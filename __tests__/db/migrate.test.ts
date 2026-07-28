@@ -15,6 +15,12 @@ function migrationFilenames(): string[] {
       "knexfile test config must define migrations.directory as a string",
     );
   }
+  // Knex's default loadExtensions is wider than this (.cjs, .ts, .coffee, …),
+  // but this repo's migrations are CommonJS .js only — the Knex CLI loads them
+  // directly and there is no ts-node (see knexfile.js). A migration added with
+  // another supported extension would be run and recorded by Knex but missed
+  // here, failing this test rather than passing silently. Widen the filter if
+  // that convention ever changes.
   return fs
     .readdirSync(directory)
     .filter((filename) => filename.endsWith(".js"))
