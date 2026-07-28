@@ -22,10 +22,18 @@ will lose the thread and end up half-reviewing.
 ## 2. Gather
 
 ```
+gh issue view <n> --repo ciaran-slow/te-kete-para --json title,body -q '.title + "\n\n" + .body'
 gh issue view <n> --repo ciaran-slow/te-kete-para --comments
-git diff main...HEAD
+git diff main...HEAD --stat
+git diff main...HEAD -- . ':(exclude)package-lock.json'
 git log main..HEAD --oneline
 ```
+
+The `--json title,body` call is the one that returns the acceptance criteria —
+`--comments` shows the comment thread but not reliably the issue body. The
+diff excludes `package-lock.json` because lockfile churn drowns the real
+changes; use the `--stat` line to confirm the lockfile changed only when
+`package.json` dependencies did.
 
 Read the plan comment and the acceptance criteria on the issue, then
 `docs/architecture.md`. If the issue touches product behaviour a user can
@@ -114,12 +122,13 @@ Then findings, most serious first. For each: file and line, what is wrong, and
 the concrete case where it goes wrong. A finding you cannot make fail with a
 specific input is a suspicion — say so, or drop it.
 
-Proving a finding usually means a throwaway test. It must live under `src/`
-(vitest's include pattern ignores everything else) and be deleted in the same
-command that runs it:
+Proving a finding usually means a throwaway test. Vitest here uses its default
+include pattern (`*.test.ts` anywhere outside `node_modules`), so put it in
+`__tests__/` — never under `src/`, where `next build`'s TypeScript pass would
+also sweep it up — and delete it in the same command that runs it:
 
 ```
-npx vitest run src/verify-scratch.test.ts; rm src/verify-scratch.test.ts
+npx vitest run __tests__/verify-scratch.test.ts; rm __tests__/verify-scratch.test.ts
 ```
 
 Separate **must fix before merge** from **worth doing later**. Not everything is
@@ -137,6 +146,10 @@ gh pr review <n> --comment --body-file <report.md>
 A review that lives only in this chat leaves the merged PR with no record of
 what was checked, what was deferred, or why. Deferred "worth doing later"
 findings especially: name the future issue each one belongs to, or file one.
+
+If this skill itself gave you a wrong command or a claim that didn't match the
+repo during the review, fixing the skill file is part of the report — future
+verify passes inherit whatever you leave uncorrected.
 
 ## 8. Only then fix
 
