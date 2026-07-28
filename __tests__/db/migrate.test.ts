@@ -25,7 +25,8 @@ describe("knex migration pipeline", () => {
     expect(batch2).toBe(1);
     expect(log2).toEqual([]);
     const migrationRows = await db("knex_migrations").select("name");
-    expect(migrationRows).toHaveLength(1);
+    // one row per migration file in db/migrations — bump when adding migrations
+    expect(migrationRows).toHaveLength(7);
   });
 
   it("rolls back and can re-migrate cleanly (up -> down -> up)", async () => {
