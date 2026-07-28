@@ -22,7 +22,7 @@ will lose the thread and end up half-reviewing.
 ## 2. Gather
 
 ```
-gh issue view <n> --repo ciaran-slow/nextjs-project --comments
+gh issue view <n> --repo ciaran-slow/te-kete-para --comments
 git diff main...HEAD
 git log main..HEAD --oneline
 ```
@@ -72,24 +72,35 @@ This is where reviews are usually weakest.
 - Are the assertions about observable behaviour, or about internals?
 - Are the failure cases tested, or only the happy path?
 - Are queries by role and label rather than test id?
-- Does anything depend on test execution order? `localStorage` is this app's data
-  layer and jsdom keeps it between tests in a file.
+- Does anything depend on test execution order? Supertest integration tests
+  share an in-memory SQLite DB per test file (docs/architecture.md §2B) —
+  confirm it's reset between tests. jsdom also keeps `localStorage` between
+  tests in a file.
 
 ## 6. Look specifically for
 
 Ordered by what actually bites in this codebase:
 
-- **Data loss.** Anything that overwrites or discards stored data a user cannot
-  recreate. Reflections have no backup and no backend.
-- **Unversioned blobs.** A persisted shape with no `version` field is a future
-  migration that cannot happen.
+- **Data loss.** Any migration or query that overwrites or discards rows a
+  user cannot recreate (addresses, subscriptions, sorting rules) without a
+  reversible path.
+- **Unversioned migrations or cache blobs.** A Knex migration with no working
+  `down`, or a persisted client-side cache shape with no `version` field, is a
+  future migration that cannot happen.
+- **Unparameterized SQL.** Knex's query builder should make this hard to get
+  wrong — flag any raw SQL string built from user input.
 - **`localStorage` during render.** Any access outside an effect breaks
   prerendering and hydration.
-- **Profile leakage.** One profile reading or writing another's keys.
+- **Cross-user leakage.** One user's address, language preference, or push
+  subscription read or overwritten via another user's request.
 - **Plan divergence.** Did it build what was planned? If it deviated, is the
   deviation justified and stated?
-- **Accessibility.** Hand-rolled interactive elements where a Radix/shadcn
-  primitive exists; missing labels; keyboard traps. This app is mostly forms.
+- **Accessibility.** Hand-rolled interactive elements where a Radix primitive
+  exists; missing labels; keyboard traps; missing `aria-live` on dynamic
+  schedule/status changes; contrast or touch-target regressions
+  (docs/vision.md §3).
+- **i18n key parity.** A new UI string added to `en` without a matching `mi`
+  entry, or vice versa.
 - **Security.** `dangerouslySetInnerHTML`, unescaped user text, anything
   executing stored strings.
 - **Scope creep.** Code beyond the issue is not a bonus. It is unreviewed,

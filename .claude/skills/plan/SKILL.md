@@ -12,7 +12,7 @@ will see this conversation. If it is not on the issue, it does not exist.
 ## 1. Load the issue and the docs
 
 ```
-gh issue view <n> --repo ciaran-slow/nextjs-project --comments
+gh issue view <n> --repo ciaran-slow/te-kete-para --comments
 ```
 
 Then read:
@@ -55,10 +55,21 @@ can copy into `docs/architecture.md`, or it does not go in the plan.
 
 These repo constraints bind every plan:
 
-- No backend, no API calls, no network. `localStorage` is the whole data layer.
-- `localStorage` is never touched during render — effects only, after mount.
-- Every persisted blob carries a `version` field.
-- Unreadable stored data is quarantined, never discarded.
+- The backend is Next.js API routes over SQLite3 via Knex.js (docs/architecture.md
+  §2B/C). New or changed persistence goes through a Knex migration — no ad hoc
+  schema changes, no hand-written SQL bypassing the query builder.
+- `localStorage` is client-only state — language preference and offline-cached
+  schedules (NFR-02) — never the primary data store. It is never touched during
+  render; read and write it only in effects, after mount.
+- Every Knex migration has a working `down`. Every persisted client-side cache
+  blob carries a `version` field so a stale shape can be migrated or
+  quarantined, never silently misread or discarded.
+- Every API route needs a Supertest integration test against an in-memory
+  SQLite DB (docs/architecture.md §2B): happy path, edge cases, failure path.
+- Every new or changed UI string needs a matching key in both `en` and `mi` —
+  the translation key-parity test is a gate (FR-01), not a suggestion.
+- Every new page or interactive component needs an axe a11y test and must meet
+  the touch-target / focus-ring / `aria-live` requirements in docs/vision.md §3.
 
 ## 4. Write the plan
 

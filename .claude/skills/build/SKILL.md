@@ -13,7 +13,7 @@ context. Your job is to execute it, not to redesign it.
 Everything you need is on the issue. Nothing is in your context.
 
 ```
-gh issue view <n> --repo ciaran-slow/nextjs-project --comments
+gh issue view <n> --repo ciaran-slow/te-kete-para --comments
 ```
 
 The plan is a comment on the issue. Read it fully before touching code.
@@ -81,13 +81,26 @@ same root cause each time.
 
 These hold regardless of what any individual plan says:
 
-- **No backend, no API calls, no network.** `localStorage` is the whole data
-  layer.
-- **Never touch `localStorage` during render.** Read it in an effect, after
-  mount. A top-level access breaks prerendering and causes hydration mismatch.
-- **Every persisted blob carries a `version` field.**
-- **Never destroy data you cannot regenerate.** Unreadable stored data gets
-  quarantined, not discarded.
+- **New or changed persistence goes through a Knex migration.** SQLite3 via
+  Knex.js is the data layer (docs/architecture.md §2B/C) — no ad hoc schema
+  changes, no hand-written SQL bypassing the query builder.
+- **`localStorage` is client-only state, not the backend**: language
+  preference and offline-cached schedules (NFR-02). Never touch it during
+  render — read and write it only in an effect, after mount. A top-level
+  access breaks prerendering and causes hydration mismatch.
+- **Every Knex migration has a working `down`.** Every persisted client-side
+  cache blob carries a `version` field. **Never destroy data you cannot
+  regenerate** — unreadable cached or stored data gets quarantined, not
+  discarded.
+- **Every API route gets a Supertest integration test** against an in-memory
+  SQLite DB (docs/architecture.md §2B) — happy path, edge cases, and the
+  failure path.
+- **Every new or changed UI string needs a matching key in both `en` and
+  `mi`.** The translation key-parity test is a gate (FR-01), not optional
+  coverage.
+- **Every new page or interactive component gets an axe a11y test** and must
+  meet the touch-target / focus-ring / `aria-live` requirements in
+  docs/vision.md §3.
 - **New dependency = an architecture decision.** It goes in
   `docs/architecture.md` with the reason, or it does not go in.
 
