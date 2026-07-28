@@ -1,6 +1,25 @@
+import fs from "node:fs";
 import { afterEach, describe, expect, it } from "vitest";
 import Knex from "knex";
 import knexConfigs from "../../knexfile.js";
+
+/**
+ * The migration filenames on disk, read from the same directory the test
+ * config points Knex at. Derived rather than hard-coded so adding a migration
+ * doesn't require editing an assertion in this unrelated file.
+ */
+function migrationFilenames(): string[] {
+  const directory = knexConfigs.test.migrations?.directory;
+  if (typeof directory !== "string") {
+    throw new Error(
+      "knexfile test config must define migrations.directory as a string",
+    );
+  }
+  return fs
+    .readdirSync(directory)
+    .filter((filename) => filename.endsWith(".js"))
+    .sort();
+}
 
 describe("knex migration pipeline", () => {
   let db: ReturnType<typeof Knex> | undefined;
@@ -24,9 +43,13 @@ describe("knex migration pipeline", () => {
     // second run is a no-op: same batch number reported, nothing re-applied
     expect(batch2).toBe(1);
     expect(log2).toEqual([]);
+    // Every migration file on disk is recorded exactly once, by name — a
+    // stronger check than a count, and it needs no edit when migrations are
+    // added.
     const migrationRows = await db("knex_migrations").select("name");
-    // one row per migration file in db/migrations — bump when adding migrations
-    expect(migrationRows).toHaveLength(7);
+    expect(migrationRows.map((row) => row.name).sort()).toEqual(
+      migrationFilenames(),
+    );
   });
 
   it("rolls back and can re-migrate cleanly (up -> down -> up)", async () => {
