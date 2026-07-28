@@ -42,6 +42,8 @@
   * `sorting_rules`: Item keys, bilingual descriptions, and WCC disposal instructions.
   * `users` & `push_subscriptions`: User preferences, language toggles, address foreign keys, and Web Push tokens.
   * *Database Testing:* Vitest verifies migration up/down cycles against clean test databases before test execution.
+* **Dependencies:** `knex` (query builder + migration runner) and `sqlite3` (driver). `sqlite3` is already on Next.js's auto-external package list, so no `serverExternalPackages` entry is needed.
+* **Migration & Seed Tooling:** Migrations and seeds run via the Knex CLI, driven by the root `knexfile.js` (`development` and `test` environments). `development` writes to `data/teketepara.db` (git-ignored; the directory is created idempotently when `knexfile.js` loads); `test` uses `:memory:`. Migration files live in `db/migrations/`, seeds in `db/seeds/`. The sqlite3 dialect's default connection pool is `{ min: 1, max: 1 }`, which is what keeps an in-memory test database consistent across queries — do not override `pool`.
 
 ---
 
