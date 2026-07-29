@@ -88,3 +88,34 @@ test("an unlabelled Radix Switch fails the audit", async () => {
   // accessible name); /name/ tolerates axe re-categorising toggle names.
   await expect(expectNoA11yViolations(container)).rejects.toThrow(/name/);
 });
+
+test("an empty container is rejected rather than passing vacuously", async () => {
+  function Nothing() {
+    return null;
+  }
+  const { container } = render(<Nothing />);
+  await expect(expectNoA11yViolations(container)).rejects.toThrow(
+    /container is empty/,
+  );
+});
+
+test("a text-only component still passes — the guard is not a rule-count check", async () => {
+  // <p>Kia ora</p> is accessible but evaluates zero axe rules, so a predicate
+  // based on "axe checked nothing" would wrongly reject it. This test is what
+  // stops the guard being rewritten that way.
+  const { container } = render(<p>Kia ora</p>);
+  await expectNoA11yViolations(container);
+});
+
+test("repeat audits of an empty container fail identically", async () => {
+  function Nothing() {
+    return null;
+  }
+  const { container } = render(<Nothing />);
+  await expect(expectNoA11yViolations(container)).rejects.toThrow(
+    /container is empty/,
+  );
+  await expect(expectNoA11yViolations(container)).rejects.toThrow(
+    /container is empty/,
+  );
+});

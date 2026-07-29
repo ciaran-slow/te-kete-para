@@ -53,6 +53,20 @@ export async function expectNoA11yViolations(
         "Render with Testing Library's render(), which mounts into document.body.",
     );
   }
+  /* An audit of an empty container passes without checking anything, which is a
+     false green when a component has regressed to rendering null. Guard on child
+     nodes, deliberately NOT on "axe evaluated no rules" (passes + violations +
+     incomplete === 0): measured in this jsdom setup, an accessible text-only
+     component such as <p>Kia ora</p> evaluates zero rules, so the rule-count
+     predicate would reject legitimate component tests. */
+  if (!container.hasChildNodes()) {
+    throw new Error(
+      "expectNoA11yViolations: container is empty, so the audit would pass " +
+        "without checking anything. Assert that the component rendered before " +
+        "auditing it — a component that has regressed to returning null " +
+        "reaches this line.",
+    );
+  }
   const results = await axe.run(container, AXE_CONFIG);
   if (results.violations.length > 0) {
     throw new Error(formatViolations(results.violations));
