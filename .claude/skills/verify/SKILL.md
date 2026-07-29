@@ -131,14 +131,21 @@ Then findings, most serious first. For each: file and line, what is wrong, and
 the concrete case where it goes wrong. A finding you cannot make fail with a
 specific input is a suspicion — say so, or drop it.
 
-Proving a finding usually means a throwaway test. Vitest here uses its default
-include pattern (`*.test.ts` anywhere outside `node_modules`), so put it in
+Proving a finding usually means a throwaway test. Vitest here collects
+`*.test.ts(x)` anywhere outside `node_modules` except `e2e/**`, so put it in
 `__tests__/` — never under `src/`, where `next build`'s TypeScript pass would
 also sweep it up — and delete it in the same command that runs it:
 
 ```
-npx vitest run __tests__/verify-scratch.test.ts; rm __tests__/verify-scratch.test.ts
+npx vitest run __tests__/verify-scratch.test.tsx; rm __tests__/verify-scratch.test.tsx
 ```
+
+Use `.tsx` for any probe that renders a component. Two gotchas that waste a run:
+Vitest v4 here **suppresses `console.log` from passing tests**, so a probe that
+only logs looks like it ran and told you nothing — collect findings and `throw`
+them at the end of the file (or pass `--silent=false`). And a probe that asserts
+nothing proves nothing: make it assert the behaviour you claim, so a green run is
+evidence rather than absence of evidence.
 
 Separate **must fix before merge** from **worth doing later**. Not everything is
 a blocker, and treating it that way makes the review easy to ignore.
