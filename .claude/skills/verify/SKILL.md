@@ -103,6 +103,15 @@ Ordered by what actually bites in this codebase:
   subscription read or overwritten via another user's request.
 - **Plan divergence.** Did it build what was planned? If it deviated, is the
   deviation justified and stated?
+- **Missing or hollow ADRs.** Every ADR drafted in the plan's "ADRs" section
+  must exist in the diff at its stated `docs/adr/NNNN-slug.md` path — a
+  promised ADR that never landed is an unmet deliverable, same as a missing
+  test. Conversely, any architecture decision visible in the diff (a new
+  dependency, a persisted data shape, a new convention) with no ADR is a
+  finding. Check the records against `docs/adr/0000-template.md`: one with no
+  alternatives or trade-offs filled in is a changelog entry, not a decision
+  record. If an ADR changed the architecture, `docs/architecture.md` must
+  match it and cite the ADR number.
 - **Accessibility.** Hand-rolled interactive elements where a Radix primitive
   exists; missing labels; keyboard traps; missing `aria-live` on dynamic
   schedule/status changes; contrast or touch-target regressions

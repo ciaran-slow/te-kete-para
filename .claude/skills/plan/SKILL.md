@@ -47,11 +47,20 @@ the repo itself. Gate against both:
 
 Unresolved decisions in a plan become the builder's improvisations. For
 genuine forks — a new dependency, a persisted data shape, anything that
-destroys or migrates data — ask the user now (AskUserQuestion), record the
-answer in the plan, and note it for `docs/architecture.md`.
+destroys or migrates data — ask the user now (AskUserQuestion) and record the
+answer in the plan.
 
-A new dependency is an architecture decision: it needs a reason the builder
-can copy into `docs/architecture.md`, or it does not go in the plan.
+**Every architecture decision the plan makes gets its own ADR, drafted in the
+plan.** Copy the format from `docs/adr/0000-template.md` (see
+`docs/adr/README.md` for what qualifies and how numbering works): context,
+the decision, each alternative considered with pros and cons, and the
+trade-offs being accepted. Put the full draft in the plan under an "ADRs"
+section with the target filename (`docs/adr/NNNN-slug.md`) so the builder
+commits it verbatim alongside the code. A decision without alternatives and
+trade-offs is not decided — it is deferred with extra steps.
+
+A new dependency is always an architecture decision: it gets an ADR draft in
+the plan, or it does not go in the plan.
 
 These repo constraints bind every plan:
 
