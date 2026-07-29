@@ -19,7 +19,7 @@
 
 ### A. Client-Side Layer (Frontend PWA)
 * **Framework:** Next.js (React) utilizing App Router for file-system routing and static/dynamic rendering optimization.
-* **Styling & Design System:** Tailwind CSS configured with Wellington design tokens (`#1B4D3E` Kākāriki, `#003B46` Moana, `#B45309` Kōwhai, `#F8FAFC` Papa).
+* **Styling & Design System:** Tailwind CSS v4 with Wellington design tokens declared CSS-first in the `@theme` block of `src/app/globals.css` (`--color-kakariki` #1B4D3E, `--color-moana` #003B46, `--color-kowhai` #B45309, `--color-papa` #F8FAFC, `--color-papa-ink` #0F172A); there is deliberately no `tailwind.config` file (ADR 0004). Typography is Inter (body, `--font-sans`) and Plus Jakarta Sans (headings/UI, `--font-heading`), self-hosted at build time via `next/font/google` with `latin` + `latin-ext` subsets so macrons render from the primary faces (ADR 0005).
 * **Accessibility Primitives:** Radix UI headless components ensuring W3C ARIA compliance, keyboard navigation, and screen-reader optimization.
 * **Localization State:** React Context (`LanguageContext`) supporting full app translation and macron-safe rendering via **Inter** and **Plus Jakarta Sans**.
 * **Client Testing Strategy (Vitest + Testing Library + Axe):**

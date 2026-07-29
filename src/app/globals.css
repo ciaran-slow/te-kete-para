@@ -1,26 +1,24 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Wellington design tokens (docs/vision.md §3, ADR 0004). Each entry
+   generates the matching Tailwind utility family (bg-kakariki, text-moana, …). */
+@theme {
+  --color-kakariki: #1b4d3e;
+  --color-moana: #003b46;
+  --color-kowhai: #b45309;
+  --color-papa: #f8fafc;
+  --color-papa-ink: #0f172a;
 }
 
+/* Font variables are declared by next/font on <html> in src/app/layout.tsx;
+   `inline` keeps them as var() references resolved at the element (ADR 0005). */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-plus-jakarta-sans);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-papa);
+  color: var(--color-papa-ink);
+  font-family: var(--font-sans);
 }
