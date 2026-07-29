@@ -20,11 +20,11 @@
 ### A. Client-Side Layer (Frontend PWA)
 * **Framework:** Next.js (React) utilizing App Router for file-system routing and static/dynamic rendering optimization.
 * **Styling & Design System:** Tailwind CSS v4 with Wellington design tokens declared CSS-first in the `@theme` block of `src/app/globals.css` (`--color-kakariki` #1B4D3E, `--color-moana` #003B46, `--color-kowhai` #B45309, `--color-papa` #F8FAFC, `--color-papa-ink` #0F172A); there is deliberately no `tailwind.config` file (ADR 0004). Typography is Inter (body, `--font-sans`) and Plus Jakarta Sans (headings/UI, `--font-heading`), self-hosted at build time via `next/font/google` with `latin` + `latin-ext` subsets so macrons render from the primary faces (ADR 0005).
-* **Accessibility Primitives:** Radix UI headless components ensuring W3C ARIA compliance, keyboard navigation, and screen-reader optimization.
+* **Accessibility Primitives:** Radix UI headless components ensuring W3C ARIA compliance, keyboard navigation, and screen-reader optimization, consumed through the unified `radix-ui` package — primitives import as namespaces (`import { Separator } from "radix-ui"`), so later issues add no new dependencies (ADR 0006).
 * **Localization State:** React Context (`LanguageContext`) supporting full app translation and macron-safe rendering via **Inter** and **Plus Jakarta Sans**.
 * **Client Testing Strategy (Vitest + Testing Library + Axe):**
   * Unit tests verify bilingual UI component rendering, dictionary interpolation, and macron preservation.
-  * Automated accessibility test suites (`@axe-core/react`) run inside Vitest to instantly catch contrast, ARIA, and focus-ring regressions.
+  * Automated accessibility audits run inside Vitest via the shared helper `expectNoA11yViolations(container)` (`__tests__/helpers/a11y.ts`), which wraps `axe-core` directly — `@axe-core/react` only logs to the dev console and cannot fail a test (ADR 0007). The helper audits rendered fragments, so contrast rules (uncomputable in jsdom) and document-level rules (`html-has-lang`, landmarks-per-page) are deliberately excluded there; those are covered by the CI axe suite (#17), the Lighthouse budget (#31), and manual QA (#18).
 * **End-to-End Testing (Playwright, ADR 0001):** Browser-level tests in `e2e/*.spec.ts` run via `npm run test:e2e` against a production build (`next build` + `next start`, managed by Playwright's `webServer`), Chromium-only. This is the layer that exercises hydration, real navigation, PWA/offline behaviour, and push flows. Vitest excludes `e2e/**`; Playwright owns `.spec.ts` there, Vitest owns `.test.ts(x)` everywhere else. E2E is a separate script, not one of the four fast gates.
 
 ### B. API & Business Logic Layer

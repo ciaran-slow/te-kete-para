@@ -1,3 +1,5 @@
+import { Separator } from "radix-ui";
+
 export default function Home() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center bg-papa font-sans text-papa-ink">
@@ -12,6 +14,7 @@ export default function Home() {
           The bilingual rubbish and recycling companion for Wellington — Te
           Whanganui-a-Tara.
         </p>
+        <Separator.Root className="h-px w-full max-w-md bg-moana/20" />
         <p
           lang="mi"
           data-testid="macron-sample"
