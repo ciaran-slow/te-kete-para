@@ -101,8 +101,8 @@ These hold regardless of what any individual plan says:
 - **Every new page or interactive component gets an axe a11y test** and must
   meet the touch-target / focus-ring / `aria-live` requirements in
   docs/vision.md §3.
-- **New dependency = an architecture decision.** It goes in
-  `docs/architecture.md` with the reason, or it does not go in.
+- **New dependency = an architecture decision.** It gets an ADR in
+  `docs/adr/` (normally drafted in the plan), or it does not go in.
 
 ## 5. Tests are yours, not the verifier's
 
@@ -138,11 +138,28 @@ or only the gates you remember touching, is how "all four passed" ends up
 being false by the time you commit. There is no partial-credit order here —
 run all four, in one sitting, after the last line you changed.
 
-## 7. Record decisions
+## 7. Record decisions as ADRs
 
-`docs/architecture.md` is a living document. If you made a real architectural
-choice while building — a folder convention, a state approach, how migrations
-work — add the decision and its reason. Not a rewrite; a few lines.
+Architecture decisions are logged individually in `docs/adr/`, one file per
+decision (`docs/adr/README.md` has the convention, `0000-template.md` the
+format).
+
+- **Decisions the plan already made** arrive as ADR drafts in the plan's
+  "ADRs" section. Commit each one verbatim at its stated path. Do not skip
+  this because the code "speaks for itself" — the ADR is a deliverable of the
+  issue, same as the tests.
+- **Decisions you made while building** — a folder convention, a state
+  approach, how migrations work, any gate-forced deviation with architectural
+  consequences — get their own ADR, written by you from the template: context,
+  the decision, the alternatives you weighed with pros and cons, and the
+  trade-offs accepted. If you cannot name an alternative you rejected, it was
+  not an architecture decision; leave it out.
+
+When an ADR changes the current architecture, also update
+`docs/architecture.md` to match and cite the ADR number — architecture.md
+stays the current-state picture; the ADR carries the reasoning.
+
+ADRs ship in the same PR as the code they justify.
 
 ## 8. Commit, push, PR
 
