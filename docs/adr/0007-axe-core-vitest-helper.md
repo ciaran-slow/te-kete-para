@@ -75,3 +75,28 @@ assert accessibility in Vitest — component tests must not import axe-core
 directly, so rule exclusions stay in one place. Revisit this record if
 the helper's configuration sprawls (jest-axe becomes the better trade) or
 when an axe-core major renames rules the tests assert on.
+
+A third gap is wider than the two rule exclusions above and is easy to
+miss, because it is a property of axe rather than of this configuration.
+`axe.run` returns three buckets — `violations`, `passes`, and `incomplete`
+for checks it could not decide — and the helper fails only on
+`violations`. Because jsdom performs no layout, every visibility-dependent
+rule lands in `incomplete`: a focusable element inside `aria-hidden="true"`
+(keyboard-reachable hidden content, a serious defect and a common mistake
+with overlay primitives such as Dialog and Popover) returns
+`violations: []` and `incomplete: ["aria-hidden-focus"]`, so the helper
+passes it. A green Vitest a11y assertion therefore means "no violation axe
+could decide here", not "accessible". This matters most for the Radix
+overlay work in #8, #24, and #26; those rules return a real verdict only in
+a browser, so #17 (Playwright-side axe) and #31 (Lighthouse) are the
+compensating controls, the same pair that covers contrast.
+
+Deliberately **not** resolved by failing on `incomplete`:
+`aria-hidden-focus` goes indeterminate whenever content is hidden, so that
+would turn legitimate tests red and train contributors to bypass the
+helper — a worse outcome than a documented gap. Two changes would be safe
+if the gap starts biting: appending incomplete rule ids to the failure
+message (visible only on tests that already fail), or asserting on
+`incomplete` in the specific tests where a rule is known to be
+indeterminate. jest-axe checks only `violations` too, so switching wrappers
+would not close this.
