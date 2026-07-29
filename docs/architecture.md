@@ -25,6 +25,7 @@
 * **Client Testing Strategy (Vitest + Testing Library + Axe):**
   * Unit tests verify bilingual UI component rendering, dictionary interpolation, and macron preservation.
   * Automated accessibility test suites (`@axe-core/react`) run inside Vitest to instantly catch contrast, ARIA, and focus-ring regressions.
+* **End-to-End Testing (Playwright, ADR 0001):** Browser-level tests in `e2e/*.spec.ts` run via `npm run test:e2e` against a production build (`next build` + `next start`, managed by Playwright's `webServer`), Chromium-only. This is the layer that exercises hydration, real navigation, PWA/offline behaviour, and push flows. Vitest excludes `e2e/**`; Playwright owns `.spec.ts` there, Vitest owns `.test.ts(x)` everywhere else. E2E is a separate script, not one of the four fast gates.
 
 ### B. API & Business Logic Layer
 * **Runtime Environment:** Node.js serverless functions / edge runtimes hosted via Vercel or Netlify.
