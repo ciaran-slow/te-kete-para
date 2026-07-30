@@ -120,9 +120,15 @@ failed build.
 ```
 npm run typecheck
 npm run lint
-npm test
+npm run test:coverage
 npm run build
 ```
+
+Run `npm run test:coverage`, not `npm test` — that is the gate
+`.github/workflows/ci.yml` actually enforces (docs/architecture.md §4, 90%
+lines/statements). `npm test` runs the same suite without evaluating that
+threshold, so a build that only ran `npm test` can look green locally and
+still fail CI on coverage.
 
 `npm run build` is not optional. It is the only check that catches a
 `localStorage` access during prerender.
@@ -133,7 +139,7 @@ If a gate fails, fix it. Do not report "done with one failing test".
 after every edit, including edits made to fix a gate failure.** A fix for one
 gate can silently break another: a workaround for a failing test (an
 untyped cast, a new shared mock) is exactly the kind of change that passes
-`npm test` while failing `npm run lint`. Running only the gate you just fixed,
+`npm run test:coverage` while failing `npm run lint`. Running only the gate you just fixed,
 or only the gates you remember touching, is how "all four passed" ends up
 being false by the time you commit. There is no partial-credit order here —
 run all four, in one sitting, after the last line you changed.
