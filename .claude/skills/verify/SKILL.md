@@ -56,12 +56,16 @@ instead of touching the tree you're actively reviewing.
 ```
 npm run typecheck
 npm run lint
-npm test
+npm run test:coverage
 npm run build
 ```
 
 Never take "tests pass" on trust. Run them. A green claim in a PR body is a
-claim, not evidence.
+claim, not evidence. Run `npm run test:coverage`, not `npm test` — that is the
+gate `.github/workflows/ci.yml` actually enforces (docs/architecture.md §4,
+90% lines/statements). `npm test` passes without evaluating that threshold,
+so a pass that only runs `npm test` can report four green gates while
+skipping the one that can actually fail on coverage.
 
 ## 4. Check each acceptance criterion individually
 
