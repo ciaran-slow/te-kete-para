@@ -99,7 +99,15 @@ criterion has evidence behind it.
 This is where reviews are usually weakest.
 
 - For each test, ask: **what change to the source would make this fail?** If
-  nothing obvious would, the test is decorative.
+  nothing obvious would, the test is decorative. Don't just reason about this
+  abstractly — mutate the source and run it: comment out or delete the
+  specific clause under test (an `.orderBy()`, an escape call, a `Boolean(...)`
+  cast), run the suite, confirm the relevant test actually goes red, then
+  revert (`git checkout -- <file>`) before moving on. A test that survives the
+  mutation is decorative regardless of how plausible its assertion reads —
+  this caught a real case on issue #11, twice: an "ordering" assertion whose
+  fixtures happened to be inserted in already-alphabetical order, so it passed
+  with or without the `.orderBy()` clause it claimed to prove.
 - Are the assertions about observable behaviour, or about internals?
 - Are the failure cases tested, or only the happy path?
 - Are queries by role and label rather than test id?
