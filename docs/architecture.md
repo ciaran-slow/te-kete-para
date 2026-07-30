@@ -32,6 +32,11 @@
 * **Runtime Environment:** Node.js serverless functions / edge runtimes hosted via Vercel or Netlify.
 * **Data Abstraction:** **Knex.js** query builder managing secure, parameterized SQL query generation and automated schema migrations.
 * **API Testing Strategy (Vitest + Supertest, ADR 0002 / ADR 0003):** Integration tests share the helper `__tests__/helpers/api.ts`. `setupTestDb()` / `teardownTestDb()` give each test file its own in-memory SQLite3 database with all Knex migrations applied and `PRAGMA foreign_keys = ON` in force, because the instance is built from `knexfile.js`'s `test` config rather than a hand-rolled one. `createRequestListener(routeModule)` adapts this fork's Web-API route handlers (`Request` → `Response`) into a Node request listener that Supertest drives **in-process** — the only way the handler under test can see a `:memory:` database that lives inside the test process's single connection. API test files therefore run under `// @vitest-environment node` (Vitest's global environment is jsdom), and app code reaches the database only through `src/lib/db.ts` (`getDb()`), so handler and fixtures share one Knex instance. Supertest validates endpoint behaviour (`/api/suburbs/search`, `/api/notifications/subscribe`) — schedule math, holiday overrides, JSON payloads — plus each route's failure path; `/api/health` is the reference example.
+* **Suburb Search Endpoint:** `GET /api/suburbs/search?q=` (`src/app/api/suburbs/search/route.ts`)
+  does a case-insensitive, wildcard-escaped partial match on `addresses.street_name` via
+  Knex, returning `{ results: [...] }` with camelCase fields; every JSON API response in this
+  app follows the envelope and casing convention in ADR 0012, established here as the first
+  data-returning endpoint.
 
 ### C. Data Persistence Layer
 * **Database Engine:** **SQLite3** stored as an embedded file database (`/data/teketepara.db`).
