@@ -1,4 +1,4 @@
-# ADR 0012: JSON API response envelope and field casing
+# ADR 0013: JSON API response envelope and field casing
 
 - **Status:** accepted
 - **Date:** 2026-07-30

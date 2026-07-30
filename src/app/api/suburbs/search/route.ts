@@ -19,14 +19,14 @@ export interface SuburbSearchResult {
 /**
  * Backslash-escapes SQLite LIKE wildcards (`%`, `_`) and the escape
  * character itself (`\`) so a user's query is matched literally, never as
- * a pattern — paired with `ESCAPE '\'` in the query below (ADR 0012).
+ * a pattern — paired with `ESCAPE '\'` in the query below (ADR 0013).
  */
 export function escapeLikePattern(value: string): string {
   return value.replace(/[\\%_]/g, (char) => `\\${char}`);
 }
 
 /**
- * Maps a raw `addresses` row to the API's camelCase contract (ADR 0012).
+ * Maps a raw `addresses` row to the API's camelCase contract (ADR 0013).
  * `Boolean(...)` closes the gap where knex's sqlite3 dialect returns
  * `boolean` columns as the JS number 1/0, not true/false.
  */

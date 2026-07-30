@@ -35,7 +35,7 @@
 * **Suburb Search Endpoint:** `GET /api/suburbs/search?q=` (`src/app/api/suburbs/search/route.ts`)
   does a case-insensitive, wildcard-escaped partial match on `addresses.street_name` via
   Knex, returning `{ results: [...] }` with camelCase fields; every JSON API response in this
-  app follows the envelope and casing convention in ADR 0012, established here as the first
+  app follows the envelope and casing convention in ADR 0013, established here as the first
   data-returning endpoint.
 
 ### C. Data Persistence Layer
