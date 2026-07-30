@@ -173,7 +173,7 @@ export function AddressSearch({ onSelect }: AddressSearchProps) {
         value={query}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        className="h-12 w-full rounded-md border border-moana/30 px-4 text-base text-papa-ink outline-none focus:outline focus:outline-[3px] focus:outline-offset-2 focus:outline-moana"
+        className="h-12 w-full rounded-md border border-moana/60 px-4 text-base text-papa-ink outline-none placeholder:text-papa-ink/70 focus:outline focus:outline-[3px] focus:outline-offset-2 focus:outline-moana"
       />
       <p
         aria-live="polite"
@@ -186,7 +186,7 @@ export function AddressSearch({ onSelect }: AddressSearchProps) {
         role="listbox"
         aria-label={t("address.search.resultsLabel")}
         hidden={!(isOpen && status === "done")}
-        className="absolute z-10 mt-1 w-full max-w-md rounded-md border border-moana/20 bg-papa shadow-lg"
+        className="absolute z-10 mt-1 w-full max-w-md rounded-md border border-moana/60 bg-papa shadow-lg"
       >
         {results.map((result, index) => (
           <li
