@@ -129,6 +129,22 @@ For every behaviour the plan prescribes, the test requirements must cover:
 Name the concrete cases. "Tests for error handling" is not a requirement; "a
 corrupt blob read three times produces exactly one quarantine copy" is.
 
+**When you write the fixture data yourself, check it can actually falsify the
+mechanism it's meant to prove.** A test for ordering, dedup, sort direction,
+or escaping is only real if the *wrong* implementation would produce a
+different result against the exact fixtures you specified — not just if the
+*right* implementation produces the asserted result. Issue #11's plan
+specified insert order `Cuba Mall, Cuba Street, Karori Road` for a case
+described as proving `.orderBy("street_name")`, but that insert order is
+already alphabetical — SQLite's default rowid order matched the asserted
+order with no `ORDER BY` at all, so the assertion passed identically whether
+or not the clause under test existed. It happened once in the plan and was
+then faithfully reproduced by two independent build attempts before verify
+caught it both times. Before finalizing fixture data for this kind of
+assertion, ask: "if the mechanism under test were deleted, would this exact
+assertion still pass against this exact data?" If yes, reorder the fixtures
+or add one until the answer is no.
+
 ## 6. Post the plan on the issue
 
 ```
