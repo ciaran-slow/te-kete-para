@@ -16,10 +16,14 @@ const MISSING_QUERY_BODY = { error: "Query parameter q is required." };
 describe("GET /api/suburbs/search", () => {
   beforeAll(async () => {
     await setupTestDb();
+    // Deliberately inserted in NON-alphabetical order ("Cuba Street" before
+    // "Cuba Mall"): sqlite's default rowid order then differs from
+    // ORDER BY street_name, so the ordering assertions below actually fail
+    // if the route drops its .orderBy("street_name") clause.
     await getDb()("addresses").insert([
-      { street_name: "Cuba Mall", suburb: "Te Aro", zone: "CBD-INNER", is_inner_city_night_collection: true },
       { street_name: "Cuba Street", suburb: "Te Aro", zone: "CBD-INNER", is_inner_city_night_collection: true },
       { street_name: "Karori Road", suburb: "Karori", zone: "SUBURBAN-WEST", is_inner_city_night_collection: false },
+      { street_name: "Cuba Mall", suburb: "Te Aro", zone: "CBD-INNER", is_inner_city_night_collection: true },
     ]);
   });
 
