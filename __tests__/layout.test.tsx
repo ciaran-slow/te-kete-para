@@ -1,4 +1,4 @@
-import { afterEach, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { cleanup, render } from "@testing-library/react";
 import RootLayout, { metadata } from "../src/app/layout";
 
@@ -30,7 +30,13 @@ vi.mock("next/font/google", () => ({
   },
 }));
 
-afterEach(cleanup);
+beforeEach(() => window.localStorage.clear());
+
+afterEach(() => {
+  cleanup();
+  window.localStorage.clear();
+  document.documentElement.lang = "en";
+});
 
 test("the document language is English so screen readers pick a voice", () => {
   render(<RootLayout><span>tamariki</span></RootLayout>);
@@ -62,4 +68,10 @@ test("the layout renders its children", () => {
 test("metadata carries the product name and a bilingual description", () => {
   expect(metadata.title).toBe("Te Kete Para");
   expect(metadata.description).toContain("Te Whanganui-a-Tara");
+});
+
+test("a stored Te Reo preference reaches <html lang> so screen readers switch voice", () => {
+  window.localStorage.setItem("tkp.locale", "mi");
+  render(<RootLayout><span>tamariki</span></RootLayout>);
+  expect(document.documentElement.lang).toBe("mi");
 });
