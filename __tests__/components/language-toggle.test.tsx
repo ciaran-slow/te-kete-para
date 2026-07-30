@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, test } from "vitest";
-import { act, cleanup, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { LanguageProvider } from "../../src/lib/i18n/language-provider";
 import { LanguageToggle } from "../../src/components/language-toggle";
 import { LOCALE_STORAGE_KEY } from "../../src/lib/i18n/locale-storage";
@@ -80,4 +80,33 @@ test("passes the accessibility audit in both English and Te Reo states", async (
   await expectNoA11yViolations(container);
   act(() => screen.getByRole("radio", { name: "Te Reo Māori" }).click());
   await expectNoA11yViolations(container);
+});
+
+test("ArrowRight moves focus to and selects the next item", async () => {
+  renderToggle();
+  const en = screen.getByRole("radio", { name: "English" });
+  const mi = screen.getByRole("radio", { name: "Te Reo Māori" });
+  act(() => en.focus());
+  /* Radix's roving-focus group schedules the actual DOM focus move via
+     setTimeout, so the selection this causes (RadioGroup's onFocus-after-
+     arrow-key handler) lands a tick later too. */
+  await act(async () => {
+    fireEvent.keyDown(en, { key: "ArrowRight" });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  });
+  expect(document.activeElement).toBe(mi);
+  expect(mi).toHaveAttribute("aria-checked", "true");
+  expect(en).toHaveAttribute("aria-checked", "false");
+  expect(window.localStorage.getItem(LOCALE_STORAGE_KEY)).toBe("mi");
+});
+
+test("each item's own name is marked with its own language", () => {
+  renderToggle();
+  expect(screen.getByRole("radio", { name: "English" })).toHaveAttribute(
+    "lang",
+    "en",
+  );
+  expect(
+    screen.getByRole("radio", { name: "Te Reo Māori" }),
+  ).toHaveAttribute("lang", "mi");
 });
