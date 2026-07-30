@@ -47,6 +47,25 @@ test("a stored Te Reo preference renders the Te Reo tagline heading", () => {
   ).toBeInTheDocument();
 });
 
+test("the description paragraph is in English by default", () => {
+  renderPage();
+  expect(
+    screen.getByText(
+      "The bilingual rubbish and recycling companion for Wellington — Te Whanganui-a-Tara.",
+    ),
+  ).toBeInTheDocument();
+});
+
+test("a stored Te Reo preference renders the Te Reo description with its macron intact", () => {
+  window.localStorage.setItem(LOCALE_STORAGE_KEY, "mi");
+  renderPage();
+  const description = screen.getByText(
+    "Te hoa reorua mō te para me te hangarua mō Te Whanganui-a-Tara.",
+  );
+  expect(description).toBeInTheDocument();
+  expect(description.textContent).toContain("mō");
+});
+
 test("macron sample contains every macron vowel, upper and lower case", () => {
   renderPage();
   const sample = screen.getByTestId("macron-sample");
