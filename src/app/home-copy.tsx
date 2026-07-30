@@ -11,7 +11,9 @@ export function HomeCopy() {
         {t("app.name")}
       </h1>
       <h2 className="text-lg">{t("app.tagline")}</h2>
-      <p className="max-w-md text-lg">{t("app.description")}</p>
+      <p data-testid="app-description" className="max-w-md text-lg">
+        {t("app.description")}
+      </p>
     </>
   );
 }
