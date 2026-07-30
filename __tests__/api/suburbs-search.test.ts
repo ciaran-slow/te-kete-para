@@ -14,10 +14,13 @@ const app = createRequestListener(searchRoute);
 describe("GET /api/suburbs/search", () => {
   beforeAll(async () => {
     await setupTestDb();
+    // Deliberately inserted in non-alphabetical order so the "ordered by
+    // street name" assertion fails if the route ever drops its ORDER BY:
+    // sqlite's default rowid order would return Cuba Street before Cuba Mall.
     await getDb()("addresses").insert([
-      { street_name: "Cuba Mall", suburb: "Te Aro", zone: "CBD-INNER", is_inner_city_night_collection: true },
-      { street_name: "Cuba Street", suburb: "Te Aro", zone: "CBD-INNER", is_inner_city_night_collection: true },
       { street_name: "Karori Road", suburb: "Karori", zone: "SUBURBAN-WEST", is_inner_city_night_collection: false },
+      { street_name: "Cuba Street", suburb: "Te Aro", zone: "CBD-INNER", is_inner_city_night_collection: true },
+      { street_name: "Cuba Mall", suburb: "Te Aro", zone: "CBD-INNER", is_inner_city_night_collection: true },
     ]);
   });
 
