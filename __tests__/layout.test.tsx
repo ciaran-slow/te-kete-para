@@ -12,14 +12,21 @@ const { interOptions, jakartaOptions } = vi.hoisted(() => ({
   jakartaOptions: vi.fn(),
 }));
 
+/* Each stub echoes back the `variable` it was handed, exactly as the real
+   transform does. Do not "simplify" this to a hardcoded "--font-inter": that
+   severs the link between what layout.tsx requests and what lands on <html>,
+   so renaming the variable to one globals.css does not reference would pass
+   every test here while macrons fell back to a system font in production. */
+type FontOptions = { variable: string };
+
 vi.mock("next/font/google", () => ({
-  Inter: (options: unknown) => {
+  Inter: (options: FontOptions) => {
     interOptions(options);
-    return { variable: "--font-inter" };
+    return { variable: options.variable };
   },
-  Plus_Jakarta_Sans: (options: unknown) => {
+  Plus_Jakarta_Sans: (options: FontOptions) => {
     jakartaOptions(options);
-    return { variable: "--font-plus-jakarta-sans" };
+    return { variable: options.variable };
   },
 }));
 
