@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/lib/i18n/language-provider";
+import { LanguageToggle } from "@/components/language-toggle";
 
 /* Macrons (ā ē ī ō ū) are Latin Extended-A glyphs: without the latin-ext
    subset they render from a fallback font (FR-01, ADR 0005). */
@@ -34,7 +35,12 @@ export default function RootLayout({
       className={`${inter.variable} ${plusJakartaSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <LanguageProvider>{children}</LanguageProvider>
+        <LanguageProvider>
+          <header className="flex justify-end px-4 py-3">
+            <LanguageToggle />
+          </header>
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   );
