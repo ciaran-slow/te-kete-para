@@ -29,7 +29,7 @@ test("a localStorage write that throws does not propagate", () => {
   expect(() => writeStoredLocale("mi")).not.toThrow();
 });
 
-test("a write that throws still notifies subscribers so the UI updates", () => {
+test("a write that throws still notifies subscribers, though the stored value is unchanged", () => {
   vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
     throw new Error("QuotaExceededError");
   });

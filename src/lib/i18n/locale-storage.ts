@@ -16,7 +16,10 @@ export function writeStoredLocale(locale: Locale): void {
   try {
     window.localStorage.setItem(LOCALE_STORAGE_KEY, locale);
   } catch {
-    /* Private mode / quota: the in-memory locale still changes. */
+    /* Private mode / quota: the write is dropped. There is no in-memory
+       fallback — getSnapshot re-reads localStorage on every notification,
+       so the visible locale silently reverts to whatever is (or isn't)
+       stored, not to the value just requested. */
   }
   window.dispatchEvent(new Event(LOCALE_CHANGE_EVENT));
 }
