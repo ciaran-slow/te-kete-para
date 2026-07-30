@@ -65,5 +65,6 @@
 
 ## 4. Testing Infrastructure & Quality Assurance Pipelines
 * **Execution Engine:** **Vitest** configured for fast parallel execution across client unit tests, accessibility hooks, and API integration suites.
-* **Coverage Enforcement:** Continuous integration pipelines fail builds if test code coverage drops below **90%**.
+* **Continuous Integration:** `.github/workflows/ci.yml` runs four gates on every pull request and every push to `main`, as one sequential job on `ubuntu-latest` with Node 24: `npm run lint`, `npm run typecheck`, `npm run test:coverage`, `npm run build`. Playwright is deliberately not wired in here — E2E stays a separate script (§2A).
+* **Coverage Enforcement:** `npm run test:coverage` (`vitest run --coverage`) measures product code only — `src/**/*.{ts,tsx}`, via `@vitest/coverage-v8` (ADR 0008) — and fails the run if **lines or statements** fall below **90%**; both currently sit at 100%. Branches and functions are reported in the CI log but not gated: `src/lib/db.ts` selects its Knex config on `NODE_ENV === "test"`, and Vitest always sets `NODE_ENV=test`, so the `development` side of that branch is unreachable from the suite (ADR 0008 §Trade-offs and consequences).
 * **Automated Linting & Type Safety:** TypeScript strict mode enabled across the entire codebase to prevent runtime type errors and ensure bulletproof database entity mapping.
