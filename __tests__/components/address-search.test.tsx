@@ -225,6 +225,70 @@ describe("AddressSearch", () => {
     expect(screen.getByRole("listbox", { hidden: true })).toHaveAttribute("hidden");
   });
 
+  test("aria-expanded stays false and arrow keys are inert while a request is in flight", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockReturnValue(new Promise(() => {})));
+    renderSearch();
+
+    fireEvent.change(input(), { target: { value: "cuba" } });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(300);
+    });
+
+    expect(input()).toHaveAttribute("aria-expanded", "false");
+    expect(screen.getByRole("listbox", { hidden: true })).toHaveAttribute("hidden");
+    fireEvent.keyDown(input(), { key: "ArrowDown" });
+    expect(input()).not.toHaveAttribute("aria-activedescendant");
+  });
+
+  test("an empty result set collapses the combobox: aria-expanded is false, the listbox is hidden, and ArrowDown/Enter do nothing", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse({ results: [] })));
+    const onSelect = vi.fn();
+    renderSearch({ onSelect });
+    await typeAndSettle("zzz-no-match");
+
+    expect(screen.getByText("No matching addresses. Check the spelling and try again.")).toBeInTheDocument();
+    expect(input()).toHaveAttribute("aria-expanded", "false");
+    expect(screen.getByRole("listbox", { hidden: true })).toHaveAttribute("hidden");
+
+    fireEvent.keyDown(input(), { key: "ArrowDown" });
+    expect(input()).not.toHaveAttribute("aria-activedescendant");
+    fireEvent.keyDown(input(), { key: "Enter" });
+    expect(onSelect).not.toHaveBeenCalled();
+  });
+
+  test("a failed search collapses the combobox: aria-expanded is false while the error message shows", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("network error")));
+    renderSearch();
+    await typeAndSettle("cuba");
+
+    expect(
+      screen.getByText("We couldn't search addresses right now. Please try again."),
+    ).toBeInTheDocument();
+    expect(input()).toHaveAttribute("aria-expanded", "false");
+    expect(screen.getByRole("listbox", { hidden: true })).toHaveAttribute("hidden");
+  });
+
+  test("typing a new query clears the previous results and active descendant before the fetch resolves", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn()
+        .mockResolvedValueOnce(jsonResponse({ results: [CUBA_MALL, CUBA_STREET] }))
+        .mockReturnValue(new Promise(() => {})),
+    );
+    renderSearch();
+    await typeAndSettle("cuba");
+    fireEvent.keyDown(input(), { key: "ArrowDown" });
+    expect(input()).toHaveAttribute("aria-activedescendant");
+    expect(input()).toHaveAttribute("aria-expanded", "true");
+
+    fireEvent.change(input(), { target: { value: "cubab" } });
+
+    expect(input()).not.toHaveAttribute("aria-activedescendant");
+    expect(input()).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryAllByRole("option")).toHaveLength(0);
+    expect(screen.getByRole("listbox", { hidden: true })).toHaveAttribute("hidden");
+  });
+
   test("shows a translated, visible, aria-live loading message while a request is in flight", async () => {
     let resolveFetch!: (value: unknown) => void;
     vi.stubGlobal(

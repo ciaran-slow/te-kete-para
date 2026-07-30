@@ -27,7 +27,13 @@ role="combobox">` with `aria-expanded`, `aria-controls`, `aria-autocomplete
 ="list"`, and `aria-activedescendant`, paired with a `<ul role="listbox">`
 of `<li role="option" aria-selected>` rows. Focus never leaves the input;
 "moving" between options only updates `aria-activedescendant` and a visual
-highlight. No Radix primitive is used for the popup panel or the option
+highlight. `aria-expanded`, the listbox's `hidden` attribute, and the
+arrow/Enter key guards all derive from one `isPopupVisible` value (open
+*and* results present), so the advertised ARIA state can never contradict
+the rendered DOM (SC 4.1.2) — in the loading, empty, and error states the
+input reports `aria-expanded="false"` while the polite live region carries
+the status message; a new query also resets the previous results and
+active descendant before the fetch starts. No Radix primitive is used for the popup panel or the option
 list. The debounce/fetch/keyboard state lives entirely inside
 `src/components/address-search.tsx` as local component state — no shared
 hook is extracted yet, since there is exactly one consumer today.

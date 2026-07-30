@@ -56,6 +56,11 @@ export function AddressSearch({ onSelect }: AddressSearchProps) {
   }
 
   function runSearch(trimmed: string) {
+    // A new query invalidates the previous results immediately: the popup
+    // must not stay expanded (or keep an active descendant) over rows that
+    // no longer match what the user typed.
+    setResults([]);
+    setActiveIndex(-1);
     setStatus("loading");
     setIsOpen(true);
     timeoutRef.current = setTimeout(() => {
@@ -120,17 +125,24 @@ export function AddressSearch({ onSelect }: AddressSearchProps) {
     onSelect?.(result);
   }
 
+  // Single source of truth for whether the listbox popup is showing.
+  // `aria-expanded`, the listbox's `hidden` attribute, and the arrow/Enter
+  // guards all derive from it, so the advertised ARIA state can never
+  // contradict the DOM (SC 4.1.2): `isOpen` alone stays true through the
+  // loading/empty/error states, where the popup is not visible.
+  const isPopupVisible = isOpen && status === "done";
+
   function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
     if (event.key === "ArrowDown") {
-      if (!isOpen || results.length === 0) return;
+      if (!isPopupVisible || results.length === 0) return;
       event.preventDefault();
       setActiveIndex((current) => Math.min(current + 1, results.length - 1));
     } else if (event.key === "ArrowUp") {
-      if (!isOpen || results.length === 0) return;
+      if (!isPopupVisible || results.length === 0) return;
       event.preventDefault();
       setActiveIndex((current) => Math.max(current - 1, 0));
     } else if (event.key === "Enter") {
-      if (!isOpen || activeIndex < 0) return;
+      if (!isPopupVisible || activeIndex < 0) return;
       const result = results[activeIndex];
       if (!result) return;
       event.preventDefault();
@@ -165,7 +177,7 @@ export function AddressSearch({ onSelect }: AddressSearchProps) {
         type="text"
         role="combobox"
         autoComplete="off"
-        aria-expanded={isOpen}
+        aria-expanded={isPopupVisible}
         aria-controls={listboxId}
         aria-autocomplete="list"
         aria-activedescendant={activeOption ? optionId(activeOption) : undefined}
@@ -185,7 +197,7 @@ export function AddressSearch({ onSelect }: AddressSearchProps) {
         id={listboxId}
         role="listbox"
         aria-label={t("address.search.resultsLabel")}
-        hidden={!(isOpen && status === "done")}
+        hidden={!isPopupVisible}
         className="absolute z-10 mt-1 w-full max-w-md rounded-md border border-moana/60 bg-papa shadow-lg"
       >
         {results.map((result, index) => (
