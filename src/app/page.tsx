@@ -1,19 +1,19 @@
+"use client";
+
 import { Separator } from "radix-ui";
+import { useTranslation } from "@/lib/i18n/language-provider";
 
 export default function Home() {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-1 flex-col items-center justify-center bg-papa font-sans text-papa-ink">
       <main className="flex w-full max-w-3xl flex-1 flex-col items-center justify-center gap-6 px-8 py-24 text-center">
         <h1 className="font-heading text-4xl font-bold tracking-tight text-moana">
-          Te Kete Para
+          {t("app.name")}
         </h1>
-        <p lang="mi" className="text-lg">
-          Tiakina te taiao, kia mauria te para.
-        </p>
-        <p className="max-w-md text-lg">
-          The bilingual rubbish and recycling companion for Wellington — Te
-          Whanganui-a-Tara.
-        </p>
+        <h2 className="text-lg">{t("app.tagline")}</h2>
+        <p className="max-w-md text-lg">{t("app.description")}</p>
         <Separator.Root className="h-px w-full max-w-md bg-moana/20" />
         <p
           lang="mi"

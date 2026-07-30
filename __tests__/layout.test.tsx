@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { cleanup, render } from "@testing-library/react";
+import { act, cleanup, render, screen, within } from "@testing-library/react";
 import RootLayout, { metadata } from "../src/app/layout";
 
 /* next/font/google is a build-time transform: called under Vitest it throws
@@ -73,5 +73,18 @@ test("metadata carries the product name and a bilingual description", () => {
 test("a stored Te Reo preference reaches <html lang> so screen readers switch voice", () => {
   window.localStorage.setItem("tkp.locale", "mi");
   render(<RootLayout><span>tamariki</span></RootLayout>);
+  expect(document.documentElement.lang).toBe("mi");
+});
+
+test("the header exposes an accessible language toggle that drives <html lang>", () => {
+  render(<RootLayout><span>tamariki</span></RootLayout>);
+  const banner = screen.getByRole("banner");
+  const toggle = within(banner).getByRole("radiogroup", {
+    name: "Choose language",
+  });
+  expect(toggle).toBeInTheDocument();
+  act(() =>
+    within(banner).getByRole("radio", { name: "Te Reo Māori" }).click(),
+  );
   expect(document.documentElement.lang).toBe("mi");
 });
