@@ -107,6 +107,20 @@ Ordered by what actually bites in this codebase:
   subscription read or overwritten via another user's request.
 - **Plan divergence.** Did it build what was planned? If it deviated, is the
   deviation justified and stated?
+- **Unmerged cross-PR dependency.** If this branch calls, imports, or
+  otherwise depends on code the plan attributes to a different issue's PR
+  (e.g. a fetch against an API route another issue owns), check whether that
+  dependency is actually on `main` yet — `git ls-tree main -- <path>` or
+  `git log main --oneline -- <path>`, not the plan's say-so, since a plan can
+  be written before its assumed prerequisite lands. If it is not on `main`,
+  merging this PR alone ships a feature that is dead or broken for every user
+  until the other PR lands, no matter how gracefully it degrades. **This is
+  not a soft condition to note and clear anyway — it makes the verdict "not
+  ready to merge."** There is no third "ready, pending someone else's PR"
+  verdict: the report is read as a binary merge/no-merge signal, so anything
+  short of "ready" must actually say "not ready." Name the exact PR/issue
+  that must land first and say so plainly in the verdict line, not buried in
+  a "worth doing later" or "merge condition" section that reads as approval.
 - **Missing or hollow ADRs.** Every ADR drafted in the plan's "ADRs" section
   must exist in the diff at its stated `docs/adr/NNNN-slug.md` path — a
   promised ADR that never landed is an unmet deliverable, same as a missing
@@ -129,7 +143,11 @@ Ordered by what actually bites in this codebase:
 
 ## 7. Report
 
-Lead with the verdict: **ready to merge**, or **not, and why**.
+Lead with the verdict: **ready to merge**, or **not, and why**. There is no
+third option. A dependency on another unmerged PR (see "Unmerged cross-PR
+dependency" above) is a **not ready** verdict, even when nothing in this
+diff itself needs to change — the fix is sequencing, not code, but the
+verdict still gates the merge and must say so.
 
 Then findings, most serious first. For each: file and line, what is wrong, and
 the concrete case where it goes wrong. A finding you cannot make fail with a
