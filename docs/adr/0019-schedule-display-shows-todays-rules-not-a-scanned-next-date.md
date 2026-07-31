@@ -14,8 +14,16 @@ window that would apply *if* that date is a collection day for that zone.
 It has no concept of which days of the week a given street is actually
 collected on — that per-street cadence is modelled by the `schedules`
 table (docs/architecture.md §2C: "Date-mapped bin collection calendars,
-alternating recycling flags, and holiday override rules"), which has no
-migration, seed data, or query path yet.
+alternating recycling flags, and holiday override rules").
+
+That table's *schema* already exists: issue #2 migrated it in
+`db/migrations/20260729100002_create_schedules.js` (`zone`,
+`collection_date`, `waste_type`, `is_recycling_week`, `is_holiday_override`,
+`original_date`, indexed on `["zone", "collection_date"]`). What does not
+exist is any **data or access path**: `db/seeds/` holds only
+`01_addresses.js`, and nothing under `src/` reads `schedules` at all. So the
+table is empty and unqueried — the blocker here is seed data and a query
+layer, not a migration.
 
 Without that data there is no way to answer "which future date is the next
 actual collection day for this address" — every day would have to be
@@ -51,11 +59,12 @@ implemented in this issue.
   collection day versus not — every suburban day currently returns a
   non-null rule set (inner-city is nightly), so a naive scan would just
   return "today" again, giving a false sense of precision without adding
-  real information. Implementing this honestly requires the `schedules`
-  table's date-mapped calendar, which is out of scope here — no migration
-  for it is part of this issue.
+  real information. Implementing this honestly requires real rows in the
+  `schedules` table plus a query path to read them; the table's migration is
+  already in place, but seeding it with WCC calendar data and wiring a query
+  are both out of scope here — neither is part of this issue.
 
-### C. Block this issue until the `schedules` table and a real collection-day calendar exist
+### C. Block this issue until `schedules` holds a real collection-day calendar
 - **Pros:** would let "next collection date" mean exactly what it says.
 - **Cons:** blocks FR-02 UI work behind an unscheduled, unscoped
   data-modelling effort, and contradicts the issue's own "Depends on" list,
@@ -68,7 +77,9 @@ This ships a real, correct "what would today's collection look like" view
 now, at the cost of not literally satisfying "next collection date" for a
 suburban resident on a non-collection day — the UI is honest about this
 (labelled "today's collection"), rather than inventing a scan that would
-silently be wrong. Follow-up work — wiring the `schedules` table and
-replacing "today's rules" with a genuine forward search — should supersede
-this ADR when that table lands; that is a new issue to file, not something
-this PR does.
+silently be wrong. Follow-up work — seeding `schedules` with real WCC
+calendar data, adding a query path for it, and replacing "today's rules" with
+a genuine forward search — should supersede this ADR once those rows exist;
+that is a new issue to file, not something this PR does. Note that the
+migration is *not* part of that follow-up: the table is already there and
+waiting, so the remaining work is data plus a query layer.
