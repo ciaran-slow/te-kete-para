@@ -21,7 +21,7 @@
 * **Framework:** Next.js (React) utilizing App Router for file-system routing and static/dynamic rendering optimization.
 * **Styling & Design System:** Tailwind CSS v4 with Wellington design tokens declared CSS-first in the `@theme` block of `src/app/globals.css` (`--color-kakariki` #1B4D3E, `--color-moana` #003B46, `--color-kowhai` #B45309, `--color-papa` #F8FAFC, `--color-papa-ink` #0F172A); there is deliberately no `tailwind.config` file (ADR 0004). Typography is Inter (body, `--font-sans`) and Plus Jakarta Sans (headings/UI, `--font-heading`), self-hosted at build time via `next/font/google` with `latin` + `latin-ext` subsets so macrons render from the primary faces (ADR 0005).
 * **Accessibility Primitives:** Radix UI headless components ensuring W3C ARIA compliance, keyboard navigation, and screen-reader optimization, consumed through the unified `radix-ui` package — primitives import as namespaces (`import { Separator } from "radix-ui"`), so later issues add no new dependencies (ADR 0006).
-* **Header & Language Toggle:** `src/components/language-toggle.tsx` renders a Radix `RadioGroup` (`role="radiogroup"`, `radio` items) inside `<header>` in `src/app/layout.tsx`, giving every route a persistent, accessible EN/Te Reo switch wired directly to `useTranslation()`. `RadioGroup`, not `ToggleGroup`, is deliberate: `ToggleGroup`'s roving focus moves the DOM focus on arrow keys without selecting, which breaks the "selection follows focus" keyboard contract implied by its own `role="radiogroup"`/`"radio"` output — `RadioGroup` selects on arrow-key focus, matching native radio behaviour. Shared, reusable UI components live in `src/components/`, one file per component (ADR 0011). `src/app/home-copy.tsx` is the one exception: it's a small Client Component holding only the three locale-dependent strings, colocated with (not exported from) `page.tsx`, which stays a Server Component per ADR 0011's "Server Component pages and layouts import and render them directly" — converting the whole page would needlessly move the static macron sample and colour-token list into client JS.
+* **Header & Language Toggle:** `src/components/language-toggle.tsx` renders a Radix `RadioGroup` (`role="radiogroup"`, `radio` items) inside `<header>` in `src/app/layout.tsx`, giving every route a persistent, accessible EN/Te Reo switch wired directly to `useTranslation()`. `RadioGroup`, not `ToggleGroup`, is deliberate: `ToggleGroup`'s roving focus moves the DOM focus on arrow keys without selecting, which breaks the "selection follows focus" keyboard contract implied by its own `role="radiogroup"`/`"radio"` output — `RadioGroup` selects on arrow-key focus, matching native radio behaviour. Shared, reusable UI components live in `src/components/`, one file per component (ADR 0011). `src/app/home-copy.tsx` and `src/app/address-schedule.tsx` are the colocated exceptions: each is a small Client Component holding page-specific composition (locale-dependent strings; the selected-address state shared between `AddressSearch` and `ScheduleDisplay`, ADR 0018) rather than a reusable primitive, colocated with (not exported from) `page.tsx`, which stays a Server Component per ADR 0011's "Server Component pages and layouts import and render them directly."
 * **Address Search:** `src/components/address-search.tsx` renders
   `<AddressSearch>`, a hand-built WAI-ARIA 1.2 combobox (no Radix primitive —
   ADR 0014) that debounces keystrokes 300ms, queries
@@ -32,6 +32,16 @@
   inside the `onChange` handler itself, which is what lets `selectResult`
   rewrite the input's display value without that rewrite re-triggering a
   search.
+* **Schedule Display:** `src/components/schedule-display.tsx` renders
+  `<ScheduleDisplay>`, which shows today's computed collection rules
+  (`computeCollectionRuleSet`, §2B) for the address selected via
+  `<AddressSearch>`. It shows *today's* rules, not a scanned "next
+  collection date" — ADR 0019 — and only ever computes "today" on a
+  render path reachable exclusively client-side, after a user selection —
+  ADR 0018. The two components are composed by the colocated
+  `src/app/address-schedule.tsx`, which owns the shared
+  `selected: SuburbSearchResult | null` state and is rendered directly
+  from `src/app/page.tsx` (a Server Component) per ADR 0011.
 * **Localization State:** `LanguageProvider` (`src/lib/i18n/language-provider.tsx`) holds the selected locale and exposes `useTranslation()` → `{ locale, setLocale, t }`. Flat dot-delimited keys live in `src/lib/i18n/dictionaries.ts`, where `en` is the source of truth (`as const`) and `mi` is typed `Record<TranslationKey, string>`, so drift fails `tsc` as well as the runtime parity test (ADR 0010). The locale is read from `localStorage` (`tkp.locale`) through `useSyncExternalStore`, never during render and never via `setState` in an effect — `react-hooks/set-state-in-effect` is an error in this repo (ADR 0009). `getServerSnapshot` returns `en` so `/` stays statically prerendered, which costs a brief flash of English before Te Reo on a hard load; the inline-script alternative that would remove it is recorded as rejected in ADR 0009. The provider mirrors the locale onto `<html lang>` in an effect so screen readers pick the right voice (vision.md §3). Macron-safe rendering comes from the Inter / Plus Jakarta Sans `latin-ext` subsets (ADR 0005).
 * **Client Testing Strategy (Vitest + Testing Library + Axe):**
   * Unit tests verify bilingual UI component rendering, dictionary interpolation, and macron preservation.
@@ -85,7 +95,7 @@
    * Client sends a GET request to `/api/suburbs/search?q=TeAro`.
    * API queries SQLite3 via Knex, returning matching zones, collection rules, and inner-city night collection flags.
 2. **Schedule Rendering & Localization:**
-   * Client renders upcoming bin requirements using localized templates, validated via component and key-parity tests.
+   * Client renders today's bin requirements via `<ScheduleDisplay>` using localized templates (ADR 0019 — today's rules, not a scanned next date), validated via component and key-parity tests.
 3. **Notification Scheduling & TDD Verification:**
    * User opts into "Night-Before" reminders via browser Service Worker.
    * Server stores subscription tokens in SQLite3. Cron workers execute nightly at 6:00 PM NZST, evaluating timezones and dispatching bilingual payloads to the Web Push API.

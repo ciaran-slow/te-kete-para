@@ -47,6 +47,25 @@ test("a stored Te Reo preference renders the Te Reo tagline heading", () => {
   ).toBeInTheDocument();
 });
 
+test("the schedule panel prompts for an address by default", () => {
+  renderPage();
+  expect(
+    screen.getByText(
+      "Search for your address above to see today's collection.",
+    ),
+  ).toBeInTheDocument();
+});
+
+test("a stored Te Reo preference renders the Te Reo schedule prompt", () => {
+  window.localStorage.setItem(LOCALE_STORAGE_KEY, "mi");
+  renderPage();
+  expect(
+    screen.getByText(
+      "Rapua tō wāhitau i runga ake nei kia kite i te kohinga o tēnei rā.",
+    ),
+  ).toBeInTheDocument();
+});
+
 test("the description paragraph is in English by default", () => {
   renderPage();
   expect(
