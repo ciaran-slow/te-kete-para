@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "@/lib/i18n/language-provider";
+import { StatusRegion } from "./status-region";
 
 /**
  * Mirrors the JSON contract of `GET /api/suburbs/search`
@@ -187,12 +188,12 @@ export function AddressSearch({ onSelect }: AddressSearchProps) {
         onKeyDown={handleKeyDown}
         className="w-full rounded-md border border-moana/60 px-4 text-base text-papa-ink placeholder:text-papa-ink/70 touch-target focus-ring"
       />
-      <p
-        aria-live="polite"
+      <StatusRegion
+        as="p"
         className={isVisibleStatus ? "mt-1 text-sm text-papa-ink" : "sr-only"}
       >
         {STATUS_MESSAGES[status]}
-      </p>
+      </StatusRegion>
       <ul
         id={listboxId}
         role="listbox"
