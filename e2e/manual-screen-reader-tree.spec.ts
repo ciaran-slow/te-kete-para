@@ -25,6 +25,21 @@ const NO_RESULTS_TEXT =
 const SEARCH_ERROR_TEXT =
   "We couldn't search addresses right now. Please try again.";
 
+/**
+ * Fixed instant for the schedule-display tests. The schedule content is
+ * date-dependent (src/lib/schedule/rules.ts): the suburban recycling bin
+ * alternates glass/mixed weekly off the ADR 0016 epoch, and the inner-city
+ * bin list gains "Cardboard" on Tuesdays. Without a pinned clock the
+ * schedule goldens would encode the capture date's bin list and red-fail on
+ * ordinary future dates (every mixed week / every Tuesday).
+ *
+ * 2026-07-31 10:00 NZST — a Friday in a glass week — reproduces the bin
+ * lists of the recorded pass (docs/qa/screen-reader-pass-2026-07-31.md).
+ * The component reads the viewer's *local* calendar date (ADR 0018), so the
+ * timezone is pinned to Pacific/Auckland alongside the clock.
+ */
+const PINNED_SCHEDULE_TIME = new Date("2026-07-31T10:00:00+12:00");
+
 function combobox(page: Page) {
   return page.getByRole("combobox", { name: SEARCH_LABEL });
 }
@@ -103,39 +118,47 @@ test.describe("manual screen-reader QA — accessibility-tree snapshots (ADR 002
     });
   });
 
-  test("schedule display shows suburban rules with correct live-region wiring", async ({
-    page,
-  }) => {
-    await page.goto("/");
-    await selectAddress(page, "Karori", /Karori Road/);
-    await expect(page).toMatchAriaSnapshot({
-      name: "schedule-suburban.aria.yml",
-    });
-  });
+  test.describe("schedule display (pinned clock — see PINNED_SCHEDULE_TIME)", () => {
+    test.use({ timezoneId: "Pacific/Auckland" });
 
-  test("schedule display shows inner-city night-collection rules", async ({
-    page,
-  }) => {
-    await page.goto("/");
-    await selectAddress(page, "Cuba Street", /Cuba Street/);
-    await expect(page).toMatchAriaSnapshot({
-      name: "schedule-inner-city.aria.yml",
+    test.beforeEach(async ({ page }) => {
+      await page.clock.setFixedTime(PINNED_SCHEDULE_TIME);
     });
-  });
 
-  test("repeated capture of the same settled state is stable", async ({
-    page,
-  }) => {
-    /* Proves the accessibility tree is deterministic across repeats, not
-       just "the golden file matched once": the same settled state, reached
-       from a fresh page load three times, must yield byte-identical trees. */
-    const snapshots: string[] = [];
-    for (let run = 0; run < 3; run += 1) {
+    test("schedule display shows suburban rules with correct live-region wiring", async ({
+      page,
+    }) => {
       await page.goto("/");
       await selectAddress(page, "Karori", /Karori Road/);
-      snapshots.push(await page.ariaSnapshot());
-    }
-    expect(snapshots[0]).toBe(snapshots[1]);
-    expect(snapshots[1]).toBe(snapshots[2]);
+      await expect(page).toMatchAriaSnapshot({
+        name: "schedule-suburban.aria.yml",
+      });
+    });
+
+    test("schedule display shows inner-city night-collection rules", async ({
+      page,
+    }) => {
+      await page.goto("/");
+      await selectAddress(page, "Cuba Street", /Cuba Street/);
+      await expect(page).toMatchAriaSnapshot({
+        name: "schedule-inner-city.aria.yml",
+      });
+    });
+
+    test("repeated capture of the same settled state is stable", async ({
+      page,
+    }) => {
+      /* Proves the accessibility tree is deterministic across repeats, not
+         just "the golden file matched once": the same settled state, reached
+         from a fresh page load three times, must yield byte-identical trees. */
+      const snapshots: string[] = [];
+      for (let run = 0; run < 3; run += 1) {
+        await page.goto("/");
+        await selectAddress(page, "Karori", /Karori Road/);
+        snapshots.push(await page.ariaSnapshot());
+      }
+      expect(snapshots[0]).toBe(snapshots[1]);
+      expect(snapshots[1]).toBe(snapshots[2]);
+    });
   });
 });

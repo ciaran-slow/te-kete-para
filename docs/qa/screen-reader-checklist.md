@@ -87,3 +87,15 @@ invented to check against in the meantime.
    — review the `.aria.yml` diff by hand against this checklist before
    committing it.
 5. Verify: `npm run test:e2e:a11y-manual`
+
+The three schedule-display tests run under a **pinned clock and timezone**
+(`PINNED_SCHEDULE_TIME` in the spec: 2026-07-31T10:00:00+12:00,
+Pacific/Auckland — a Friday in an ADR 0016 glass week), because the
+schedule content is date-dependent: `src/lib/schedule/rules.ts` alternates
+the suburban recycling bin weekly and adds "Cardboard" to the inner-city
+list on Tuesdays. The schedule goldens therefore assert the **exact** date
+and bin list for that instant and stay green on any real-world run date.
+Do not "fix" a schedule-golden failure by regenerating on a different
+date — if the pinned instant must change (e.g. real WCC calendar data
+replaces the ADR 0016 placeholder), update `PINNED_SCHEDULE_TIME`,
+regenerate, and record the new instant here and in the pass log.

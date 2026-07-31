@@ -11,12 +11,12 @@
   - paragraph
   - region "Today's collection":
     - heading "Today's collection" [level=2]
-    - paragraph: "/Date: \\d+\\/\\d+\\/\\d+/"
+    - paragraph: "Date: 31/07/2026"
     - paragraph: Bins to put out
     - list:
       - listitem: General rubbish
       - listitem: Glass recycling crate
-    - paragraph: /Put out by \d+:\d+/
+    - paragraph: "Put out by 07:00"
   - separator
   - paragraph: āēīōū ĀĒĪŌŪ — Para Whānui, Rauemi Hangarua, Kete Karāhe, Āpopo
   - list "Wellington colour tokens":

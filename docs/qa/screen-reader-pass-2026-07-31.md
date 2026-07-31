@@ -43,10 +43,25 @@ npm run test:e2e:a11y-manual   # confirming re-run 2
 ```
 
 Baseline generation ran once; both confirming re-runs passed 8/8 with no
-snapshot drift. Note: Playwright normalized the volatile date/time text in
-the schedule snapshots to regex patterns (e.g.
-`"/Date: \\d+\\/\\d+\\/\\d+/"`) at generation time, so the goldens are not
-bound to the capture date.
+snapshot drift.
+
+**Pinned clock (amended same day, after PR review):** the initial capture
+let the schedule tests use the real clock; Playwright generalized the
+date/time text to regex patterns but captured the equally date-dependent
+**bin list** literally — `src/lib/schedule/rules.ts` alternates the
+suburban recycling bin weekly (ADR 0016 epoch) and adds "Cardboard" to the
+inner-city list on Tuesdays, so those goldens would have red-failed on
+every mixed week / every Tuesday. The three schedule tests now pin the
+browser clock and timezone via `page.clock.setFixedTime(...)` +
+`timezoneId: "Pacific/Auckland"` to
+**`PINNED_SCHEDULE_TIME` = 2026-07-31T10:00:00+12:00** — a Friday in a
+glass week, i.e. the same conditions as this pass, so the hand-checked
+golden content is unchanged — and the schedule goldens assert the exact
+`Date: 31/07/2026`, bin lists, and time-window text for that instant.
+Verified load-bearing with a throwaway probe: pinning 2026-08-04 (a
+mixed-week Tuesday) instead makes both schedule tests fail with
+`Mixed recycling (paper, plastic, metal)` and an extra `Cardboard`
+listitem, proving the pinned clock (not the run date) drives the content.
 
 ## Checklist results
 
@@ -83,8 +98,8 @@ bound to the capture date.
 | Outer `<section>` is atomic polite live region | `aria-live="polite"` `aria-atomic="true"` (ADR 0021) | DOM/code + goldens | PASS | `StatusRegion as="section" atomic` in `schedule-display.tsx`; region content appears whole in `schedule-suburban.aria.yml` / `schedule-inner-city.aria.yml` (live-region attributes themselves are not carried by aria snapshots) |
 | `aria-labelledby` points at rendered `<h2>` | Section named by its heading | Golden | PASS | `region "Today's collection"` node in both schedule goldens — a `<section>` is only exposed as `region` when it has an accessible name, so the name proves the wiring |
 | `aria-labelledby` absent (not dangling) in "no address" / "error" states | `headingId` passed only when a rule set rendered | Golden + code | PASS | `home-default-en.aria.yml` has no named `region` — just the "Search for your address above…" paragraph. The rule-engine error state renders through the same `headingId={ruleSet ? headingId : undefined}` guard (code-verified; that state is not reachable from seeded data) |
-| Suburban rules content | Heading, date, bins list, time window (Karori Road, `zone-west`) | Golden | PASS | `schedule-suburban.aria.yml`: heading level 2, `Date:` line, list of "General rubbish" + "Glass recycling crate", "Put out by 07:00"-shaped line |
-| Inner-city night-collection content | Cuba Street (`zone-cbd`, night collection) | Golden | PASS | `schedule-inner-city.aria.yml`: "Yellow rubbish bag" list item and a "Collection window: …–…" line |
+| Suburban rules content | Heading, date, bins list, time window (Karori Road, `zone-west`) | Golden | PASS | `schedule-suburban.aria.yml`: heading level 2, exact `Date: 31/07/2026` line (pinned clock), list of "General rubbish" + "Glass recycling crate" (glass week at the pinned instant), exact "Put out by 07:00" line |
+| Inner-city night-collection content | Cuba Street (`zone-cbd`, night collection) | Golden | PASS | `schedule-inner-city.aria.yml`: "Yellow rubbish bag" list item (no "Cardboard" — the pinned instant is a Friday, not Tuesday) and exact "Collection window: 17:30–22:00" line |
 | "Bins to put out" is a paragraph, not a heading | Deliberate paragraph | Golden | PASS | **Verified intentional, not a missed heading**: exposed as `paragraph: Bins to put out` in both schedule goldens, no `heading` node — matches the component's deliberate `<p className="font-medium">` |
 | Repeated capture is stable | Deterministic settled tree | Spec test 8 | PASS | Three fresh-load captures of the Karori flow byte-identical (`repeated capture of the same settled state is stable`, green on all three runs) |
 
