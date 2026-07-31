@@ -63,6 +63,18 @@
   * Unit tests verify bilingual UI component rendering, dictionary interpolation, and macron preservation.
   * Automated accessibility audits run inside Vitest via the shared helper `expectNoA11yViolations(container)` (`__tests__/helpers/a11y.ts`), which wraps `axe-core` directly — `@axe-core/react` only logs to the dev console and cannot fail a test (ADR 0007). The helper audits rendered fragments, so contrast rules (uncomputable in jsdom) and document-level rules (`html-has-lang`, landmarks-per-page) are deliberately excluded there; those are covered by the CI axe suite (#17), the Lighthouse budget (#31), and manual QA (#18). Two further limits are inherent rather than configured, so a green assertion means "no violation axe could decide here", not "accessible" (ADR 0007, §Trade-offs and consequences). First, `axe.run` also returns an `incomplete` bucket for checks it could not decide, and the helper fails only on `violations`; without layout, jsdom sends every visibility-dependent rule to `incomplete`, so a focusable element inside `aria-hidden="true"` reports `incomplete: ["aria-hidden-focus"]` and no violation. Those rules get a real verdict only in a browser, via #17 and #31. Second, many small fragments match no rules at all (`<p>Kia ora</p>` evaluates zero), so an audit can pass having checked nothing. The helper narrows that second case without closing it: it rejects a container with no child nodes, which catches a component regressing to returning `null`, but a fragment that renders and still matches no rules (`<div />`) passes.
 * **End-to-End Testing (Playwright, ADR 0001):** Browser-level tests in `e2e/*.spec.ts` run via `npm run test:e2e` against a production build (`next build` + `next start`, managed by Playwright's `webServer`), Chromium-only. This is the layer that exercises hydration, real navigation, PWA/offline behaviour, and push flows. Vitest excludes `e2e/**`; Playwright owns `.spec.ts` there, Vitest owns `.test.ts(x)` everywhere else. E2E is a separate script, not one of the four fast gates. The axe a11y suite (`e2e/a11y.spec.ts`, `e2e/a11y-harness.spec.ts`, ADR 0022) runs in this layer, using a repo-owned helper (`e2e/helpers/axe.ts`) rather than `@axe-core/playwright` — it audits what the jsdom helper (ADR 0007) explicitly cannot: contrast and document-level landmark rules.
+* **Manual Screen-Reader QA (ADR 0024):** `docs/qa/screen-reader-checklist.md`
+  is a reusable checklist covering address search, schedule display, and
+  the language toggle, cross-checked against ARIA-snapshot golden files
+  captured by `e2e/manual-screen-reader-tree.spec.ts`
+  (`npm run test:e2e:a11y-manual`) — a scriptable proxy for what
+  VoiceOver/TalkBack/NVDA/JAWS actually consume, since this pipeline cannot
+  drive those tools directly (ADR 0024, §Trade-offs and consequences). This
+  spec is deliberately not part of `test:e2e:a11y` or any CI-invoked
+  script; it's a manual/on-demand tool, not an automated gate. A
+  human-operated pass with real assistive technology remains open as a
+  follow-up issue and is what actually closes vision.md §3's named-tool
+  claim.
 
 ### B. API & Business Logic Layer
 * **Runtime Environment:** Node.js serverless functions / edge runtimes hosted via Vercel or Netlify.
