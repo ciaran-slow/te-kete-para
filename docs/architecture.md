@@ -22,11 +22,21 @@
 * **Styling & Design System:** Tailwind CSS v4 with Wellington design tokens declared CSS-first in the `@theme` block of `src/app/globals.css` (`--color-kakariki` #1B4D3E, `--color-moana` #003B46, `--color-kowhai` #B45309, `--color-papa` #F8FAFC, `--color-papa-ink` #0F172A); there is deliberately no `tailwind.config` file (ADR 0004). Typography is Inter (body, `--font-sans`) and Plus Jakarta Sans (headings/UI, `--font-heading`), self-hosted at build time via `next/font/google` with `latin` + `latin-ext` subsets so macrons render from the primary faces (ADR 0005).
 * **Accessibility Primitives:** Radix UI headless components ensuring W3C ARIA compliance, keyboard navigation, and screen-reader optimization, consumed through the unified `radix-ui` package — primitives import as namespaces (`import { Separator } from "radix-ui"`), so later issues add no new dependencies (ADR 0006).
 * **Header & Language Toggle:** `src/components/language-toggle.tsx` renders a Radix `RadioGroup` (`role="radiogroup"`, `radio` items) inside `<header>` in `src/app/layout.tsx`, giving every route a persistent, accessible EN/Te Reo switch wired directly to `useTranslation()`. Its items, and every other real interactive element in the app, share the .focus-ring / .touch-target utility classes declared in src/app/globals.css (vision.md §3, ADR 0020) rather than duplicating focus/sizing utilities per component. `RadioGroup`, not `ToggleGroup`, is deliberate: `ToggleGroup`'s roving focus moves the DOM focus on arrow keys without selecting, which breaks the "selection follows focus" keyboard contract implied by its own `role="radiogroup"`/`"radio"` output — `RadioGroup` selects on arrow-key focus, matching native radio behaviour. Shared, reusable UI components live in `src/components/`, one file per component (ADR 0011). `src/app/home-copy.tsx` and `src/app/address-schedule.tsx` are the colocated exceptions: each is a small Client Component holding page-specific composition (locale-dependent strings; the selected-address state shared between `AddressSearch` and `ScheduleDisplay`, ADR 0018) rather than a reusable primitive, colocated with (not exported from) `page.tsx`, which stays a Server Component per ADR 0011's "Server Component pages and layouts import and render them directly."
+* **Shared Status Announcements:** `src/components/status-region.tsx`
+  renders `<StatusRegion>`, a stateless `aria-live="polite"` wrapper
+  parameterized by host element (`as`), `atomic`, and an optional
+  `headingId` → `aria-labelledby` (ADR 0021). `ScheduleDisplay`'s outer
+  `<section>` and `AddressSearch`'s status `<p>` both render through it
+  today with no change to their existing DOM output; the shift-alert
+  banner (#24) is expected to render its announcement through the same
+  component once #22/#23 land.
 * **Address Search:** `src/components/address-search.tsx` renders
   `<AddressSearch>`, a hand-built WAI-ARIA 1.2 combobox (no Radix primitive —
   ADR 0014) that debounces keystrokes 300ms, queries
   `GET /api/suburbs/search`, and renders matches as a keyboard-navigable
-  `role="listbox"`. It is rendered directly from `src/app/page.tsx` (a Server
+  `role="listbox"`. Its loading/empty/error status message renders through
+  the shared `<StatusRegion>` (ADR 0021). It is rendered directly from
+  `src/app/page.tsx` (a Server
   Component) per ADR 0011. All fetch/debounce/keyboard state is local to the
   component — no `useEffect` reacts to the query; scheduling a search happens
   inside the `onChange` handler itself, which is what lets `selectResult`
@@ -38,7 +48,10 @@
 * **Schedule Display:** `src/components/schedule-display.tsx` renders
   `<ScheduleDisplay>`, which shows today's computed collection rules
   (`computeCollectionRuleSet`, §2B) for the address selected via
-  `<AddressSearch>`. It shows *today's* rules, not a scanned "next
+  `<AddressSearch>`. It renders through the shared `<StatusRegion>`
+  (ADR 0021), which supplies the
+  `aria-live`/`aria-atomic`/`aria-labelledby` plumbing. It shows
+  *today's* rules, not a scanned "next
   collection date" — ADR 0019 — and only ever computes "today" on a
   render path reachable exclusively client-side, after a user selection —
   ADR 0018. The two components are composed by the colocated
