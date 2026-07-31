@@ -47,6 +47,18 @@
   Knex, returning `{ results: [...] }` with camelCase fields; every JSON API response in this
   app follows the envelope and casing convention in ADR 0013, established here as the first
   data-returning endpoint.
+* **Collection Rule Engine:** `src/lib/schedule/rules.ts` exports a pure
+  `computeCollectionRuleSet(zone, date)` that maps a zone's classification
+  (`{ zone, isInnerCityNightCollection }`, sourced from `addresses`) and a
+  calendar date to the applicable bin types, collection time window, and
+  — for suburban zones — which side of the fortnightly glass/mixed
+  recycling alternation the date falls on (vision.md §4A). The function
+  takes no DB dependency: classification is passed in explicitly rather
+  than re-derived from the zone string (ADR 0015), and the alternating
+  recycling cadence is computed from a fixed epoch date pending real WCC
+  calendar data (ADR 0016). It reads only the UTC calendar date of the
+  `Date` passed in, so callers must construct dates via `Date.UTC(...)`
+  or a `Z`-suffixed ISO string, never a local-time constructor.
 
 ### C. Data Persistence Layer
 * **Database Engine:** **SQLite3** stored as an embedded file database (`/data/teketepara.db`).
@@ -82,6 +94,7 @@
 
 ## 4. Testing Infrastructure & Quality Assurance Pipelines
 * **Execution Engine:** **Vitest** configured for fast parallel execution across client unit tests, accessibility hooks, and API integration suites.
+* **Suite Time Zone:** the whole Vitest suite runs at **`TZ=Pacific/Auckland`** (UTC+12/+13, never UTC), pinned by `process.env.TZ` at the top of `vitest.setup.ts` before any test module is imported. This is deliberate: CI's `ubuntu-latest` runs at UTC, where local-time `Date` getters (`getDay`, `getFullYear`, ...) are indistinguishable from their `getUTC*` twins, so the "UTC calendar date only" contract in `src/lib/schedule/rules.ts` (§2B) could never fail there — a `getUTCDay()` → local `getDay()` regression would pass CI and shift every Wellington collection result by a day in production. Consequence for test authors (including future date math in #22/#23): `new Date(...)` local-time constructors and local getters in tests resolve at Pacific/Auckland; construct instants with `Date.UTC(...)` or `Z`-suffixed ISO strings when you mean UTC (ADR 0017).
 * **Continuous Integration:** `.github/workflows/ci.yml` runs four gates on every pull request and every push to `main`, as one sequential job on `ubuntu-latest` with Node 24: `npm run lint`, `npm run typecheck`, `npm run test:coverage`, `npm run build`. Playwright is deliberately not wired in here — E2E stays a separate script (§2A).
 * **Merge Enforcement:** the `lint, typecheck, test, build` check is a **required** status check on `main` (branch protection, #45), so a red pull request cannot be merged — including by repository admins (`enforce_admins`), and including a PR that is green against a stale `main` (`strict`). This is what makes the coverage number below binding rather than advisory; verified by a probe PR whose merge was refused with "the base branch policy prohibits the merge". The check name in the protection rule must stay byte-identical to the job's `name:` in `ci.yml` — a mismatch produces a rule that silently matches nothing.
 * **Coverage Enforcement:** `npm run test:coverage` (`vitest run --coverage`) measures product code only — `src/**/*.{ts,tsx}`, via `@vitest/coverage-v8` (ADR 0008) — and fails the run if **lines or statements** fall below **90%**; both currently sit at 100%. Branches and functions are reported in the CI log but not gated: `src/lib/db.ts` selects its Knex config on `NODE_ENV === "test"`, and Vitest always sets `NODE_ENV=test`, so the `development` side of that branch is unreachable from the suite (ADR 0008 §Trade-offs and consequences).
