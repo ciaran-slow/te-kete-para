@@ -34,12 +34,17 @@ test("defaults to English checked, with an English group label", () => {
   ).toHaveAttribute("aria-checked", "false");
 });
 
-test("both radio items carry the shared touch-target and focus-ring classes (ADR 0020)", () => {
+test("both radio items carry the shared touch-target and focus-ring classes and no per-component focus: utilities (ADR 0020)", () => {
   renderToggle();
   for (const name of ["English", "Te Reo Māori"]) {
     const item = screen.getByRole("radio", { name });
     expect(item.className).toContain("touch-target");
     expect(item.className).toContain("focus-ring");
+    // Focus styling comes only from the shared .focus-ring class; a
+    // `focus:`-prefixed utility would gate styling on plain :focus (the
+    // mouse-click-ring bug #15 fixed). Behavioural assertions against the
+    // real stylesheet: __tests__/a11y/focus-and-touch-targets.test.tsx.
+    expect(item.className).not.toMatch(/focus:/);
   }
 });
 

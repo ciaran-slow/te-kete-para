@@ -19,11 +19,30 @@ not a generic input primitive).
 
 ## Decision
 
-Two Tailwind v4 `@layer components` classes, `.focus-ring` and
-`.touch-target`, declared once in `src/app/globals.css` and applied via
-`className` on each real interactive element. `address-search.tsx`'s input
-is also switched from `:focus` to `:focus-visible` gating to match, closing
-the inconsistency.
+Two plain CSS classes, `.focus-ring` and `.touch-target`, declared once in
+`src/app/globals.css` and applied via `className` on each real interactive
+element. `address-search.tsx`'s input is also switched from `:focus` to
+`:focus-visible` gating to match, closing the inconsistency.
+
+Two deliberate authoring choices keep the rules testable and unoverridable:
+
+- **Top-level, not `@layer components`:** unlayered author styles outrank
+  every layered rule, so no layered utility class can silently override the
+  accessibility floor — and jsdom drops `@layer` blocks entirely while
+  computing top-level rules as written, which lets
+  `__tests__/a11y/focus-and-touch-targets.test.tsx` inject the real
+  `globals.css` and assert the *computed values* (outline width/style/
+  offset, the `var(--color-moana)` reference, the 3rem minimums) on the
+  actual focused elements, not just class-name strings.
+- **Longhand `outline-*` properties, not the `outline:` shorthand:** jsdom
+  does not expand the shorthand into computed longhands, so the shorthand
+  would be invisible to that test.
+
+jsdom's `:focus-visible` matching is discriminating (keyboard-driven focus
+matches, mouse-driven focus does not), so the keyboard-vs-mouse gating is
+asserted behaviourally under jsdom too; the browser tier
+(`e2e/design-tokens.spec.ts`) additionally pins the var()-resolved ring
+colour `rgb(0, 59, 70)`, the painted ≥48px boxes, and real Tab traversal.
 
 ## Alternatives considered
 
@@ -42,7 +61,7 @@ the inconsistency.
   elsewhere (e.g. ADR 0011's own "cheap follow-up... not a reason to
   pre-build structure now for components that do not exist yet").
 
-### B (chosen): Shared `@layer components` CSS classes
+### B (chosen): Shared top-level CSS classes in `globals.css`
 - **Pros:** single source of truth enforced at the styling layer, which is
   where the duplication actually lives today; zero new components, zero new
   dependencies; retrofits both existing consumers with a one-line className
@@ -66,7 +85,10 @@ the inconsistency.
 
 Accepts that future interactive components must remember to add
 `focus-ring`/`touch-target` by hand (no compiler or lint enforcement of
-this), in exchange for zero new dependencies, zero unused components, and a
+this), and that because the rules are unlayered, a Tailwind utility on the
+same element cannot override them — an element that genuinely must not
+carry the floor opts out by not applying the class, rather than overriding
+it — in exchange for zero new dependencies, zero unused components, and a
 one-line retrofit of both existing consumers today. Revisit if a third or
 fourth real interactive component lands needing more than styling in common
 — at that point a real shared component (Alternative A) composes cleanly on
