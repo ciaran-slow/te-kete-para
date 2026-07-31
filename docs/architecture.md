@@ -47,6 +47,18 @@
   Knex, returning `{ results: [...] }` with camelCase fields; every JSON API response in this
   app follows the envelope and casing convention in ADR 0013, established here as the first
   data-returning endpoint.
+* **Collection Rule Engine:** `src/lib/schedule/rules.ts` exports a pure
+  `computeCollectionRuleSet(zone, date)` that maps a zone's classification
+  (`{ zone, isInnerCityNightCollection }`, sourced from `addresses`) and a
+  calendar date to the applicable bin types, collection time window, and
+  — for suburban zones — which side of the fortnightly glass/mixed
+  recycling alternation the date falls on (vision.md §4A). The function
+  takes no DB dependency: classification is passed in explicitly rather
+  than re-derived from the zone string (ADR 0015), and the alternating
+  recycling cadence is computed from a fixed epoch date pending real WCC
+  calendar data (ADR 0016). It reads only the UTC calendar date of the
+  `Date` passed in, so callers must construct dates via `Date.UTC(...)`
+  or a `Z`-suffixed ISO string, never a local-time constructor.
 
 ### C. Data Persistence Layer
 * **Database Engine:** **SQLite3** stored as an embedded file database (`/data/teketepara.db`).
