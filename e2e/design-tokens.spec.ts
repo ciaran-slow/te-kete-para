@@ -121,6 +121,74 @@ test.describe("Wellington design tokens", () => {
     expect(uncovered).toEqual([]);
   });
 
+  /* vision.md §3 / issue #15 (ADR 0020): the browser tier resolves what
+     jsdom cannot — var(--color-moana) to its rgb value and the 3rem floor
+     to a painted >= 48px box. The keyboard/mouse :focus-visible gating and
+     the authored declaration values are asserted under jsdom in
+     __tests__/a11y/focus-and-touch-targets.test.tsx. */
+  test("tabbing onto the language toggle then the search input shows the resolved 3px solid moana ring with 2px offset", async ({
+    page,
+  }) => {
+    await page.goto("/");
+
+    const resolvedRing = (el: Element) => {
+      const s = getComputedStyle(el);
+      return {
+        width: s.outlineWidth,
+        style: s.outlineStyle,
+        color: s.outlineColor,
+        offset: s.outlineOffset,
+      };
+    };
+    const moanaRing = {
+      width: "3px",
+      style: "solid",
+      color: "rgb(0, 59, 70)", // moana #003b46, resolved from var(--color-moana)
+      offset: "2px",
+    };
+
+    // First Tab stop is the header's radiogroup; Radix's roving focus hands
+    // the entry focus to the checked item.
+    await page.keyboard.press("Tab");
+    const en = page.getByRole("radio", { name: "English" });
+    await expect(en).toBeFocused();
+    expect(await en.evaluate(resolvedRing)).toEqual(moanaRing);
+
+    // Second Tab leaves the radiogroup (no focus trap) for the combobox.
+    await page.keyboard.press("Tab");
+    const input = page.getByRole("combobox");
+    await expect(input).toBeFocused();
+    expect(await input.evaluate(resolvedRing)).toEqual(moanaRing);
+  });
+
+  test("clicking a language radio focuses it without showing the ring", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const mi = page.getByRole("radio", { name: "Te Reo Māori" });
+    await mi.click();
+    await expect(mi).toBeFocused();
+    expect(await mi.evaluate((el) => getComputedStyle(el).outlineStyle)).toBe(
+      "none",
+    );
+  });
+
+  test("both language radios and the search input paint at least 48x48px", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    for (const locator of [
+      page.getByRole("radio", { name: "English" }),
+      page.getByRole("radio", { name: "Te Reo Māori" }),
+      page.getByRole("combobox"),
+    ]) {
+      const box = await locator.boundingBox();
+      expect(box).not.toBeNull();
+      expect(box!.width).toBeGreaterThanOrEqual(48);
+      expect(box!.height).toBeGreaterThanOrEqual(48);
+    }
+  });
+
   test("switching languages repeatedly still renders the Māori description with its macron intact", async ({
     page,
   }) => {

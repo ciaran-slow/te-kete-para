@@ -436,6 +436,21 @@ describe("AddressSearch", () => {
     await expectNoA11yViolations(container); // error
   }, 10000);
 
+  test("the input carries the shared touch-target and focus-ring classes and no per-component focus: utilities (ADR 0020)", () => {
+    renderSearch();
+    const field = input();
+    expect(field.className).toContain("touch-target");
+    expect(field.className).toContain("focus-ring");
+    // Regression guard: focus styling comes only from the shared
+    // .focus-ring class. Any `focus:`-prefixed utility (focus:outline-*,
+    // focus:ring-*, …) would reintroduce styling gated on plain :focus —
+    // the mouse-click-ring bug this issue fixed. (`focus-visible:` does not
+    // match this pattern.) The behavioural keyboard-vs-mouse assertions
+    // against the real stylesheet live in
+    // __tests__/a11y/focus-and-touch-targets.test.tsx.
+    expect(field.className).not.toMatch(/focus:/);
+  });
+
   test("formatOptionLabel joins street name and suburb", () => {
     expect(formatOptionLabel(KARORI)).toBe("Karori Road, Karori");
   });

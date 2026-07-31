@@ -22,3 +22,39 @@ body {
   color: var(--color-papa-ink);
   font-family: var(--font-sans);
 }
+
+/* vision.md §3 accessibility floor, shared by every interactive element
+   (ADR 0020). Deliberately top-level, NOT inside @layer: unlayered author
+   styles outrank every layered rule, so no future utility class can
+   silently override the floor — and jsdom drops @layer blocks entirely,
+   while it computes these top-level rules as written, which lets
+   __tests__/a11y/focus-and-touch-targets.test.tsx pin the actual values
+   rather than class names. Longhands, not the `outline:` shorthand, for
+   the same reason: jsdom does not expand the shorthand into computed
+   longhands. */
+
+/* 3px solid moana ring with 2px offset, shown for keyboard focus only
+   (WCAG 2.2 AAA 2.4.13 intent) — never on mouse click of a button. jsdom's
+   :focus-visible matching discriminates keyboard-driven from mouse-driven
+   focus, so both sides of this rule are asserted under jsdom against this
+   stylesheet; what jsdom cannot do is resolve var() or paint, so the
+   resolved ring colour and geometry are additionally pinned in a real
+   browser by e2e/design-tokens.spec.ts. */
+.focus-ring {
+  outline-style: none;
+}
+.focus-ring:focus-visible {
+  outline-width: 3px;
+  outline-style: solid;
+  outline-color: var(--color-moana);
+  outline-offset: 2px;
+}
+
+/* vision.md §3: minimum 48x48px (3rem at the 16px root size) touch
+   target. min-, not fixed, height so content that needs to grow (e.g.
+   text zoom) never clips below the floor instead of being capped at
+   exactly 48px. */
+.touch-target {
+  min-height: 3rem;
+  min-width: 3rem;
+}

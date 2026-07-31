@@ -5,7 +5,7 @@ import { isLocale } from "@/lib/i18n/dictionaries";
 import { useTranslation } from "@/lib/i18n/language-provider";
 
 const ITEM_CLASS =
-  "flex min-h-12 min-w-12 items-center justify-center rounded-full px-4 py-2 text-sm font-medium text-papa-ink outline-none data-[state=checked]:bg-moana data-[state=checked]:text-papa focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-moana";
+  "flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium text-papa-ink touch-target focus-ring data-[state=checked]:bg-moana data-[state=checked]:text-papa";
 
 export function LanguageToggle() {
   const { locale, setLocale, t } = useTranslation();
