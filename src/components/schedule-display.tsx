@@ -12,6 +12,7 @@ import { useId } from "react";
 import { useTranslation } from "@/lib/i18n/language-provider";
 import type { TranslationKey } from "@/lib/i18n/dictionaries";
 import type { SuburbSearchResult } from "./address-search";
+import { StatusRegion } from "./status-region";
 import {
   computeCollectionRuleSet,
   type CollectionRuleSet,
@@ -105,10 +106,10 @@ export function ScheduleDisplay({ address, now }: ScheduleDisplayProps) {
   const ruleSet = schedule?.ruleSet ?? null;
 
   return (
-    <section
-      aria-live="polite"
-      aria-atomic="true"
-      aria-labelledby={ruleSet ? headingId : undefined}
+    <StatusRegion
+      as="section"
+      atomic
+      headingId={ruleSet ? headingId : undefined}
       className="w-full max-w-md text-left text-papa-ink"
     >
       {schedule === null && <p>{t("schedule.noAddressSelected")}</p>}
@@ -136,6 +137,6 @@ export function ScheduleDisplay({ address, now }: ScheduleDisplayProps) {
           <p>{formatTimeWindowLabel(t, ruleSet.timeWindow)}</p>
         </>
       )}
-    </section>
+    </StatusRegion>
   );
 }
