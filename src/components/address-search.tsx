@@ -185,7 +185,7 @@ export function AddressSearch({ onSelect }: AddressSearchProps) {
         value={query}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        className="h-12 w-full rounded-md border border-moana/60 px-4 text-base text-papa-ink outline-none placeholder:text-papa-ink/70 focus:outline focus:outline-[3px] focus:outline-offset-2 focus:outline-moana"
+        className="w-full rounded-md border border-moana/60 px-4 text-base text-papa-ink placeholder:text-papa-ink/70 touch-target focus-ring"
       />
       <p
         aria-live="polite"
@@ -208,7 +208,7 @@ export function AddressSearch({ onSelect }: AddressSearchProps) {
             aria-selected={index === activeIndex}
             onMouseDown={(event) => event.preventDefault()}
             onClick={() => selectResult(result)}
-            className={`flex min-h-12 cursor-pointer items-center px-4 text-sm ${
+            className={`flex touch-target cursor-pointer items-center px-4 text-sm ${
               index === activeIndex ? "bg-moana text-papa" : "text-papa-ink"
             }`}
           >

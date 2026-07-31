@@ -34,6 +34,15 @@ test("defaults to English checked, with an English group label", () => {
   ).toHaveAttribute("aria-checked", "false");
 });
 
+test("both radio items carry the shared touch-target and focus-ring classes (ADR 0020)", () => {
+  renderToggle();
+  for (const name of ["English", "Te Reo Māori"]) {
+    const item = screen.getByRole("radio", { name });
+    expect(item.className).toContain("touch-target");
+    expect(item.className).toContain("focus-ring");
+  }
+});
+
 test("selecting Te Reo Māori switches, persists, and relabels the group", () => {
   renderToggle();
   act(() => screen.getByRole("radio", { name: "Te Reo Māori" }).click());

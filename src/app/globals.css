@@ -22,3 +22,26 @@ body {
   color: var(--color-papa-ink);
   font-family: var(--font-sans);
 }
+
+@layer components {
+  /* vision.md §3: 3px solid focus ring, 2px offset, shown only for
+     keyboard focus (WCAG 2.2 AAA 2.4.13 intent) — never on mouse click.
+     jsdom cannot verify the applied style (no layout/paint, same
+     limitation as color-contrast in __tests__/helpers/a11y.ts); tests
+     assert this class is present on the focused element instead. */
+  .focus-ring {
+    outline: none;
+  }
+  .focus-ring:focus-visible {
+    outline: 3px solid var(--color-moana);
+    outline-offset: 2px;
+  }
+
+  /* vision.md §3: minimum 48x48px touch target. min-, not fixed, height
+     so content that needs to grow (e.g. text zoom) never clips below the
+     floor instead of being capped at exactly 48px. */
+  .touch-target {
+    min-height: 3rem;
+    min-width: 3rem;
+  }
+}

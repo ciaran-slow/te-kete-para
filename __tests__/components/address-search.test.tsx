@@ -436,6 +436,16 @@ describe("AddressSearch", () => {
     await expectNoA11yViolations(container); // error
   }, 10000);
 
+  test("the input carries the shared touch-target and focus-ring classes, not a plain :focus outline (ADR 0020)", () => {
+    renderSearch();
+    const field = input();
+    expect(field.className).toContain("touch-target");
+    expect(field.className).toContain("focus-ring");
+    // Regression guard: the ring must be gated on :focus-visible via the
+    // shared class, never on plain :focus (which shows it on mouse click).
+    expect(field.className).not.toContain("focus:outline");
+  });
+
   test("formatOptionLabel joins street name and suburb", () => {
     expect(formatOptionLabel(KARORI)).toBe("Karori Road, Karori");
   });
