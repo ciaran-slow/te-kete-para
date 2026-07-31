@@ -130,6 +130,25 @@ describe("computeCollectionRuleSet", () => {
     expect(suburbanLateInUtcDay).toEqual(suburbanUtcMidnight);
   });
 
+  test("the recycling week is read from the UTC calendar date, not the local one, across a week boundary", () => {
+    // 2024-01-07T23:00:00Z is Sunday in UTC (end of the epoch's glass week,
+    // so still "glass"), but Monday 12:00 in Pacific/Auckland (UTC+13,
+    // pinned suite-wide by ADR 0017) — the start of the next ("mixed")
+    // week. Every other UTC-contract fixture in this file is either exact
+    // UTC midnight or falls in the same epoch week under both readings, so
+    // none of them can catch a getUTCFullYear/getUTCMonth/getUTCDate ->
+    // local-getter regression in the recycling-week arithmetic. This one
+    // can: a local-getter regression here computes "mixed" instead.
+    const result = computeCollectionRuleSet(
+      SUBURBAN,
+      new Date("2024-01-07T23:00:00Z"),
+    );
+    if (result.collectionType !== "suburban-kerbside") {
+      throw new Error("expected a suburban rule set");
+    }
+    expect(result.recyclingType).toBe("glass");
+  });
+
   test("an invalid date throws a RangeError, identically on repeat calls", () => {
     const invalidDate = new Date("not-a-date");
 
