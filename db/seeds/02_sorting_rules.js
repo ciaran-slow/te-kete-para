@@ -6,6 +6,23 @@
  * other table has a foreign key into sorting_rules, so unlike addresses
  * there is no downstream ON DELETE SET NULL effect from a re-run.
  *
+ * UNVERIFIED CONTENT — placeholder data, the same status as the schedule
+ * epoch "pending real WCC calendar data" (architecture.md §2B, ADR 0016):
+ *
+ * - The disposal instructions are drafted from the 2024 national kerbside
+ *   standardisation (Ministry for the Environment, in force 1 Feb 2024:
+ *   aerosols, all lids, liquid paperboard, plastics 3/4/6/7, and items
+ *   under 50mm are excluded from kerbside recycling) and from Wellington
+ *   City Council's published guidance ("What can go in kerbside recycling"
+ *   and "Recycling crates", wellington.govt.nz — the glass crate takes
+ *   clean glass bottles and jars only, no lids). They have NOT been
+ *   confirmed row-by-row against WCC's live pages and must be verified
+ *   before this content is surfaced to end users.
+ * - The Te Reo Māori text is a machine draft. Key vocabulary was checked
+ *   against Te Aka (pātara "bottle", pūhiko "battery"), but the full
+ *   dataset still needs review by a fluent Te Reo Māori speaker before
+ *   it ships to users.
+ *
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
@@ -16,11 +33,11 @@ exports.seed = async function seed(knex) {
       item_key: "pizza-box",
       description_en: "A greasy pizza box, often stained with oil and cheese.",
       description_mi:
-        "He pouaka pizza hinu, he maha ngā wā he toto hinu, he tīhi hoki e piri ana.",
+        "He pouaka pizza hinu, he maha ngā wā ka paru i te hinu, i te tīhi hoki.",
       disposal_instructions_en:
-        "If the box is greasy or has food stuck to it, put it in your general rubbish — food oil stops cardboard from being recycled. Clean, dry sections of the lid can go in your kerbside cardboard collection.",
+        "If the box is greasy or has food stuck to it, put it in your general rubbish — food oil stops cardboard from being recycled. Clean, dry sections of the lid can go in your mixed recycling with other paper and cardboard.",
       disposal_instructions_mi:
-        "Mehemea he hinu, he kai rānei kei runga, whakauruhia ki tō para whānui — mā te hinu kai e aukati ai te hangarua o te kāta. Ki te mā, ki te maroke hoki tētahi wāhanga o te uwhi, ka taea te whakauru ki tō kohinga kāta ā-huarahi.",
+        "Mehemea he hinu, he kai rānei kei runga, whakauruhia ki tō para whānui — mā te hinu kai e aukati ai te hangarua o te kāta. Ki te mā, ki te maroke hoki tētahi wāhanga o te uwhi, ka taea te whakauru ki tō rauemi hangarua me ērā atu pepa, kāta hoki.",
     },
     {
       item_key: "coffee-cup",
@@ -40,31 +57,31 @@ exports.seed = async function seed(knex) {
       description_mi:
         "He kēne hau pungahou (hei tauira, te wai kakara tinana, te peita puhipuhi, te wai kakara whare), ahakoa kua watea, kāhore rānei.",
       disposal_instructions_en:
-        "Only empty, fully depressurised cans go in your mixed recycling. If the can still contains product or you're unsure, take it to a WCC transfer station as hazardous waste — never puncture or burn it.",
+        "Aerosol cans are not accepted in kerbside recycling under the 2024 national kerbside standard. Put completely empty cans in your general rubbish. If the can still contains product or you're unsure, take it to a WCC transfer station as hazardous waste — never puncture or burn it.",
       disposal_instructions_mi:
-        "Ko ngā kēne kua watea, kua kore hoki he pungatanga anake ka whakaurua ki tō rauemi hangarua. Mēnā kei roto tonu he rawa, kāore rānei koe i te mōhio, kawea ki tētahi teihana whakawhiti a WCC hei para mōrearea — kaua rawa e wero, e tahu rānei.",
+        "Kāore ngā kēne hau pungahou e whakaaetia ki te hangarua ā-huarahi i raro i te paerewa ā-motu o te tau 2024. Whakauruhia ngā kēne kua tino watea ki tō para whānui. Mēnā kei roto tonu he rawa, kāore rānei koe i te mōhio, kawea ki tētahi teihana whakawhiti a WCC hei para mōrearea — kaua rawa e wero, e tahu rānei.",
     },
     {
       item_key: "glass-bottle",
       description_en:
         "A glass bottle or jar (drink bottles, sauce jars, jam jars).",
       description_mi:
-        "He pounamu karāhe, he ipu karāhe rānei (pounamu inu, ipu ranu, ipu tiami).",
+        "He pātara karāhe, he ipu karāhe rānei (pātara inu, ipu ranu, ipu tiami).",
       disposal_instructions_en:
-        "Give it a rinse and place it in your fortnightly glass recycling crate. Remove the lid and put that in your mixed recycling instead.",
+        "Give it a rinse, remove the lid, and place the bottle or jar in your fortnightly glass recycling crate — the crate takes glass bottles and jars only. Lids are not accepted in kerbside recycling, so put them in your general rubbish.",
       disposal_instructions_mi:
-        "Horoia, ka whakauru ai ki tō kete karāhe hangarua e rua wiki ai. Tangohia te uwhi ka whakauru ai ki tō rauemi hangarua.",
+        "Horoia, tangohia te uwhi, ka whakauru ai i te pātara, i te ipu rānei ki tō kete karāhe hangarua e rua wiki ai — mō ngā pātara me ngā ipu karāhe anake te kete. Kāore ngā uwhi e whakaaetia ki te hangarua ā-huarahi, nō reira whakauruhia ki tō para whānui.",
     },
     {
       item_key: "plastic-bottle",
       description_en:
         "A plastic drink bottle (PET or HDPE), such as a water or soft drink bottle.",
       description_mi:
-        "He pounamu kirihou inu (PET, HDPE rānei), pēnei i te pounamu wai, pounamu inu reka rānei.",
+        "He pātara inu kirihou (PET, HDPE rānei), pēnei i te pātara wai, i te pātara inu reka rānei.",
       disposal_instructions_en:
-        "Rinse it out, put the lid back on, and place it in your mixed recycling.",
+        "Rinse it out and place it in your mixed recycling. Remove the lid first — lids are not accepted in kerbside recycling, so the lid goes in your general rubbish.",
       disposal_instructions_mi:
-        "Horoia, whakahokia te uwhi, ka whakauru ai ki tō rauemi hangarua.",
+        "Horoia, ka whakauru ai ki tō rauemi hangarua. Tangohia te uwhi i te tuatahi — kāore ngā uwhi e whakaaetia ki te hangarua ā-huarahi, nō reira ka haere te uwhi ki tō para whānui.",
     },
     {
       item_key: "tin-can",
@@ -92,11 +109,11 @@ exports.seed = async function seed(knex) {
       description_en:
         "Polystyrene foam packaging, such as meat trays or protective packing pieces.",
       description_mi:
-        "He uwhi puehu porohita, pēnei i ngā pereti mīti, ngā wāhanga uwhi tiaki rānei.",
+        "He uwhi kirihou pahuka (polystyrene), pēnei i ngā pereti mīti, ngā wāhanga uwhi tiaki rānei.",
       disposal_instructions_en:
         "Polystyrene is not accepted in kerbside recycling. Put it in your general rubbish, or check whether your nearest WCC transfer station has a dedicated foam recycling drop-off.",
       disposal_instructions_mi:
-        "Kāore te porohita e whakaaetia ki te rauemi hangarua ā-huarahi. Whakauruhia ki tō para whānui, tirohia rānei mēnā he wāhi hangarua porohita motuhake kei te teihana whakawhiti a WCC e tata ana ki a koe.",
+        "Kāore te kirihou pahuka (polystyrene) e whakaaetia ki te hangarua ā-huarahi. Whakauruhia ki tō para whānui, tirohia rānei mēnā he wāhi hangarua motuhake mō te kirihou pahuka kei te teihana whakawhiti a WCC e tata ana ki a koe.",
     },
     {
       item_key: "milk-carton",
@@ -105,9 +122,9 @@ exports.seed = async function seed(knex) {
       description_mi:
         "He pouaka pepa mō te waiū, mō te wai hua rānei (hei tauira, Tetra Pak).",
       disposal_instructions_en:
-        "Rinse and flatten the carton, then place it in your kerbside cardboard collection.",
+        "Liquid paperboard cartons are not accepted in kerbside recycling under the 2024 national kerbside standard. Put them in your general rubbish, or rinse and flatten them and take them to a specialist drop-off point (such as saveBOARD) if one is available.",
       disposal_instructions_mi:
-        "Horoia, whakaparetia te pouaka, ka whakauru ai ki tō kohinga kāta ā-huarahi.",
+        "Kāore ngā pouaka pepa mō te wai e whakaaetia ki te hangarua ā-huarahi i raro i te paerewa ā-motu o te tau 2024. Whakauruhia ki tō para whānui, horoia rānei, whakaparetia, ka kawe ai ki tētahi wāhi tuku motuhake (pēnei i a saveBOARD) mēnā kei reira tētahi.",
     },
     {
       item_key: "food-scraps",
@@ -125,11 +142,11 @@ exports.seed = async function seed(knex) {
       description_en:
         "Household batteries — AA, AAA, button cell, or rechargeable.",
       description_mi:
-        "Ngā pātete kāinga — AA, AAA, pātete pātene, pātete whakahou rānei.",
+        "Ngā pūhiko kāinga — AA, AAA, pūhiko pātene, pūhiko whakahou rānei.",
       disposal_instructions_en:
         "Never put batteries in your kerbside bins — they're a fire risk in rubbish trucks. Take them to a battery recycling drop-off point or a WCC transfer station.",
       disposal_instructions_mi:
-        "Kaua rawa e whakauru pātete ki ō kete ā-huarahi — he mōrea ahi ki roto i ngā taraka para. Kawea ki tētahi wāhi hangarua pātete, ki tētahi teihana whakawhiti a WCC rānei.",
+        "Kaua rawa e whakauru pūhiko ki ō kete ā-huarahi — he mōrearea ahi ki roto i ngā taraka para. Kawea ki tētahi wāhi hangarua pūhiko, ki tētahi teihana whakawhiti a WCC rānei.",
     },
     {
       item_key: "light-bulb",
@@ -169,7 +186,7 @@ exports.seed = async function seed(knex) {
       disposal_instructions_en:
         "Donate anything still wearable to an op shop. Worn-out textiles can go in your general rubbish, or a dedicated textile recycling bin where one is available.",
       disposal_instructions_mi:
-        "Tukuna ngā mea e taea tonu ana te mau ki tētahi toa taonga tuku iho. Ka taea ngā kākahu kua ngenge te whakauru ki tō para whānui, ki tētahi pēke hangarua kākahu motuhake rānei mēnā kei reira tētahi.",
+        "Tukuna ngā mea e taea tonu ana te mau ki tētahi toa hokohoko (op shop). Ka taea ngā kākahu kua ngenge te whakauru ki tō para whānui, ki tētahi pēke hangarua kākahu motuhake rānei mēnā kei reira tētahi.",
     },
   ]);
 };
