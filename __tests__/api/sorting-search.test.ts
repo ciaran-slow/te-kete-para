@@ -39,6 +39,20 @@ describe("GET /api/sorting/search", () => {
         disposal_instructions_en: "Empty cans go in general rubbish.",
         disposal_instructions_mi: "Ka haere ngā kēne watea ki te para whānui.",
       },
+      // Mirrors the real seed row (db/seeds/02_sorting_rules.js): "e-waste"
+      // appears ONLY in item_key and disposal_instructions_en, never in
+      // either description — so it exercises the item_key match clause.
+      {
+        item_key: "small-e-waste",
+        description_en:
+          "A small electronic device, charger, or cable (e.g. an old phone or headphones).",
+        description_mi:
+          "He taputapu hiko iti, he pūrere whakakī, he taura rānei (hei tauira, he waea tawhito, he waea taringa rānei).",
+        disposal_instructions_en:
+          "Never put e-waste in your kerbside bins. Take it to a WCC transfer station e-waste drop-off or a retailer take-back scheme.",
+        disposal_instructions_mi:
+          "Kaua rawa e whakauru para hiko ki ō kete ā-huarahi. Kawea ki tētahi wāhi tuku para hiko kei tētahi teihana whakawhiti a WCC, ki tētahi kaupapa whakahoki-ki-te-toa rānei.",
+      },
     ]);
   });
 
@@ -83,6 +97,21 @@ describe("GET /api/sorting/search", () => {
     expect(
       response.body.results.map((r: { itemKey: string }) => r.itemKey).sort(),
     ).toEqual(["aerosol-can", "tin-can"]);
+  });
+
+  it("matches a term that appears only in item_key, in neither description", async () => {
+    // "e-waste" is absent from description_en and description_mi of every
+    // fixture, and disposal instructions are outside the match scope
+    // (ADR 0025) — so this result can only come from the item_key clause.
+    // Deleting `item_key LIKE ?` from the route must fail this test.
+    const response = await request(app).get(
+      `/api/sorting/search?q=${encodeURIComponent("e-waste")}`,
+    );
+
+    expect(response.status).toBe(200);
+    expect(
+      response.body.results.map((r: { itemKey: string }) => r.itemKey),
+    ).toEqual(["small-e-waste"]);
   });
 
   it("returns an empty result set for no match, not an error", async () => {
