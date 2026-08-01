@@ -7,19 +7,22 @@
  * there is no downstream ON DELETE SET NULL effect from a re-run.
  *
  * UNVERIFIED CONTENT — placeholder data, the same status as the schedule
- * epoch "pending real WCC calendar data" (architecture.md §2B, ADR 0016):
+ * epoch "pending real WCC calendar data" (architecture.md §2B, ADR 0016,
+ * tracked by issue #59). Each caveat below has its own tracking issue,
+ * and both block #21 (sorting search UI) surfacing this text to users:
  *
- * - The disposal instructions are drafted from the 2024 national kerbside
- *   standardisation (Ministry for the Environment, in force 1 Feb 2024:
- *   aerosols, all lids, liquid paperboard, plastics 3/4/6/7, and items
- *   under 50mm are excluded from kerbside recycling) and from Wellington
- *   City Council's published guidance ("What can go in kerbside recycling"
- *   and "Recycling crates", wellington.govt.nz — the glass crate takes
- *   clean glass bottles and jars only, no lids). They have NOT been
- *   confirmed row-by-row against WCC's live pages and must be verified
- *   before this content is surfaced to end users.
- * - The Te Reo Māori text is a machine draft. Key vocabulary was checked
- *   against Te Aka (pātara "bottle", pūhiko "battery"), but the full
+ * - Issue #70: the disposal instructions are drafted from the 2024
+ *   national kerbside standardisation (Ministry for the Environment, in
+ *   force 1 Feb 2024: aerosols, all lids, liquid paperboard, plastics
+ *   3/4/6/7, and items under 50mm are excluded from kerbside recycling)
+ *   and from Wellington City Council's published guidance ("What can go
+ *   in kerbside recycling" and "Recycling crates", wellington.govt.nz —
+ *   the glass crate takes clean glass bottles and jars only, no lids).
+ *   They have NOT been confirmed row-by-row against WCC's live pages and
+ *   must be verified before this content is surfaced to end users.
+ * - Issue #69: the Te Reo Māori text is a machine draft. Key vocabulary
+ *   was checked against Te Aka (pātara "bottle", pūhiko "battery",
+ *   rehu matūriki "aerosol", kōrekoreko "fluorescent"), but the full
  *   dataset still needs review by a fluent Te Reo Māori speaker before
  *   it ships to users.
  *
@@ -44,7 +47,7 @@ exports.seed = async function seed(knex) {
       description_en:
         "A single-use disposable coffee cup, usually lined with plastic.",
       description_mi:
-        "He kapu kawhe waiwai kotahi noa te whakamahi, he kirihou tonu te whakapaipai o roto.",
+        "He kapu kawhe kotahi noa te whakamahi, he kirihou tonu te whakapaipai o roto.",
       disposal_instructions_en:
         "Put the whole cup, including the lid, in your general rubbish — the plastic lining cannot be separated by WCC's recycling plant. Bring a reusable cup next time to avoid this waste.",
       disposal_instructions_mi:
@@ -55,11 +58,11 @@ exports.seed = async function seed(knex) {
       description_en:
         "An aerosol spray can (e.g. deodorant, spray paint, air freshener), empty or full.",
       description_mi:
-        "He kēne hau pungahou (hei tauira, te wai kakara tinana, te peita puhipuhi, te wai kakara whare), ahakoa kua watea, kāhore rānei.",
+        "He kēne rehu matūriki (hei tauira, te wai kakara tinana, te peita puhipuhi, te wai kakara whare), ahakoa kua watea, kāore rānei.",
       disposal_instructions_en:
         "Aerosol cans are not accepted in kerbside recycling under the 2024 national kerbside standard. Put completely empty cans in your general rubbish. If the can still contains product or you're unsure, take it to a WCC transfer station as hazardous waste — never puncture or burn it.",
       disposal_instructions_mi:
-        "Kāore ngā kēne hau pungahou e whakaaetia ki te hangarua ā-huarahi i raro i te paerewa ā-motu o te tau 2024. Whakauruhia ngā kēne kua tino watea ki tō para whānui. Mēnā kei roto tonu he rawa, kāore rānei koe i te mōhio, kawea ki tētahi teihana whakawhiti a WCC hei para mōrearea — kaua rawa e wero, e tahu rānei.",
+        "Kāore ngā kēne rehu matūriki e whakaaetia ki te hangarua ā-huarahi i raro i te paerewa ā-motu o te tau 2024. Whakauruhia ngā kēne kua tino watea ki tō para whānui. Mēnā kei roto tonu he rawa, kāore rānei koe i te mōhio, kawea ki tētahi teihana whakawhiti a WCC hei para mōrearea — kaua rawa e wero, e tahu rānei.",
     },
     {
       item_key: "glass-bottle",
@@ -135,7 +138,7 @@ exports.seed = async function seed(knex) {
       disposal_instructions_en:
         "Compost at home if you can. Wellington City Council's kerbside collection does not currently include a food scraps bin, so anything you can't compost goes in general rubbish.",
       disposal_instructions_mi:
-        "Whakaputahia hei wairākau mēnā ka taea. Kāore anō te kohinga ā-huarahi a Te Kaunihera o Pōneke i whai pēke toenga kai, nō reira ko ngā mea kāore e taea te whakawairākau ka haere ki te para whānui.",
+        "Whakaputahia hei wairākau mēnā ka taea. Kāore anō te kohinga ā-huarahi a Te Kaunihera o Pōneke i whai pēke toenga kai, nō reira ko ngā mea kāore e taea te whakaputa hei wairākau ka haere ki te para whānui.",
     },
     {
       item_key: "household-batteries",
@@ -152,11 +155,12 @@ exports.seed = async function seed(knex) {
       item_key: "light-bulb",
       description_en:
         "A light bulb — LED, incandescent, or fluorescent/CFL.",
-      description_mi: "He rama iti — LED, whakakā mūmura, huka rānei/CFL.",
+      description_mi:
+        "He rama iti — LED, whakakā mūmura, kōrekoreko/CFL rānei.",
       disposal_instructions_en:
         "Fluorescent and CFL bulbs contain mercury and must never go in kerbside bins. Take all bulb types to a WCC transfer station or a participating retailer for recycling.",
       disposal_instructions_mi:
-        "Kei roto i ngā rama huka, CFL hoki he konutai, nō reira kaua rawa e whakaurua ki ngā kete ā-huarahi. Kawea ngā momo rama katoa ki tētahi teihana whakawhiti a WCC, ki tētahi toa e whai wāhi ana rānei, hei hangarua.",
+        "Kei roto i ngā rama kōrekoreko, CFL hoki he konutai, nō reira kaua rawa e whakaurua ki ngā kete ā-huarahi. Kawea ngā momo rama katoa ki tētahi teihana whakawhiti a WCC, ki tētahi toa e whai wāhi ana rānei, hei hangarua.",
     },
     {
       item_key: "small-e-waste",

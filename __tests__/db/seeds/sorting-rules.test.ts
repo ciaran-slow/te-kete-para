@@ -13,6 +13,27 @@ import knexConfigs from "../../../knexfile.js";
  */
 const SEEDED_ROW_COUNT = 15;
 
+// The full item_key set, sorted. Pinning every key (not just a count) means a
+// renamed or misspelled key fails loudly, and it pins the lowercase kebab-case
+// slug convention that #20 will put in a URL/query parameter.
+const SEEDED_ITEM_KEYS = [
+  "aerosol-can",
+  "coffee-cup",
+  "food-scraps",
+  "glass-bottle",
+  "household-batteries",
+  "light-bulb",
+  "milk-carton",
+  "paint-tin",
+  "pizza-box",
+  "plastic-bottle",
+  "polystyrene-packaging",
+  "small-e-waste",
+  "soft-plastic-bag",
+  "textiles-clothing",
+  "tin-can",
+];
+
 describe("sorting_rules seed", () => {
   let db: ReturnType<typeof Knex> | undefined;
 
@@ -29,21 +50,17 @@ describe("sorting_rules seed", () => {
     const [{ n }] = await db("sorting_rules").count({ n: "*" });
     expect(n).toBe(SEEDED_ROW_COUNT);
 
-    const namedItems = await db("sorting_rules").whereIn("item_key", [
-      "pizza-box",
-      "coffee-cup",
-      "aerosol-can",
-    ]);
-    expect(namedItems).toHaveLength(3);
-    for (const row of namedItems) {
-      expect(row.description_en.length).toBeGreaterThan(0);
-      expect(row.description_mi.length).toBeGreaterThan(0);
-      expect(row.disposal_instructions_en.length).toBeGreaterThan(0);
-      expect(row.disposal_instructions_mi.length).toBeGreaterThan(0);
+    // The exact key set, not just the three named items: a broken or renamed
+    // item_key on any of the 15 rows fails here, and the sorted comparison
+    // gives a readable diff naming the offending key.
+    const keys = await db("sorting_rules").pluck("item_key");
+    expect([...keys].sort()).toEqual(SEEDED_ITEM_KEYS);
+    for (const named of ["pizza-box", "coffee-cup", "aerosol-can"]) {
+      expect(SEEDED_ITEM_KEYS).toContain(named);
     }
   });
 
-  it("every row has distinct English and Te Reo Māori text", async () => {
+  it("every row has non-empty, distinct English and Te Reo Māori text", async () => {
     db = Knex(knexConfigs.test);
     await db.migrate.latest();
     await db.seed.run();
@@ -57,6 +74,15 @@ describe("sorting_rules seed", () => {
     );
     expect(rows).toHaveLength(SEEDED_ROW_COUNT);
     for (const row of rows) {
+      // Non-empty on all 15 rows, not just the three items issue #19 names:
+      // an empty translation on any row is a delivery failure for the
+      // bilingual lookup this table exists to provide.
+      expect(row.description_en.length).toBeGreaterThan(0);
+      expect(row.description_mi.length).toBeGreaterThan(0);
+      expect(row.disposal_instructions_en.length).toBeGreaterThan(0);
+      expect(row.disposal_instructions_mi.length).toBeGreaterThan(0);
+      // Distinctness guards against the mi column being a copy of en. With
+      // the non-empty assertions above, "" no longer passes trivially.
       expect(row.description_en).not.toBe(row.description_mi);
       expect(row.disposal_instructions_en).not.toBe(
         row.disposal_instructions_mi,
