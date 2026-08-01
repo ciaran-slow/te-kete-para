@@ -1,0 +1,19 @@
+- banner:
+  - radiogroup "Kōwhiria te reo":
+    - radio "English"
+    - radio "Te Reo Māori" [checked]
+- main:
+  - heading "Te Kete Para" [level=1]
+  - heading "Tiakina te taiao, kia mauria te para." [level=2]
+  - paragraph: Te hoa reorua mō te para me te hangarua mō Te Whanganui-a-Tara.
+  - text: Rapua tō wāhitau tiriti
+  - combobox "Rapua tō wāhitau tiriti"
+  - paragraph
+  - paragraph: Rapua tō wāhitau i runga ake nei kia kite i te kohinga o tēnei rā.
+  - separator
+  - paragraph: āēīōū ĀĒĪŌŪ — Para Whānui, Rauemi Hangarua, Kete Karāhe, Āpopo
+  - list "Wellington colour tokens":
+    - listitem: Kākāriki
+    - listitem: Moana
+    - listitem: Kōwhai
+- alert

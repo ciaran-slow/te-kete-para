@@ -1,0 +1,19 @@
+- banner:
+  - radiogroup "Choose language":
+    - radio "English" [checked]
+    - radio "Te Reo Māori"
+- main:
+  - heading "Te Kete Para" [level=1]
+  - heading "Protect the environment, take care of your waste." [level=2]
+  - paragraph: The bilingual rubbish and recycling companion for Wellington — Te Whanganui-a-Tara.
+  - text: Search for your street address
+  - combobox "Search for your street address": Nonexistent Street
+  - paragraph: No matching addresses. Check the spelling and try again.
+  - paragraph: Search for your address above to see today's collection.
+  - separator
+  - paragraph: āēīōū ĀĒĪŌŪ — Para Whānui, Rauemi Hangarua, Kete Karāhe, Āpopo
+  - list "Wellington colour tokens":
+    - listitem: Kākāriki
+    - listitem: Moana
+    - listitem: Kōwhai
+- alert
