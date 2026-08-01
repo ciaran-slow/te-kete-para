@@ -43,3 +43,23 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  a11y:
+    name: a11y (axe)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Axe a11y suite (Playwright)
+        run: npm run test:e2e:a11y
