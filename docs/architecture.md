@@ -85,6 +85,12 @@
   Knex, returning `{ results: [...] }` with camelCase fields; every JSON API response in this
   app follows the envelope and casing convention in ADR 0013, established here as the first
   data-returning endpoint.
+* **Sorting Search Endpoint:** `GET /api/sorting/search?q=` (`src/app/api/sorting/search/route.ts`)
+  does a case-insensitive, wildcard-escaped partial match on `sorting_rules.item_key`,
+  `description_en`, and `description_mi` via Knex, returning `{ results: [...] }` with
+  camelCase fields and both locales' description/disposal-instructions text in every
+  result (ADR 0013, ADR 0025). `escapeLikePattern` is shared with `/api/suburbs/search`
+  via `src/lib/api/escape-like-pattern.ts` rather than duplicated.
 * **Collection Rule Engine:** `src/lib/schedule/rules.ts` exports a pure
   `computeCollectionRuleSet(zone, date)` that maps a zone's classification
   (`{ zone, isInnerCityNightCollection }`, sourced from `addresses`) and a
@@ -104,7 +110,7 @@
   * `addresses`: Wellington street indices, council zones, suburb classifications (Suburban vs. CBD night collection).
   * `schedules`: Date-mapped bin collection calendars, alternating recycling flags, and holiday override rules.
   * `i18n_strings`: Relational translation keys with explicit English (`en`) and Te Reo Māori (`mi`) text columns.
-  * `sorting_rules`: Item keys, bilingual descriptions, and WCC disposal instructions. The seed dataset (`db/seeds/02_sorting_rules.js`) is unverified placeholder content — drafted from the 2024 national kerbside standardisation and WCC's published guidance but not confirmed row-by-row against WCC's live pages (tracked by issue #70), and the Te Reo Māori text awaits review by a fluent speaker (tracked by issue #69) — the same status as the schedule epoch pending real WCC calendar data (§2B, issue #59). Both #69 and #70 block #21 surfacing this text to users.
+  * `sorting_rules`: Item keys, bilingual descriptions, and WCC disposal instructions. The seed dataset (`db/seeds/02_sorting_rules.js`) is unverified placeholder content — drafted from the 2024 national kerbside standardisation and WCC's published guidance but not confirmed row-by-row against WCC's live pages (tracked by issue #70), and the Te Reo Māori text awaits review by a fluent speaker (tracked by issue #69) — the same status as the schedule epoch pending real WCC calendar data (§2B, issue #59). Both #69 and #70 block #21 surfacing this text to users. Queried by `GET /api/sorting/search` (ADR 0025).
   * `users` & `push_subscriptions`: User preferences, language toggles, address foreign keys, and Web Push tokens.
   * *Database Testing:* Vitest verifies migration up/down cycles against clean test databases before test execution.
 * **Dependencies:** `knex` (query builder + migration runner) and `sqlite3` (driver). `sqlite3` is already on Next.js's auto-external package list; `knex` is not, and its dynamic dialect requires break when bundled into a route handler, so `next.config.ts` sets `serverExternalPackages: ["knex"]` (ADR 0002).

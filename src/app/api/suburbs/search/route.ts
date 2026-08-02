@@ -1,4 +1,5 @@
 import { getDb } from "@/lib/db";
+import { escapeLikePattern } from "@/lib/api/escape-like-pattern";
 
 interface AddressRow {
   id: number;
@@ -16,14 +17,7 @@ export interface SuburbSearchResult {
   isInnerCityNightCollection: boolean;
 }
 
-/**
- * Backslash-escapes SQLite LIKE wildcards (`%`, `_`) and the escape
- * character itself (`\`) so a user's query is matched literally, never as
- * a pattern — paired with `ESCAPE '\'` in the query below (ADR 0013).
- */
-export function escapeLikePattern(value: string): string {
-  return value.replace(/[\\%_]/g, (char) => `\\${char}`);
-}
+export { escapeLikePattern } from "@/lib/api/escape-like-pattern";
 
 /**
  * Maps a raw `addresses` row to the API's camelCase contract (ADR 0013).
