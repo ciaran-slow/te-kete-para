@@ -128,6 +128,13 @@
   * `schedules`: Date-mapped bin collection calendars, alternating recycling flags, and holiday override rules.
   * `i18n_strings`: Relational translation keys with explicit English (`en`) and Te Reo Māori (`mi`) text columns.
   * `sorting_rules`: Item keys, bilingual descriptions, and WCC disposal instructions. The seed dataset (`db/seeds/02_sorting_rules.js`) is unverified placeholder content — drafted from the 2024 national kerbside standardisation and WCC's published guidance but not confirmed row-by-row against WCC's live pages (tracked by issue #70), and the Te Reo Māori text awaits review by a fluent speaker (tracked by issue #69) — the same status as the schedule epoch pending real WCC calendar data (§2B, issue #59). Both #69 and #70 block #21 surfacing this text to users. Queried by `GET /api/sorting/search` (ADR 0025).
+  * `holidays`: NZ/Wellington public holiday dates relevant to WCC
+    collection shifts, bilingual names, and the number of days collection
+    shifts by (ADR 0029). No foreign key to `addresses` or `schedules` — a
+    public holiday is council-wide, not per-zone. Seed data
+    (`db/seeds/03_holidays.js`) is unverified placeholder content for
+    calendar year 2026, the same status as the recycling-week epoch
+    (issue #59) and the `sorting_rules` seed (issues #69/#70).
   * `users` & `push_subscriptions`: User preferences, language toggles, address foreign keys, and Web Push tokens.
   * *Database Testing:* Vitest verifies migration up/down cycles against clean test databases before test execution.
 * **Dependencies:** `knex` (query builder + migration runner) and `sqlite3` (driver). `sqlite3` is already on Next.js's auto-external package list; `knex` is not, and its dynamic dialect requires break when bundled into a route handler, so `next.config.ts` sets `serverExternalPackages: ["knex"]` (ADR 0002).
