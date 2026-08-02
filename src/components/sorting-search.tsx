@@ -233,16 +233,19 @@ export function SortingSearch() {
       >
         {STATUS_MESSAGES[status]}
       </StatusRegion>
-      {isListening && (
-        <StatusRegion as="p" className="sr-only">
-          {t("sortingSearch.voice.listening")}
-        </StatusRegion>
-      )}
-      {voiceError && (
-        <StatusRegion as="p" className="mt-1 text-sm text-papa-ink">
-          {t("sortingSearch.voice.error")}
-        </StatusRegion>
-      )}
+      {/* Both voice regions stay mounted permanently — only their text
+          changes. Conditionally mounting a StatusRegion inserts the element
+          into the DOM already containing its message, which aria-live never
+          announces (StatusRegion's documented contract). */}
+      <StatusRegion as="p" className="sr-only">
+        {isListening ? t("sortingSearch.voice.listening") : ""}
+      </StatusRegion>
+      <StatusRegion
+        as="p"
+        className={voiceError ? "mt-1 text-sm text-papa-ink" : "sr-only"}
+      >
+        {voiceError ? t("sortingSearch.voice.error") : ""}
+      </StatusRegion>
       <ul
         aria-label={t("sortingSearch.resultsLabel")}
         className="mt-2 flex flex-col gap-2"

@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { renderToString } from "react-dom/server";
 import {
   SortingSearch,
   type SortingRuleSearchResult,
@@ -270,6 +271,19 @@ describe("SortingSearch", () => {
     ).not.toBeInTheDocument();
   });
 
+  test("server rendering emits no mic button even when SpeechRecognition exists, so a static prerender can never hydrate into a support mismatch (ADR 0027 decision 2)", () => {
+    // Pins getServerSnapshot() === false in use-speech-recognition-support:
+    // the constructor IS present here, so a mutation to `return true` puts a
+    // <button> into the server HTML and fails this assertion.
+    stubSpeechRecognition();
+    const html = renderToString(
+      <LanguageProvider>
+        <SortingSearch />
+      </LanguageProvider>,
+    );
+    expect(html).not.toContain("<button");
+  });
+
   test("clicking the mic button starts recognition and flips to the pressed stop state", () => {
     stubSpeechRecognition();
     renderSearch();
@@ -336,6 +350,39 @@ describe("SortingSearch", () => {
     // A failed voice attempt must not clear results already on screen.
     expect(screen.getByText("Pizza box")).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  test("the listening and voice-error live regions exist in the DOM before their messages do, so aria-live can announce them", () => {
+    stubSpeechRecognition();
+    renderSearch();
+
+    // Capture every aria-live host at idle, before any voice interaction.
+    // Announcement only happens when text changes inside an already-mounted
+    // live region — an element inserted with its message pre-filled is
+    // silent — so each message's host must be one of these idle elements.
+    const idleHosts = Array.from(document.querySelectorAll("[aria-live]"));
+
+    fireEvent.click(screen.getByRole("button", { name: "Search by voice" }));
+    const listeningHost = screen
+      .getByText("Listening…")
+      .closest("[aria-live]");
+    expect(idleHosts).toContain(listeningHost);
+
+    const recognition = FakeSpeechRecognition.instances[0]!;
+    act(() => {
+      recognition.onerror?.(speechErrorEvent());
+    });
+    expect(screen.queryByText("Listening…")).not.toBeInTheDocument();
+    const errorHost = screen
+      .getByText(
+        "We couldn't hear you clearly. Please try again or type your search.",
+      )
+      .closest("[aria-live]");
+    expect(idleHosts).toContain(errorHost);
+    // The same still-mounted host, not a remount that happens to reuse a node.
+    expect(document.querySelectorAll("[aria-live]")).toHaveLength(
+      idleHosts.length,
+    );
   });
 
   test("clicking the mic button while listening stops the same instance rather than constructing a second one", () => {
