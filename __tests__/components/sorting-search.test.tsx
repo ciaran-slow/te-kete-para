@@ -242,20 +242,60 @@ describe("SortingSearch", () => {
     }
   });
 
-  test("issuing the same successful query three times renders the same result list each time, never accumulating duplicates", async () => {
+  test("consecutive successful queries matching the same row replace the results, never accumulating duplicates", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue(jsonResponse({ results: [PIZZA_BOX] })),
     );
     renderSearch();
 
-    for (let attempt = 0; attempt < 3; attempt++) {
-      await typeAndSettle("");
-      await typeAndSettle("pizza");
-      const items = screen.getAllByRole("listitem");
-      expect(items).toHaveLength(1);
-      expect(items[0]).toHaveTextContent("Pizza box");
-    }
+    // Two *different* non-empty queries, so nothing between them passes
+    // through handleChange's empty-value branch (which clears results as a
+    // side effect and would mask the property under test). An accumulating
+    // setResults((prev) => [...prev, ...body.results]) regression must
+    // surface here as a second <li> after the second query.
+    await typeAndSettle("pizza");
+    let items = screen.getAllByRole("listitem");
+    expect(items).toHaveLength(1);
+    expect(items[0]).toHaveTextContent("Pizza box");
+
+    await typeAndSettle("box");
+    items = screen.getAllByRole("listitem");
+    expect(items).toHaveLength(1);
+    expect(items[0]).toHaveTextContent("Pizza box");
+  });
+
+  test("shows a visible aria-live 'Searching…' message while a request is in flight, then announces results are available in a live region", async () => {
+    let resolveFetch!: (value: unknown) => void;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockReturnValue(new Promise((resolve) => (resolveFetch = resolve))),
+    );
+    renderSearch();
+
+    fireEvent.change(input(), { target: { value: "pizza" } });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(300);
+    });
+
+    // The only "request in flight" feedback: visible, and inside a polite
+    // live region so screen readers hear it.
+    const loading = screen.getByText("Searching…");
+    expect(loading).toHaveAttribute("aria-live", "polite");
+    expect(loading.className).not.toContain("sr-only");
+
+    await act(async () => {
+      resolveFetch(jsonResponse({ results: [PIZZA_BOX] }));
+      await vi.advanceTimersByTimeAsync(0);
+    });
+
+    // The results <ul> is not a live region, so this message is the only
+    // signal to a screen-reader user that results arrived (visually hidden,
+    // but announced).
+    const done = screen.getByText("Results are available below.");
+    expect(done).toHaveAttribute("aria-live", "polite");
+    expect(screen.queryByText("Searching…")).not.toBeInTheDocument();
+    expect(screen.getByText("Pizza box")).toBeInTheDocument();
   });
 
   test("when SpeechRecognition is unsupported, no voice button renders at all — the documented graceful fallback (ADR 0027)", () => {
