@@ -58,6 +58,23 @@
   `src/app/address-schedule.tsx`, which owns the shared
   `selected: SuburbSearchResult | null` state and is rendered directly
   from `src/app/page.tsx` (a Server Component) per ADR 0011.
+* **Sorting Search:** `src/components/sorting-search.tsx` renders
+  `<SortingSearch>` (FR-05, "He Aha Tēnei?"), a debounced (300ms) search
+  over `GET /api/sorting/search` that renders matched items and their
+  disposal instructions in the current locale as a plain labelled
+  `<ul>`/`<li>` results list — deliberately *not* an ARIA combobox, since
+  there is no selection step (ADR 0026). Status messages render through
+  the shared `<StatusRegion>` (ADR 0021); the input and mic button carry
+  the shared `.touch-target`/`.focus-ring` utilities (ADR 0020). Optional
+  voice input uses the browser-native Web Speech API, feature-detected via
+  `useSpeechRecognitionSupport()` (`src/lib/speech/`, a
+  `useSyncExternalStore` hook with ambient types in
+  `speech-recognition-types.d.ts`); when unsupported the mic button is
+  simply absent and typed search is the fallback (ADR 0027). The component
+  is fully built and tested but **not composed into any route yet**: the
+  `sorting_rules` seed content it renders is unverified pending #69/#70
+  (§2C), so wiring it into `page.tsx` is deferred until both close
+  (ADR 0028).
 * **Localization State:** `LanguageProvider` (`src/lib/i18n/language-provider.tsx`) holds the selected locale and exposes `useTranslation()` → `{ locale, setLocale, t }`. Flat dot-delimited keys live in `src/lib/i18n/dictionaries.ts`, where `en` is the source of truth (`as const`) and `mi` is typed `Record<TranslationKey, string>`, so drift fails `tsc` as well as the runtime parity test (ADR 0010). The locale is read from `localStorage` (`tkp.locale`) through `useSyncExternalStore`, never during render and never via `setState` in an effect — `react-hooks/set-state-in-effect` is an error in this repo (ADR 0009). `getServerSnapshot` returns `en` so `/` stays statically prerendered, which costs a brief flash of English before Te Reo on a hard load; the inline-script alternative that would remove it is recorded as rejected in ADR 0009. The provider mirrors the locale onto `<html lang>` in an effect so screen readers pick the right voice (vision.md §3). Macron-safe rendering comes from the Inter / Plus Jakarta Sans `latin-ext` subsets (ADR 0005).
 * **Client Testing Strategy (Vitest + Testing Library + Axe):**
   * Unit tests verify bilingual UI component rendering, dictionary interpolation, and macron preservation.
