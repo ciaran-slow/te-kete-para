@@ -120,6 +120,20 @@
   calendar data (ADR 0016). It reads only the UTC calendar date of the
   `Date` passed in, so callers must construct dates via `Date.UTC(...)`
   or a `Z`-suffixed ISO string, never a local-time constructor.
+* **Holiday Shift Calculation:** `src/lib/schedule/holiday-shift.ts`
+  exports a pure `computeHolidayShift(date, holidays)` that detects
+  whether a candidate collection date falls on a public holiday and, if
+  so, returns the effective shifted date (vision.md §4B: "Good Friday or
+  Christmas moving to Saturday"). `holidays` is an explicit
+  `HolidayRecord[]` (`{ date, shiftDays }`) that the caller sources from
+  the `holidays` table (§2C) — the function takes no DB dependency
+  itself, following the same explicit-input shape as
+  `computeCollectionRuleSet` (ADR 0015, ADR 0029). A matched shift is
+  re-checked against the same holiday list, so adjacent holiday dates
+  (e.g. New Year's Day into the Day after New Year's Day) chain into a
+  single resolved date instead of stopping after one shift (ADR 0030).
+  Like the rule engine, it reads only the UTC calendar date of the
+  `Date` passed in and of every `holidays[].date` string.
 
 ### C. Data Persistence Layer
 * **Database Engine:** **SQLite3** stored as an embedded file database (`/data/teketepara.db`).
