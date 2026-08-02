@@ -82,6 +82,17 @@ const SCHEMA = {
       { from: "address_id", table: "addresses", to: "id", on_delete: "SET NULL" },
     ],
   },
+  holidays: {
+    columns: {
+      id: { nullable: false, defaultValue: null },
+      holiday_date: { nullable: false, defaultValue: null },
+      name_en: { nullable: false, defaultValue: null },
+      name_mi: { nullable: false, defaultValue: null },
+      shift_days: { nullable: false, defaultValue: "'1'" },
+    },
+    indexes: [{ name: "holidays_holiday_date_unique", unique: true }],
+    foreignKeys: [],
+  },
 };
 
 type IndexRow = { name: string; unique: number };
@@ -100,7 +111,7 @@ describe("core schema migrations", () => {
     db = undefined;
   });
 
-  it("creates all six core tables with exactly their expected columns", async () => {
+  it("creates all seven core tables with exactly their expected columns", async () => {
     db = Knex(knexConfigs.test);
     await db.migrate.latest();
 
@@ -265,7 +276,7 @@ describe("core schema migrations", () => {
     ).rejects.toThrow(/NOT NULL constraint failed/);
   });
 
-  it("rolls back and re-migrates all six core tables cleanly (up -> down -> up)", async () => {
+  it("rolls back and re-migrates all seven core tables cleanly (up -> down -> up)", async () => {
     db = Knex(knexConfigs.test);
     await db.migrate.latest();
     await db.migrate.rollback();
@@ -299,7 +310,7 @@ describe("core schema migrations", () => {
     db = Knex(knexConfigs.test);
     await db.migrate.latest();
 
-    // The first rollback actually runs all six down() functions; the second
+    // The first rollback actually runs all seven down() functions; the second
     // has nothing left in the batch and must no-op rather than throw.
     const [firstBatch, firstLog] = await db.migrate.rollback();
     expect(firstBatch).toBe(1);
