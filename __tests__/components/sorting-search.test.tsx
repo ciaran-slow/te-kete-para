@@ -229,6 +229,34 @@ describe("SortingSearch", () => {
     expect(abortSpy).toHaveBeenCalled();
   });
 
+  test("aborting an in-flight request by typing again does not surface it as an error", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockImplementation(
+        (_url: string, init?: { signal: AbortSignal }) =>
+          new Promise((_resolve, reject) => {
+            init?.signal.addEventListener("abort", () => {
+              reject(new DOMException("Aborted", "AbortError"));
+            });
+          }),
+      ),
+    );
+    renderSearch();
+
+    fireEvent.change(input(), { target: { value: "pizza" } });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(300); // fires the debounced fetch
+    });
+    fireEvent.change(input(), { target: { value: "pizzaa" } }); // aborts it mid-flight
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0);
+    });
+
+    expect(
+      screen.queryByText("We couldn't search household items right now. Please try again."),
+    ).not.toBeInTheDocument();
+  });
+
   test("repeating the same failing query three times shows exactly one error message each time, never a stack", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("network error")));
     renderSearch();
@@ -340,6 +368,19 @@ describe("SortingSearch", () => {
     expect(recognition.lang).toBe("en-NZ");
     expect(mic).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("button", { name: "Stop voice search" })).toBe(mic);
+  });
+
+  test("switching to Te Reo before clicking the mic constructs recognition with lang \"mi\" (ADR 0027 decision 4)", () => {
+    stubSpeechRecognition();
+    renderSearch();
+    act(() => writeStoredLocale("mi"));
+
+    const mic = screen.getByRole("button", { name: "Rapua mā te reo" });
+    fireEvent.click(mic);
+
+    expect(FakeSpeechRecognition.instances).toHaveLength(1);
+    const recognition = FakeSpeechRecognition.instances[0]!;
+    expect(recognition.lang).toBe("mi");
   });
 
   test("a voice result sets the input value and triggers exactly one immediate fetch, with no debounce wait", async () => {
