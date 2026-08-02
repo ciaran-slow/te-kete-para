@@ -121,6 +121,16 @@ Ordered by what actually bites in this codebase:
   short of "ready" must actually say "not ready." Name the exact PR/issue
   that must land first and say so plainly in the verdict line, not buried in
   a "worth doing later" or "merge condition" section that reads as approval.
+- **Orphaned forward references.** `grep -rln "#<issue-number>" docs/adr
+  db/migrations` for prior ADRs or migration comments that describe what
+  this issue "is expected to" do (this repo's ADRs regularly predict work
+  for a future issue by number, e.g. ADR 0016 → #22, ADR 0029 → #23). If
+  the plan/PR scoped away from a described expectation, confirm it says
+  where the leftover work now lives — an existing issue named explicitly,
+  or a new one filed — rather than silently dropping it. A defensible
+  narrowing with no pointer to where the rest of the work went is the same
+  class of gap as a missing ADR for work that did ship: flag it, and say
+  so in the verdict even when the code itself is otherwise ready.
 - **Missing or hollow ADRs.** Every ADR drafted in the plan's "ADRs" section
   must exist in the diff at its stated `docs/adr/NNNN-slug.md` path — a
   promised ADR that never landed is an unmet deliverable, same as a missing

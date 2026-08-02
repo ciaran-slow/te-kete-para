@@ -24,7 +24,7 @@ Then read:
 ## 2. Check repo reality before prescribing anything
 
 The two most expensive planning failures so far were plans that contradicted
-the repo itself. Gate against both:
+the repo itself. Gate against both, then check the third recurring gap below:
 
 - **Lint config.** For every code pattern the plan prescribes (a hook shape,
   an effect, a state approach), confirm the repo's ESLint setup allows it:
@@ -42,6 +42,30 @@ the repo itself. Gate against both:
 - **This fork's Next.js docs.** AGENTS.md is not decoration: this Next.js has
   breaking changes. List `node_modules/next/dist/docs/` and read every guide
   covering an API the plan will name. Do not prescribe from training data.
+
+- **Forward references from prior ADRs and migrations.** This repo's ADRs
+  routinely predict work for a numbered future issue before that issue is
+  planned — e.g. ADR 0016 named a future "#22" for per-date overrides, and
+  ADR 0029 stated that "#23 is expected to" join the `holidays` table
+  against `schedules` and populate `is_holiday_override`/`original_date`
+  (a migration comment made the same claim). Search for these before
+  narrowing scope:
+
+  ```
+  grep -rln "#<n>" docs/adr db/migrations
+  ```
+
+  If a prior ADR or migration comment describes work for this issue that
+  the acceptance criteria alone don't require, the plan may still
+  legitimately narrow away from it (e.g. deferring DB wiring while a
+  dependency is unverified) — but the plan must say so explicitly: either
+  fold the described work back in, or name the exact issue that now owns
+  it (filing a new one with `gh issue create` if none exists) and record
+  that pointer in this issue's own ADR. A prior ADR's stated expectation
+  quietly going unmet, with no issue tracking it, is untracked scope, not
+  a scope decision — and accepted ADRs shouldn't be edited after the fact
+  to retract what they predicted (`docs/adr/README.md`), so the correction
+  belongs in the new plan/ADR, not a rewrite of the old one.
 
 ## 3. Decide, don't defer
 
