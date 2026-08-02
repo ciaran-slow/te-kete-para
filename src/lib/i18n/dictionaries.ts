@@ -23,6 +23,21 @@ export const en = {
   "address.search.resultsAvailable":
     "Results are available below. Use the up and down arrow keys to choose one.",
   "address.search.error": "We couldn't search addresses right now. Please try again.",
+  "sortingSearch.heading": "What is this?",
+  "sortingSearch.label": "Search for a household item",
+  "sortingSearch.placeholder": "e.g. pizza box",
+  "sortingSearch.resultsLabel": "Matching items",
+  "sortingSearch.loading": "Searching…",
+  "sortingSearch.noResults": "No matching items. Check the spelling and try again.",
+  "sortingSearch.resultsAvailable": "Results are available below.",
+  "sortingSearch.error":
+    "We couldn't search household items right now. Please try again.",
+  "sortingSearch.disposalHeading": "How to dispose of this",
+  "sortingSearch.voice.button": "Search by voice",
+  "sortingSearch.voice.stop": "Stop voice search",
+  "sortingSearch.voice.listening": "Listening…",
+  "sortingSearch.voice.error":
+    "We couldn't hear you clearly. Please try again or type your search.",
   "schedule.heading": "Today's collection",
   "schedule.noAddressSelected":
     "Search for your address above to see today's collection.",
@@ -60,6 +75,22 @@ export const mi: Record<TranslationKey, string> = {
     "Kua rite ngā hua i raro nei. Whakamahia ngā pātuhi pere ki te kōwhiri.",
   "address.search.error":
     "Kāore i taea te rapu wāhitau i tēnei wā. Whakamātauria anō.",
+  "sortingSearch.heading": "He Aha Tēnei?",
+  "sortingSearch.label": "Rapua tētahi mea kāinga",
+  "sortingSearch.placeholder": "Hei tauira, pouaka pizza",
+  "sortingSearch.resultsLabel": "Ngā mea e rite ana",
+  "sortingSearch.loading": "E rapu ana…",
+  "sortingSearch.noResults":
+    "Kāore he mea e rite ana. Tirohia te tuhi, ka whakamātau anō.",
+  "sortingSearch.resultsAvailable": "Kua rite ngā hua i raro nei.",
+  "sortingSearch.error":
+    "Kāore i taea te rapu mea kāinga i tēnei wā. Whakamātauria anō.",
+  "sortingSearch.disposalHeading": "Me pēhea te whakapau i tēnei",
+  "sortingSearch.voice.button": "Rapua mā te reo",
+  "sortingSearch.voice.stop": "Whakamutua te rapu reo",
+  "sortingSearch.voice.listening": "E whakarongo ana…",
+  "sortingSearch.voice.error":
+    "Kāore i mārama te rongo i a koe. Whakamātauria anō, tuhia rānei tō rapunga.",
   "schedule.heading": "Te kohinga o tēnei rā",
   "schedule.noAddressSelected":
     "Rapua tō wāhitau i runga ake nei kia kite i te kohinga o tēnei rā.",
