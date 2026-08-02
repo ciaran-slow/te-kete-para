@@ -12,9 +12,11 @@
  * Holidays Act 1981 Mondayisation rule and Easter 2026 falling on 5 April,
  * not confirmed against WCC's own published collection calendar, and the
  * Te Reo Māori names are an unreviewed draft pending a fluent-speaker
- * review (same caveat as issue #69). A follow-up confirmation issue should
- * be filed before this data is relied on for a real user-facing shift
- * alert (#23/#24).
+ * review (same caveat as issue #69). Issue #78 tracks confirming both,
+ * including candidate holidays this placeholder may be missing (e.g.
+ * Wellington Anniversary, Waitangi Day, Easter Monday, ANZAC Day
+ * observed, Matariki, Labour Day) — a missing row here silently means "no
+ * shift", so #78 blocks #23/#24 surfacing shift alerts to real users.
  *
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }

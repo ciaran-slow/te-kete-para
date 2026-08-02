@@ -134,7 +134,12 @@
     public holiday is council-wide, not per-zone. Seed data
     (`db/seeds/03_holidays.js`) is unverified placeholder content for
     calendar year 2026, the same status as the recycling-week epoch
-    (issue #59) and the `sorting_rules` seed (issues #69/#70).
+    (issue #59) and the `sorting_rules` seed (issues #69/#70): dates and
+    Te Reo Māori names are unconfirmed, and holidays may be missing
+    entirely — a missing row silently means "no collection shift".
+    Issue #78 tracks confirming the calendar against WCC's published
+    collection pages and the Te Reo review, and blocks #23/#24 surfacing
+    holiday shift alerts to users.
   * `users` & `push_subscriptions`: User preferences, language toggles, address foreign keys, and Web Push tokens.
   * *Database Testing:* Vitest verifies migration up/down cycles against clean test databases before test execution.
 * **Dependencies:** `knex` (query builder + migration runner) and `sqlite3` (driver). `sqlite3` is already on Next.js's auto-external package list; `knex` is not, and its dynamic dialect requires break when bundled into a route handler, so `next.config.ts` sets `serverExternalPackages: ["knex"]` (ADR 0002).

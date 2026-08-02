@@ -13,14 +13,41 @@ import knexConfigs from "../../../knexfile.js";
  */
 const SEEDED_ROW_COUNT = 5;
 
-// The full holiday_date set, sorted. Pinning every date (not just a count)
-// means a mistyped or dropped date fails loudly with a readable diff.
-const SEEDED_HOLIDAY_DATES = [
-  "2026-01-01",
-  "2026-01-02",
-  "2026-04-03",
-  "2026-12-25",
-  "2026-12-28",
+// Every seeded row in full, sorted by holiday_date. Pinning all columns of
+// all rows (not a count, and not one sample row) means a mistyped date,
+// name, or shift on ANY row fails loudly with a readable diff — a
+// single-row spot check was proven mutable without failing the suite.
+const SEEDED_HOLIDAYS = [
+  {
+    holiday_date: "2026-01-01",
+    name_en: "New Year's Day",
+    name_mi: "Te Rā Tau Hou",
+    shift_days: 1,
+  },
+  {
+    holiday_date: "2026-01-02",
+    name_en: "Day after New Year's Day",
+    name_mi: "Te Rā i muri i te Tau Hou",
+    shift_days: 1,
+  },
+  {
+    holiday_date: "2026-04-03",
+    name_en: "Good Friday",
+    name_mi: "Te Paraire Pai",
+    shift_days: 1,
+  },
+  {
+    holiday_date: "2026-12-25",
+    name_en: "Christmas Day",
+    name_mi: "Te Rā Kirihimete",
+    shift_days: 1,
+  },
+  {
+    holiday_date: "2026-12-28",
+    name_en: "Boxing Day (observed)",
+    name_mi: "Te Rā Poeke (i whakatakotoria)",
+    shift_days: 1,
+  },
 ];
 
 describe("holidays seed", () => {
@@ -31,23 +58,39 @@ describe("holidays seed", () => {
     db = undefined;
   });
 
-  it("seeds exactly 5 rows covering the 2026 collection-shifting holidays", async () => {
+  it("seeds exactly the 5 pinned 2026 collection-shifting holiday rows", async () => {
     db = Knex(knexConfigs.test);
     await db.migrate.latest();
     await db.seed.run();
 
-    const [{ n }] = await db("holidays").count({ n: "*" });
-    expect(n).toBe(SEEDED_ROW_COUNT);
+    const rows = await db("holidays")
+      .select("holiday_date", "name_en", "name_mi", "shift_days")
+      .orderBy("holiday_date", "asc");
+    expect(rows).toEqual(SEEDED_HOLIDAYS);
+    expect(rows).toHaveLength(SEEDED_ROW_COUNT);
+  });
 
-    const dates = await db("holidays").pluck("holiday_date");
-    expect([...dates].sort()).toEqual(SEEDED_HOLIDAY_DATES);
+  it("every row has non-empty, distinct English and Te Reo Māori names", async () => {
+    db = Knex(knexConfigs.test);
+    await db.migrate.latest();
+    await db.seed.run();
 
-    const christmas = await db("holidays")
-      .where({ holiday_date: "2026-12-25" })
-      .select("name_en", "shift_days");
-    expect(christmas).toEqual([
-      { name_en: "Christmas Day", shift_days: 1 },
-    ]);
+    const rows = await db("holidays").select(
+      "holiday_date",
+      "name_en",
+      "name_mi",
+    );
+    expect(rows).toHaveLength(SEEDED_ROW_COUNT);
+    for (const row of rows) {
+      // Non-empty on every row: an empty translation on any row is a
+      // delivery failure for the bilingual alerts this table feeds
+      // (#23/#24), same rationale as sorting-rules.test.ts.
+      expect(row.name_en.length).toBeGreaterThan(0);
+      expect(row.name_mi.length).toBeGreaterThan(0);
+      // Distinctness guards against the mi column being a copy of en. With
+      // the non-empty assertions above, "" no longer passes trivially.
+      expect(row.name_en).not.toBe(row.name_mi);
+    }
   });
 
   it("rejects when run before the holidays table has been migrated", async () => {
