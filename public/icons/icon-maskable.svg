@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Te Kete Para">
+  <rect width="512" height="512" fill="#003b46"/>
+  <g transform="translate(256 256) scale(0.6) translate(-256 -256)">
+    <path d="M156 224h200l-24 176a32 32 0 0 1-31.7 27.4H211.7A32 32 0 0 1 180 400z" fill="#f8fafc"/>
+    <path d="M180 224c0-46 34-84 76-84s76 38 76 84" fill="none" stroke="#f8fafc" stroke-width="20" stroke-linecap="round"/>
+  </g>
+</svg>
