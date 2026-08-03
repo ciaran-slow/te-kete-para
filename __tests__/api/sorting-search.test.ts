@@ -114,6 +114,73 @@ describe("GET /api/sorting/search", () => {
     ).toEqual(["aerosol-can", "tin-can"]);
   });
 
+  it("matches a capitalised macron query (Kēne)", async () => {
+    const response = await request(app).get(
+      `/api/sorting/search?q=${encodeURIComponent("Kēne")}`,
+    );
+
+    expect(response.status).toBe(200);
+    expect(
+      response.body.results.map((r: { itemKey: string }) => r.itemKey).sort(),
+    ).toEqual(["aerosol-can", "tin-can"]);
+  });
+
+  it("matches an all-caps macron query that ASCII-only case folding alone would miss (KĒNE)", async () => {
+    const response = await request(app).get(
+      `/api/sorting/search?q=${encodeURIComponent("KĒNE")}`,
+    );
+
+    expect(response.status).toBe(200);
+    expect(
+      response.body.results.map((r: { itemKey: string }) => r.itemKey).sort(),
+    ).toEqual(["aerosol-can", "tin-can"]);
+  });
+
+  it("matches a macron-less query against macron-bearing stored text (kene)", async () => {
+    const response = await request(app).get(
+      `/api/sorting/search?q=${encodeURIComponent("kene")}`,
+    );
+
+    expect(response.status).toBe(200);
+    expect(
+      response.body.results.map((r: { itemKey: string }) => r.itemKey).sort(),
+    ).toEqual(["aerosol-can", "tin-can"]);
+  });
+
+  it("matches a macron-less partial query against macron-bearing text spanning a whole word (maturiki)", async () => {
+    const response = await request(app).get(
+      `/api/sorting/search?q=${encodeURIComponent("maturiki")}`,
+    );
+
+    expect(response.status).toBe(200);
+    expect(
+      response.body.results.map((r: { itemKey: string }) => r.itemKey),
+    ).toEqual(["aerosol-can"]);
+  });
+
+  it("answers repeated macron-folded requests identically", async () => {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const response = await request(app).get(
+        `/api/sorting/search?q=${encodeURIComponent("KĒNE")}`,
+      );
+      expect(response.status).toBe(200);
+      expect(
+        response.body.results
+          .map((r: { itemKey: string }) => r.itemKey)
+          .sort(),
+      ).toEqual(["aerosol-can", "tin-can"]);
+    }
+  });
+
+  it("folds diacritics without defeating wildcard escaping", async () => {
+    const response = await request(app).get(
+      `/api/sorting/search?q=${encodeURIComponent("kēne%")}`,
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.body.results).toEqual([]);
+  });
+
   it("matches a term that appears only in item_key, in neither description", async () => {
     // "e-waste" is absent from description_en and description_mi of every
     // fixture, and disposal instructions are outside the match scope
@@ -230,6 +297,7 @@ describe("GET /api/sorting/search", () => {
       description_mi: "mi desc",
       disposal_instructions_en: "en instr",
       disposal_instructions_mi: "mi instr",
+      keywords: "",
     });
     expect(mapped).toEqual({
       itemKey: "test-item",
