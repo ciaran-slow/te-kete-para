@@ -243,6 +243,27 @@ describe("POST/DELETE /api/notifications/subscribe", () => {
       expect(rows).toHaveLength(0);
     });
 
+    it("deletes only the targeted endpoint, leaving an unrelated subscription in place", async () => {
+      const targetEndpoint = "https://push.example/delete-scoped-target";
+      const otherEndpoint = "https://push.example/delete-scoped-other";
+      await request(app)
+        .post(ROUTE)
+        .send({ endpoint: targetEndpoint, keys: { p256dh: "key", auth: "secret" } });
+      await request(app)
+        .post(ROUTE)
+        .send({ endpoint: otherEndpoint, keys: { p256dh: "key", auth: "secret" } });
+
+      const response = await request(app).delete(ROUTE).send({ endpoint: targetEndpoint });
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({ deleted: true });
+
+      const targetRows = await getDb()("push_subscriptions").where({ endpoint: targetEndpoint });
+      expect(targetRows).toHaveLength(0);
+      const otherRows = await getDb()("push_subscriptions").where({ endpoint: otherEndpoint });
+      expect(otherRows).toHaveLength(1);
+    });
+
     it("reports deleted: false for an endpoint that was never subscribed", async () => {
       const response = await request(app)
         .delete(ROUTE)
