@@ -26,10 +26,9 @@
   renders `<StatusRegion>`, a stateless `aria-live="polite"` wrapper
   parameterized by host element (`as`), `atomic`, and an optional
   `headingId` → `aria-labelledby` (ADR 0021). `ScheduleDisplay`'s outer
-  `<section>` and `AddressSearch`'s status `<p>` both render through it
-  today with no change to their existing DOM output; the shift-alert
-  banner (#24) is expected to render its announcement through the same
-  component once #22/#23 land.
+  `<section>`, `AddressSearch`'s status `<p>`, `SortingSearch`'s status
+  messages, and `ShiftAlertBanner`'s announcement `<div>` all render
+  through it today.
 * **Address Search:** `src/components/address-search.tsx` renders
   `<AddressSearch>`, a hand-built WAI-ARIA 1.2 combobox (no Radix primitive —
   ADR 0014) that debounces keystrokes 300ms, queries
@@ -75,6 +74,28 @@
   `sorting_rules` seed content it renders is unverified pending #69/#70
   (§2C), so wiring it into `page.tsx` is deferred until both close
   (ADR 0028).
+* **Shift-Alert Banner:** `src/components/shift-alert-banner.tsx` renders
+  `<ShiftAlertBanner>` (vision.md §4B, issue #24), which announces an
+  upcoming holiday-shifted collection through the shared `<StatusRegion>`
+  (ADR 0021), bilingual per `LanguageContext`. Its pure `findUpcomingShift`
+  helper scans a 7-day window (today + 6 days, inclusive) over the
+  council-wide holiday list, delegating shift math — including cascading
+  adjacent-holiday chains (ADR 0030) — to `computeHolidayShift` (§2B); the
+  window length is a recorded product judgment call (ADR 0032). Rendering
+  and fetching are gated on the same address-selection prop
+  `<ScheduleDisplay>` uses (ADR 0018): with no address selected the banner
+  stays an empty `sr-only` live region and never fetches. Once an address
+  is selected, it fetches `GET /api/holidays` (§2B) from a `useEffect`
+  keyed on `address.id` — the codebase's **first effect-based data fetch**
+  (as opposed to the event-handler fetches in `AddressSearch` and
+  `SortingSearch`); ADR 0032 records the pattern (all `setState` inside the
+  promise callbacks, never synchronously in the effect body, keeping
+  `react-hooks/set-state-in-effect` satisfied) and future "fetch when a
+  prop becomes available" components should follow it rather than
+  re-litigating. Like `<SortingSearch>`, the component is fully built and
+  tested but **not composed into any route yet**: the seeded 2026 holiday
+  calendar is unverified pending #78 (§2C), so wiring it into
+  `address-schedule.tsx` is deferred until #78 closes (ADR 0031).
 * **Localization State:** `LanguageProvider` (`src/lib/i18n/language-provider.tsx`) holds the selected locale and exposes `useTranslation()` → `{ locale, setLocale, t }`. Flat dot-delimited keys live in `src/lib/i18n/dictionaries.ts`, where `en` is the source of truth (`as const`) and `mi` is typed `Record<TranslationKey, string>`, so drift fails `tsc` as well as the runtime parity test (ADR 0010). The locale is read from `localStorage` (`tkp.locale`) through `useSyncExternalStore`, never during render and never via `setState` in an effect — `react-hooks/set-state-in-effect` is an error in this repo (ADR 0009). `getServerSnapshot` returns `en` so `/` stays statically prerendered, which costs a brief flash of English before Te Reo on a hard load; the inline-script alternative that would remove it is recorded as rejected in ADR 0009. The provider mirrors the locale onto `<html lang>` in an effect so screen readers pick the right voice (vision.md §3). Macron-safe rendering comes from the Inter / Plus Jakarta Sans `latin-ext` subsets (ADR 0005).
 * **Client Testing Strategy (Vitest + Testing Library + Axe):**
   * Unit tests verify bilingual UI component rendering, dictionary interpolation, and macron preservation.
@@ -108,6 +129,18 @@
   camelCase fields and both locales' description/disposal-instructions text in every
   result (ADR 0013, ADR 0025). `escapeLikePattern` is shared with `/api/suburbs/search`
   via `src/lib/api/escape-like-pattern.ts` rather than duplicated.
+* **Holidays Endpoint:** `GET /api/holidays` (`src/app/api/holidays/route.ts`)
+  takes no query parameters and returns every row of the `holidays` table
+  (§2C) ordered by `holiday_date` ascending, camelCase-mapped to
+  `{ results: [{ date, nameEn, nameMi, shiftDays }] }` (ADR 0013). No
+  server-side date filtering — the table holds only a handful of rows per
+  year, and the client needs rows from outside any naive window anyway to
+  resolve adjacent-holiday chains (ADR 0030), so the 7-day lookahead is
+  computed client-side in `<ShiftAlertBanner>` (§2A, ADR 0032). Failure
+  path returns `{ error }` with status 503. The route is live and publicly
+  reachable, but nothing user-facing calls it yet — its only consumer,
+  `<ShiftAlertBanner>`, is not composed into any route until #78 closes
+  (ADR 0031).
 * **Collection Rule Engine:** `src/lib/schedule/rules.ts` exports a pure
   `computeCollectionRuleSet(zone, date)` that maps a zone's classification
   (`{ zone, isInnerCityNightCollection }`, sourced from `addresses`) and a

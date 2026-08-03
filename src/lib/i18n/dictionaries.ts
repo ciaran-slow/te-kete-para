@@ -52,6 +52,10 @@ export const en = {
   "schedule.binType.cardboard": "Cardboard",
   "schedule.error":
     "We couldn't work out today's collection for this address. Please try again.",
+  "shiftAlert.prefix": "Your collection due",
+  "shiftAlert.shiftsTo": "shifts to",
+  "shiftAlert.error":
+    "We couldn't check for upcoming collection changes right now. Please try again.",
 } as const;
 
 export type TranslationKey = keyof typeof en;
@@ -105,6 +109,10 @@ export const mi: Record<TranslationKey, string> = {
   "schedule.binType.cardboard": "Kāta",
   "schedule.error":
     "Kāore i taea te tātai i te kohinga mō tēnei wāhitau. Whakamātauria anō.",
+  "shiftAlert.prefix": "Ko tō kohinga e tika ana mō te",
+  "shiftAlert.shiftsTo": "ka huri ki te",
+  "shiftAlert.error":
+    "Kāore i taea te tirotiro i ngā panoni kohinga ā tōna wā. Whakamātauria anō.",
 };
 
 export const dictionaries: Record<Locale, Record<TranslationKey, string>> = {
