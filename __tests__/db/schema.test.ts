@@ -79,6 +79,8 @@ const SCHEMA = {
       auth: { nullable: false, defaultValue: null },
       language_preference: { nullable: false, defaultValue: "'en'" },
       address_id: { nullable: true, defaultValue: null },
+      created_at: { nullable: false, defaultValue: "CURRENT_TIMESTAMP" },
+      updated_at: { nullable: false, defaultValue: "CURRENT_TIMESTAMP" },
     },
     indexes: [{ name: "push_subscriptions_endpoint_unique", unique: true }],
     foreignKeys: [
@@ -273,6 +275,39 @@ describe("core schema migrations", () => {
     await expect(db("sorting_rules").insert(rule)).rejects.toThrow(
       /UNIQUE constraint failed/,
     );
+  });
+
+  it("populates created_at and updated_at on insert without the caller supplying them, independently per row", async () => {
+    db = Knex(knexConfigs.test);
+    await db.migrate.latest();
+
+    const [firstId] = await db("push_subscriptions").insert({
+      endpoint: "https://push.example/timestamp-a",
+      p256dh: "key",
+      auth: "auth",
+    });
+    const [secondId] = await db("push_subscriptions").insert({
+      endpoint: "https://push.example/timestamp-b",
+      p256dh: "key",
+      auth: "auth",
+    });
+
+    const rows = await db("push_subscriptions")
+      .whereIn("id", [firstId, secondId])
+      .orderBy("id");
+
+    for (const row of rows) {
+      expect(row.created_at).toEqual(expect.any(String));
+      expect(row.updated_at).toEqual(expect.any(String));
+      // SQLite's CURRENT_TIMESTAMP is UTC; parsing without a "Z" suffix
+      // would apply the process TZ (Pacific/Auckland, ADR 0017) instead.
+      expect(Number.isNaN(Date.parse(`${row.created_at}Z`))).toBe(false);
+    }
+
+    // Not a single shared value reused across rows/columns — two distinct
+    // inserts each get their own populated pair.
+    expect(rows[0].created_at).toEqual(rows[0].updated_at);
+    expect(rows[1].created_at).toEqual(rows[1].updated_at);
   });
 
   it("widening push_subscriptions.endpoint preserves rows, the unique index, and constraints across up and down", async () => {
