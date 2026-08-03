@@ -85,6 +85,11 @@ test.describe("manual screen-reader QA — accessibility-tree snapshots (ADR 002
     await expect(
       page.getByRole("option", { name: /Karori Road/ }),
     ).toBeVisible();
+    /* toMatchAriaSnapshot's `contain` matching does not fail on extra
+       sibling nodes, so it cannot by itself prove there is exactly one
+       option and none stuck highlighted (issue #67). */
+    await expect(page.getByRole("option")).toHaveCount(1);
+    await expect(page.getByRole("option", { selected: true })).toHaveCount(0);
     await expect(page).toMatchAriaSnapshot({
       name: "address-search-results.aria.yml",
     });
@@ -94,6 +99,13 @@ test.describe("manual screen-reader QA — accessibility-tree snapshots (ADR 002
     await page.goto("/");
     await combobox(page).fill("Nonexistent Street");
     await expect(page.getByText(NO_RESULTS_TEXT)).toBeVisible();
+    /* toMatchAriaSnapshot cannot enforce an absent attribute or node — a
+       template that omits `[expanded]` still matches an actual node that
+       has it (issue #67). Assert the negative rows directly. */
+    await expect(combobox(page)).toHaveAttribute("aria-expanded", "false");
+    await expect(
+      page.getByRole("listbox", { includeHidden: true }),
+    ).toBeHidden();
     await expect(page).toMatchAriaSnapshot({
       name: "address-search-no-results.aria.yml",
     });
@@ -113,9 +125,34 @@ test.describe("manual screen-reader QA — accessibility-tree snapshots (ADR 002
     await page.goto("/");
     await combobox(page).fill("Karori");
     await expect(page.getByText(SEARCH_ERROR_TEXT)).toBeVisible();
+    await expect(combobox(page)).toHaveAttribute("aria-expanded", "false");
+    await expect(
+      page.getByRole("listbox", { includeHidden: true }),
+    ).toBeHidden();
     await expect(page).toMatchAriaSnapshot({
       name: "address-search-error.aria.yml",
     });
+  });
+
+  test("address search popup and options clear when a query stops matching", async ({
+    page,
+  }) => {
+    /* Regression class from #67: a query going from "has results" to
+       "no results" must actually collapse the popup and options, not leave
+       aria-expanded/listbox/option state stuck from the prior open state —
+       the exact defect class a fresh no-results page load can't exercise. */
+    await page.goto("/");
+    await combobox(page).fill("Karori");
+    await expect(
+      page.getByRole("option", { name: /Karori Road/ }),
+    ).toBeVisible();
+    await combobox(page).fill("Nonexistent Street");
+    await expect(page.getByText(NO_RESULTS_TEXT)).toBeVisible();
+    await expect(combobox(page)).toHaveAttribute("aria-expanded", "false");
+    await expect(
+      page.getByRole("listbox", { includeHidden: true }),
+    ).toBeHidden();
+    await expect(page.getByRole("option")).toHaveCount(0);
   });
 
   test.describe("schedule display (pinned clock — see PINNED_SCHEDULE_TIME)", () => {
