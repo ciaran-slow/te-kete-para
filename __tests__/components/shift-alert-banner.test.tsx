@@ -181,7 +181,14 @@ describe("ShiftAlertBanner", () => {
     });
 
     expect(fetchMock).not.toHaveBeenCalled();
-    expect(screen.getByText(EN_CHRISTMAS_MESSAGE)).toBeInTheDocument();
+    const message = screen.getByText(EN_CHRISTMAS_MESSAGE);
+    // AC1's announcement mechanism (ADR 0021): the message must live inside
+    // a polite, atomic live region — same assertions as its StatusRegion
+    // peers (schedule-display.test.tsx, sorting-search.test.tsx).
+    const liveRegion = message.closest("[aria-live]");
+    expect(liveRegion).not.toBeNull();
+    expect(liveRegion).toHaveAttribute("aria-live", "polite");
+    expect(liveRegion).toHaveAttribute("aria-atomic", "true");
   });
 
   test("switching the stored locale to Te Reo renders the Māori holiday name and connective text", () => {
