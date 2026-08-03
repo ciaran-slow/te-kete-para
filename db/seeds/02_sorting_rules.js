@@ -26,7 +26,7 @@
  *   dataset still needs review by a fluent Te Reo Māori speaker before
  *   it ships to users.
  *
- * `keywords` (issue #73, ADR 0033) is a separate, curated search-recall
+ * `keywords` (issue #73, ADR 0035) is a separate, curated search-recall
  * aid, not translated/verified content like the rest of the row — it is
  * populated incrementally as real search-recall gaps are found, not
  * backfilled in bulk.

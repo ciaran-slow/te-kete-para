@@ -1,4 +1,4 @@
-# ADR 0033: Tokenized, hyphen-normalized, keyword-augmented sorting search match
+# ADR 0035: Tokenized, hyphen-normalized, keyword-augmented sorting search match
 
 - **Status:** accepted
 - **Date:** 2026-08-03

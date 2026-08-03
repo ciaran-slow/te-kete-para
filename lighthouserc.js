@@ -34,7 +34,7 @@ module.exports = {
     },
     upload: {
       // Local report files as a CI artifact, not a third-party upload —
-      // see ADR 0033 alternatives (temporary-public-storage rejected).
+      // see ADR 0036 alternatives (temporary-public-storage rejected).
       target: "filesystem",
       outputDir: "./.lighthouseci",
     },

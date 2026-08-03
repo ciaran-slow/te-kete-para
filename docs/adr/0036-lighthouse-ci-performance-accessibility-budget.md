@@ -1,4 +1,4 @@
-# ADR 0033: Lighthouse CI performance & accessibility budget
+# ADR 0036: Lighthouse CI performance & accessibility budget
 
 - **Status:** accepted
 - **Date:** 2026-08-03
