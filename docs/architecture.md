@@ -124,10 +124,17 @@
   app follows the envelope and casing convention in ADR 0013, established here as the first
   data-returning endpoint.
 * **Sorting Search Endpoint:** `GET /api/sorting/search?q=` (`src/app/api/sorting/search/route.ts`)
-  does a case-insensitive, wildcard-escaped partial match on `sorting_rules.item_key`,
-  `description_en`, and `description_mi` via Knex, returning `{ results: [...] }` with
-  camelCase fields and both locales' description/disposal-instructions text in every
-  result (ADR 0013, ADR 0025). `escapeLikePattern` is shared with `/api/suburbs/search`
+  tokenizes `q` on whitespace (`tokenizeSearchQuery`,
+  `src/lib/api/tokenize-search-query.ts`) and requires every term to match,
+  case-insensitively, in at least one of `sorting_rules.item_key`,
+  `description_en`, `description_mi`, or `keywords` (AND across terms, OR
+  across columns) — replacing the old single-contiguous-substring match
+  (ADR 0033). Both sides of each comparison are hyphen-normalized via SQL
+  `REPLACE(column, '-', '')` against a hyphen-stripped term, so a hyphen-free
+  query matches a hyphenated stored value and vice versa. Returns
+  `{ results: [...] }` with camelCase fields and both locales'
+  description/disposal-instructions text in every result (ADR 0013, ADR
+  0025, ADR 0033). `escapeLikePattern` is shared with `/api/suburbs/search`
   via `src/lib/api/escape-like-pattern.ts` rather than duplicated.
 * **Holidays Endpoint:** `GET /api/holidays` (`src/app/api/holidays/route.ts`)
   takes no query parameters and returns every row of the `holidays` table
@@ -174,7 +181,7 @@
   * `addresses`: Wellington street indices, council zones, suburb classifications (Suburban vs. CBD night collection).
   * `schedules`: Date-mapped bin collection calendars, alternating recycling flags, and holiday override rules.
   * `i18n_strings`: Relational translation keys with explicit English (`en`) and Te Reo Māori (`mi`) text columns.
-  * `sorting_rules`: Item keys, bilingual descriptions, and WCC disposal instructions. The seed dataset (`db/seeds/02_sorting_rules.js`) is unverified placeholder content — drafted from the 2024 national kerbside standardisation and WCC's published guidance but not confirmed row-by-row against WCC's live pages (tracked by issue #70), and the Te Reo Māori text awaits review by a fluent speaker (tracked by issue #69) — the same status as the schedule epoch pending real WCC calendar data (§2B, issue #59). Both #69 and #70 block #21 surfacing this text to users. Queried by `GET /api/sorting/search` (ADR 0025).
+  * `sorting_rules`: Item keys, bilingual descriptions, WCC disposal instructions, and a `keywords` column — a curated, author-added set of extra search terms included in `GET /api/sorting/search`'s match scope (ADR 0033), populated incrementally as real recall gaps are found rather than translated/verified content, so it isn't blocked by #69/#70. The rest of the seed dataset (`db/seeds/02_sorting_rules.js`) is unverified placeholder content — drafted from the 2024 national kerbside standardisation and WCC's published guidance but not confirmed row-by-row against WCC's live pages (tracked by issue #70), and the Te Reo Māori text awaits review by a fluent speaker (tracked by issue #69) — the same status as the schedule epoch pending real WCC calendar data (§2B, issue #59). Both #69 and #70 block #21 surfacing this text to users. Queried by `GET /api/sorting/search` (ADR 0025, ADR 0033).
   * `holidays`: NZ/Wellington public holiday dates relevant to WCC
     collection shifts, bilingual names, and the number of days collection
     shifts by (ADR 0029). No foreign key to `addresses` or `schedules` — a
