@@ -57,7 +57,7 @@ describe("GET /api/sorting/search", () => {
           "Kaua rawa e whakauru para hiko ki ō kete ā-huarahi. Kawea ki tētahi wāhi tuku para hiko kei tētahi teihana whakawhiti a WCC, ki tētahi kaupapa whakahoki-ki-te-toa rānei.",
         keywords: "",
       },
-      // Proves the new `keywords` column (ADR 0033) participates in the
+      // Proves the new `keywords` column (ADR 0035) participates in the
       // match: "gizmo" appears nowhere else on this row or any other
       // fixture here.
       {
