@@ -63,3 +63,34 @@ jobs:
 
       - name: Axe a11y suite (Playwright)
         run: npm run test:e2e:a11y
+
+  lighthouse:
+    name: lighthouse (perf & a11y budget)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # Asserts FCP, Accessibility, and Best Practices budgets from NFR-01
+      # (ADR 0033). Starts its own `next start` server against the build
+      # above and audits it three times with headless Chrome.
+      - name: Lighthouse CI budget
+        run: npm run test:lighthouse
+
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci
+          retention-days: 14
