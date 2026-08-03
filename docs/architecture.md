@@ -202,9 +202,13 @@
   itself, following the same explicit-input shape as
   `computeCollectionRuleSet` (ADR 0015, ADR 0029). A matched shift is
   re-checked against the same holiday list, so adjacent holiday dates
-  (e.g. New Year's Day into the Day after New Year's Day) chain into a
-  single resolved date instead of stopping after one shift (ADR 0030).
-  Like the rule engine, it reads only the UTC calendar date of the
+  chain into a single resolved date instead of stopping after one shift
+  (ADR 0030) — no row in the confirmed 2026 `holidays` seed (issue #78,
+  ADR 0038) is currently adjacent to another, so this path is exercised
+  by a synthetic test fixture rather than any real seeded date, but
+  remains load-bearing for any future year whose confirmed holidays do
+  land on consecutive calendar dates. Like the rule engine, it reads only
+  the UTC calendar date of the
   `Date` passed in and of every `holidays[].date` string.
 
 ### C. Data Persistence Layer
@@ -218,14 +222,14 @@
     collection shifts, bilingual names, and the number of days collection
     shifts by (ADR 0029). No foreign key to `addresses` or `schedules` — a
     public holiday is council-wide, not per-zone. Seed data
-    (`db/seeds/03_holidays.js`) is unverified placeholder content for
-    calendar year 2026, the same status as the recycling-week epoch
-    (issue #59) and the `sorting_rules` seed (issues #69/#70): dates and
-    Te Reo Māori names are unconfirmed, and holidays may be missing
-    entirely — a missing row silently means "no collection shift".
-    Issue #78 tracks confirming the calendar against WCC's published
-    collection pages and the Te Reo review, and blocks #23/#24 surfacing
-    holiday shift alerts to users.
+    (`db/seeds/03_holidays.js`) is confirmed for calendar year 2026
+    against WCC's published collection policy (issue #78, ADR 0038):
+    exactly 3 rows — New Year's Day, Good Friday, Christmas Day — each
+    with `shift_days` derived from that date's actual 2026 weekday, not a
+    uniform 1. The Te Reo Māori names remain an unreviewed draft pending a
+    fluent-speaker review — the same open status as `sorting_rules` (issue
+    #69) — so `name_mi` should still be treated as provisional by any
+    future consumer.
   * `users` & `push_subscriptions`: User preferences, language toggles, address foreign keys, and Web Push tokens.
   * *Database Testing:* Vitest verifies migration up/down cycles against clean test databases before test execution.
 * **Dependencies:** `knex` (query builder + migration runner) and `sqlite3` (driver). `sqlite3` is already on Next.js's auto-external package list; `knex` is not, and its dynamic dialect requires break when bundled into a route handler, so `next.config.ts` sets `serverExternalPackages: ["knex"]` (ADR 0002).
