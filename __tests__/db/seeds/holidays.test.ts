@@ -3,15 +3,15 @@ import Knex from "knex";
 import knexConfigs from "../../../knexfile.js";
 
 /**
- * db/seeds/03_holidays.js: the fixed 5-row NZ/Wellington public holiday
+ * db/seeds/03_holidays.js: the fixed 3-row NZ/Wellington public holiday
  * calendar for 2026 — the holidays that shift WCC collection days
- * (vision.md §4B, issue #22). Idempotency is delete-then-reinsert
+ * (vision.md §4B, issue #78, ADR 0033). Idempotency is delete-then-reinsert
  * (ADR 0012), which these tests pin down as deliberate behaviour: repeated
  * runs and destructive re-seed are asserted, not just documented. Unlike
  * addresses, no other table has a foreign key into holidays, so there is
  * no FK-nulling side effect to assert here.
  */
-const SEEDED_ROW_COUNT = 5;
+const SEEDED_ROW_COUNT = 3;
 
 // Every seeded row in full, sorted by holiday_date. Pinning all columns of
 // all rows (not a count, and not one sample row) means a mistyped date,
@@ -22,13 +22,7 @@ const SEEDED_HOLIDAYS = [
     holiday_date: "2026-01-01",
     name_en: "New Year's Day",
     name_mi: "Te Rā Tau Hou",
-    shift_days: 1,
-  },
-  {
-    holiday_date: "2026-01-02",
-    name_en: "Day after New Year's Day",
-    name_mi: "Te Rā i muri i te Tau Hou",
-    shift_days: 1,
+    shift_days: 2,
   },
   {
     holiday_date: "2026-04-03",
@@ -42,12 +36,6 @@ const SEEDED_HOLIDAYS = [
     name_mi: "Te Rā Kirihimete",
     shift_days: 1,
   },
-  {
-    holiday_date: "2026-12-28",
-    name_en: "Boxing Day (observed)",
-    name_mi: "Te Rā Poeke (i whakatakotoria)",
-    shift_days: 1,
-  },
 ];
 
 describe("holidays seed", () => {
@@ -58,7 +46,7 @@ describe("holidays seed", () => {
     db = undefined;
   });
 
-  it("seeds exactly the 5 pinned 2026 collection-shifting holiday rows", async () => {
+  it("seeds exactly the 3 pinned 2026 collection-shifting holiday rows", async () => {
     db = Knex(knexConfigs.test);
     await db.migrate.latest();
     await db.seed.run();
@@ -130,7 +118,7 @@ describe("holidays seed", () => {
     ).rejects.toThrow(/NOT NULL constraint failed/);
   });
 
-  it("running the seed three times in a row leaves exactly 5 rows every time", async () => {
+  it("running the seed three times in a row leaves exactly 3 rows every time", async () => {
     db = Knex(knexConfigs.test);
     await db.migrate.latest();
 

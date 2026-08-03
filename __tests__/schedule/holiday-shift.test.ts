@@ -4,9 +4,13 @@ import {
   type HolidayRecord,
 } from "../../src/lib/schedule/holiday-shift";
 
-// Mirrors db/seeds/03_holidays.js's dates and shift_days, minus the name
-// columns this module has no use for.
-const WELLINGTON_2026_HOLIDAYS: HolidayRecord[] = [
+// A synthetic holiday list — deliberately not sourced from
+// db/seeds/03_holidays.js — used to exercise computeHolidayShift's general
+// contract: independent per-row shifts, chaining through calendar-adjacent
+// holidays (ADR 0030), and UTC-only date reading. The confirmed 2026 seed
+// (issue #78, ADR 0033) has no adjacent rows, so this fixture keeps that
+// path covered without requiring it of real data.
+const SYNTHETIC_HOLIDAYS: HolidayRecord[] = [
   { date: "2026-01-01", shiftDays: 1 }, // New Year's Day
   { date: "2026-01-02", shiftDays: 1 }, // Day after New Year's Day
   { date: "2026-04-03", shiftDays: 1 }, // Good Friday
@@ -18,7 +22,7 @@ describe("computeHolidayShift", () => {
   test("a normal week nowhere near a holiday is not shifted", () => {
     const result = computeHolidayShift(
       new Date(Date.UTC(2026, 5, 15)),
-      WELLINGTON_2026_HOLIDAYS,
+      SYNTHETIC_HOLIDAYS,
     );
 
     expect(result).toEqual({ isShifted: false, shiftedDate: "2026-06-15" });
@@ -27,7 +31,7 @@ describe("computeHolidayShift", () => {
   test("Christmas Day shifts to Saturday (vision.md §4B example)", () => {
     const result = computeHolidayShift(
       new Date(Date.UTC(2026, 11, 25)),
-      WELLINGTON_2026_HOLIDAYS,
+      SYNTHETIC_HOLIDAYS,
     );
 
     expect(result).toEqual({ isShifted: true, shiftedDate: "2026-12-26" });
@@ -36,7 +40,7 @@ describe("computeHolidayShift", () => {
   test("Good Friday shifts to Saturday (vision.md §4B example)", () => {
     const result = computeHolidayShift(
       new Date(Date.UTC(2026, 3, 3)),
-      WELLINGTON_2026_HOLIDAYS,
+      SYNTHETIC_HOLIDAYS,
     );
 
     expect(result).toEqual({ isShifted: true, shiftedDate: "2026-04-04" });
@@ -45,7 +49,7 @@ describe("computeHolidayShift", () => {
   test("Boxing Day (observed) shifts independently of the other rows", () => {
     const result = computeHolidayShift(
       new Date(Date.UTC(2026, 11, 28)),
-      WELLINGTON_2026_HOLIDAYS,
+      SYNTHETIC_HOLIDAYS,
     );
 
     expect(result).toEqual({ isShifted: true, shiftedDate: "2026-12-29" });
@@ -54,7 +58,7 @@ describe("computeHolidayShift", () => {
   test("adjacent holidays chain into a single resolved date (ADR 0030)", () => {
     const result = computeHolidayShift(
       new Date(Date.UTC(2026, 0, 1)),
-      WELLINGTON_2026_HOLIDAYS,
+      SYNTHETIC_HOLIDAYS,
     );
 
     // Does not stop at 2026-01-02 (itself a listed holiday) — keeps
@@ -65,11 +69,11 @@ describe("computeHolidayShift", () => {
   test("only the UTC calendar date is read, never wall-clock time", () => {
     const lateInUtcDay = computeHolidayShift(
       new Date("2026-12-25T23:00:00Z"),
-      WELLINGTON_2026_HOLIDAYS,
+      SYNTHETIC_HOLIDAYS,
     );
     const utcMidnight = computeHolidayShift(
       new Date(Date.UTC(2026, 11, 25)),
-      WELLINGTON_2026_HOLIDAYS,
+      SYNTHETIC_HOLIDAYS,
     );
 
     expect(lateInUtcDay).toEqual(utcMidnight);
@@ -79,10 +83,10 @@ describe("computeHolidayShift", () => {
     const invalidDate = new Date("not-a-date");
 
     expect(() =>
-      computeHolidayShift(invalidDate, WELLINGTON_2026_HOLIDAYS),
+      computeHolidayShift(invalidDate, SYNTHETIC_HOLIDAYS),
     ).toThrow(new RangeError("computeHolidayShift: date is invalid."));
     expect(() =>
-      computeHolidayShift(invalidDate, WELLINGTON_2026_HOLIDAYS),
+      computeHolidayShift(invalidDate, SYNTHETIC_HOLIDAYS),
     ).toThrow(new RangeError("computeHolidayShift: date is invalid."));
   });
 
@@ -157,22 +161,22 @@ describe("computeHolidayShift", () => {
   test("repeat calls are deterministic and never mutate the caller's holidays", () => {
     const resultA = computeHolidayShift(
       new Date(Date.UTC(2026, 0, 1)),
-      WELLINGTON_2026_HOLIDAYS,
+      SYNTHETIC_HOLIDAYS,
     );
     const resultB = computeHolidayShift(
       new Date(Date.UTC(2026, 0, 1)),
-      WELLINGTON_2026_HOLIDAYS,
+      SYNTHETIC_HOLIDAYS,
     );
     const resultC = computeHolidayShift(
       new Date(Date.UTC(2026, 0, 1)),
-      WELLINGTON_2026_HOLIDAYS,
+      SYNTHETIC_HOLIDAYS,
     );
 
     expect(resultA).toEqual({ isShifted: true, shiftedDate: "2026-01-03" });
     expect(resultB).toEqual({ isShifted: true, shiftedDate: "2026-01-03" });
     expect(resultC).toEqual({ isShifted: true, shiftedDate: "2026-01-03" });
 
-    expect(WELLINGTON_2026_HOLIDAYS).toEqual([
+    expect(SYNTHETIC_HOLIDAYS).toEqual([
       { date: "2026-01-01", shiftDays: 1 },
       { date: "2026-01-02", shiftDays: 1 },
       { date: "2026-04-03", shiftDays: 1 },
