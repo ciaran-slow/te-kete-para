@@ -148,6 +148,25 @@
   reachable, but nothing user-facing calls it yet — its only consumer,
   `<ShiftAlertBanner>`, is not composed into any route until #78 closes
   (ADR 0031).
+* **Push Subscription Endpoints:** `POST` and `DELETE`
+  `/api/notifications/subscribe`
+  (`src/app/api/notifications/subscribe/route.ts`) create/update and remove
+  rows in `push_subscriptions` (§2C). `POST` upserts on the unique
+  `endpoint` column (`.onConflict("endpoint").merge([...])`), always
+  responding `200 { subscription: { id, endpoint, languagePreference,
+  addressId } }` (camelCase, ADR 0013) whether the row was inserted or
+  updated, so a re-subscribe after a Web Push key rotation never needs to
+  branch on "was this new" (ADR 0033); the response omits `p256dh`/`auth`,
+  which the client already has. Validation (missing/empty `endpoint`,
+  missing `keys`/`keys.p256dh`/`keys.auth`, an unsupported
+  `languagePreference`, or a non-positive-integer `addressId`) returns
+  `400 { error }`; an `addressId` with no matching `addresses` row is
+  caught as a `FOREIGN KEY constraint failed` error and also mapped to
+  `400`, not `503`. `DELETE` removes by `{ endpoint }` in the JSON body and
+  always responds `200 { deleted: boolean }` — deleting an endpoint that
+  was never subscribed, or was already removed, is not an error (ADR
+  0034). Both verbs' catch-all failure path (e.g. a broken DB connection)
+  returns `503 { error }`, matching every other route.
 * **Collection Rule Engine:** `src/lib/schedule/rules.ts` exports a pure
   `computeCollectionRuleSet(zone, date)` that maps a zone's classification
   (`{ zone, isInnerCityNightCollection }`, sourced from `addresses`) and a
