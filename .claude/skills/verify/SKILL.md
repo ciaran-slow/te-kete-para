@@ -21,6 +21,25 @@ will lose the thread and end up half-reviewing.
 
 ## 2. Gather
 
+If you are not already sitting on the PR's branch, get onto it first. This
+repo runs plan/build/verify from per-agent worktrees, so the branch name is
+very often already checked out in a sibling worktree — both
+`git fetch origin <branch>:<branch>` and `git checkout -B <branch>` then fail
+with "refusing to fetch into branch … checked out at <other worktree>" or
+"already used by worktree at …". This has hit consecutive verify passes on
+the same PR, so treat it as the expected case, not a one-off:
+
+```
+git fetch origin <branch>
+git checkout -B <unique-local-name> FETCH_HEAD
+```
+
+Pick `<unique-local-name>` so it can't collide with a branch name a sibling
+worktree already holds — e.g. `verify-<issue-number>-<random-suffix>` rather
+than bare `verify-<issue-number>`. A freshly fetched worktree also has no
+`node_modules`; run `npm ci` before the four gates in step 3 or they fail for
+an unrelated reason.
+
 ```
 gh issue view <n> --repo ciaran-slow/te-kete-para --json title,body -q '.title + "\n\n" + .body'
 gh issue view <n> --repo ciaran-slow/te-kete-para --comments
@@ -88,6 +107,16 @@ This is where reviews are usually weakest.
   share an in-memory SQLite DB per test file (docs/architecture.md §2B) —
   confirm it's reset between tests. jsdom also keeps `localStorage` between
   tests in a file.
+- **Is a tunable constant's "boundary" fixture actually derived from that
+  constant** (e.g. `today = holidayDate - LOOKAHEAD_DAYS * MS_PER_DAY`)? That
+  proves only that the loop's bound is inclusive, not that the constant holds
+  any particular value — try mutating the constant alone (a lookahead window,
+  a retry count, a timeout) while leaving the surrounding logic untouched; if
+  the suite stays green, the constant itself is unpinned even though
+  "boundary" tests exist (#24: collapsing `LOOKAHEAD_DAYS` from 6 to 0 — the
+  issue's own ADR-rejected today-only alternative — passed all 259 tests on
+  the first pass). Confirm at least one assertion uses literal, independent
+  values on each side of the boundary before treating the window as tested.
 
 ## 6. Look specifically for
 
@@ -121,6 +150,16 @@ Ordered by what actually bites in this codebase:
   short of "ready" must actually say "not ready." Name the exact PR/issue
   that must land first and say so plainly in the verdict line, not buried in
   a "worth doing later" or "merge condition" section that reads as approval.
+- **Orphaned forward references.** `grep -rln "#<issue-number>" docs/adr
+  db/migrations` for prior ADRs or migration comments that describe what
+  this issue "is expected to" do (this repo's ADRs regularly predict work
+  for a future issue by number, e.g. ADR 0016 → #22, ADR 0029 → #23). If
+  the plan/PR scoped away from a described expectation, confirm it says
+  where the leftover work now lives — an existing issue named explicitly,
+  or a new one filed — rather than silently dropping it. A defensible
+  narrowing with no pointer to where the rest of the work went is the same
+  class of gap as a missing ADR for work that did ship: flag it, and say
+  so in the verdict even when the code itself is otherwise ready.
 - **Missing or hollow ADRs.** Every ADR drafted in the plan's "ADRs" section
   must exist in the diff at its stated `docs/adr/NNNN-slug.md` path — a
   promised ADR that never landed is an unmet deliverable, same as a missing
@@ -168,6 +207,14 @@ only logs looks like it ran and told you nothing — collect findings and `throw
 them at the end of the file (or pass `--silent=false`). And a probe that asserts
 nothing proves nothing: make it assert the behaviour you claim, so a green run is
 evidence rather than absence of evidence.
+
+The same "prove it by mutation" technique applies beyond throwaway test files —
+e.g. temporarily editing a migration or seed file to check a test actually
+catches the regression. When you do this, keep a copy of the original content
+outside the worktree (or hold it in memory precisely) before mutating, restore
+it immediately after, and confirm `git status --porcelain` is empty before
+including the result in your report — so a probe can never be mistaken for a
+review edit, and a crash mid-probe can't leave the branch silently altered.
 
 Separate **must fix before merge** from **worth doing later**. Not everything is
 a blocker, and treating it that way makes the review easy to ignore.
