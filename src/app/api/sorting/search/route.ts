@@ -1,5 +1,6 @@
 import { getDb } from "@/lib/db";
 import { escapeLikePattern } from "@/lib/api/escape-like-pattern";
+import { tokenizeSearchQuery } from "@/lib/api/tokenize-search-query";
 
 interface SortingRuleRow {
   item_key: string;
@@ -33,6 +34,16 @@ export function toSortingRuleSearchResult(
   };
 }
 
+// Fixed, hardcoded column names — never user input — so interpolating them
+// into the raw SQL template below is safe; only the per-term `pattern`
+// value is parameter-bound.
+const MATCH_COLUMNS = [
+  "item_key",
+  "description_en",
+  "description_mi",
+  "keywords",
+] as const;
+
 export async function GET(request: Request): Promise<Response> {
   const url = new URL(request.url);
   const q = (url.searchParams.get("q") ?? "").trim();
@@ -46,13 +57,24 @@ export async function GET(request: Request): Promise<Response> {
 
   try {
     const db = getDb();
-    const pattern = `%${escapeLikePattern(q)}%`;
+    const terms = tokenizeSearchQuery(q);
     const rows: SortingRuleRow[] = await db("sorting_rules")
       .where((builder) => {
-        builder
-          .whereRaw("item_key LIKE ? ESCAPE '\\'", [pattern])
-          .orWhereRaw("description_en LIKE ? ESCAPE '\\'", [pattern])
-          .orWhereRaw("description_mi LIKE ? ESCAPE '\\'", [pattern]);
+        for (const term of terms) {
+          // Hyphens are stripped before escaping — escapeLikePattern only
+          // touches `\`, `%`, `_`, so order between the two steps doesn't
+          // affect correctness, but stripping first keeps the escaped
+          // output easy to reason about.
+          const pattern = `%${escapeLikePattern(term.replace(/-/g, ""))}%`;
+          builder.andWhere((termBuilder) => {
+            for (const column of MATCH_COLUMNS) {
+              termBuilder.orWhereRaw(
+                `REPLACE(${column}, '-', '') LIKE ? ESCAPE '\\'`,
+                [pattern],
+              );
+            }
+          });
+        }
       })
       .orderBy("item_key")
       .select(
