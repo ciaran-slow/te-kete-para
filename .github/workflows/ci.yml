@@ -82,7 +82,7 @@ jobs:
         run: npm run build
 
       # Asserts FCP, Accessibility, and Best Practices budgets from NFR-01
-      # (ADR 0033). Starts its own `next start` server against the build
+      # (ADR 0036). Starts its own `next start` server against the build
       # above and audits it three times with headless Chrome.
       - name: Lighthouse CI budget
         run: npm run test:lighthouse

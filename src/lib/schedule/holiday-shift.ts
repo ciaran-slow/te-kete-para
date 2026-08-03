@@ -17,7 +17,7 @@
  * increasing, finite sequence of dates and must exit once it reaches one
  * absent from the list — no iteration cap is needed or added. (No row in
  * the confirmed 2026 `holidays` seed is currently adjacent to another —
- * issue #78, ADR 0033 — so in production this path is reachable only in a
+ * issue #78, ADR 0038 — so in production this path is reachable only in a
  * future year whose confirmed holidays do land on consecutive dates; it's
  * covered today by a synthetic fixture in
  * `__tests__/schedule/holiday-shift.test.ts`.)

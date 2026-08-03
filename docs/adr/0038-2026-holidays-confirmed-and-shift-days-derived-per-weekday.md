@@ -1,4 +1,4 @@
-# ADR 0033: 2026 holidays seed confirmed to 3 WCC-published dates; shift_days derived per weekday, not fixed at 1
+# ADR 0038: 2026 holidays seed confirmed to 3 WCC-published dates; shift_days derived per weekday, not fixed at 1
 
 - **Status:** accepted
 - **Date:** 2026-08-03

@@ -191,7 +191,7 @@
   re-checked against the same holiday list, so adjacent holiday dates
   chain into a single resolved date instead of stopping after one shift
   (ADR 0030) — no row in the confirmed 2026 `holidays` seed (issue #78,
-  ADR 0033) is currently adjacent to another, so this path is exercised
+  ADR 0038) is currently adjacent to another, so this path is exercised
   by a synthetic test fixture rather than any real seeded date, but
   remains load-bearing for any future year whose confirmed holidays do
   land on consecutive calendar dates. Like the rule engine, it reads only
@@ -210,7 +210,7 @@
     shifts by (ADR 0029). No foreign key to `addresses` or `schedules` — a
     public holiday is council-wide, not per-zone. Seed data
     (`db/seeds/03_holidays.js`) is confirmed for calendar year 2026
-    against WCC's published collection policy (issue #78, ADR 0033):
+    against WCC's published collection policy (issue #78, ADR 0038):
     exactly 3 rows — New Year's Day, Good Friday, Christmas Day — each
     with `shift_days` derived from that date's actual 2026 weekday, not a
     uniform 1. The Te Reo Māori names remain an unreviewed draft pending a
