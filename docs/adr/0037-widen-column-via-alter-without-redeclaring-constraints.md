@@ -1,4 +1,4 @@
-# ADR 0033: Widen a column type via bare `alter()`, never redeclaring existing constraints
+# ADR 0037: Widen a column type via bare `alter()`, never redeclaring existing constraints
 
 - **Status:** accepted
 - **Date:** 2026-08-03
