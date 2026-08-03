@@ -56,6 +56,10 @@ const MS_PER_DAY = 24 * 60 * 60 * 1000;
 // date matches the UTC one — no day-rollover ambiguity, same technique as
 // schedule-display.test.tsx.
 const CHRISTMAS_DAY = new Date(Date.UTC(2026, 11, 25, 1));
+// Six literal days before Christmas: the holiday is genuinely in the future
+// (offset > 0), on the last day of the 7-day window. Literal, not derived
+// from LOOKAHEAD_DAYS — see the window-pinning tests below.
+const SIX_DAYS_BEFORE_CHRISTMAS = new Date(Date.UTC(2026, 11, 19, 1));
 const MID_JUNE = new Date(Date.UTC(2026, 5, 15, 1));
 
 const EN_CHRISTMAS_MESSAGE =
@@ -116,6 +120,32 @@ describe("findUpcomingShift", () => {
     );
 
     expect(findUpcomingShift(today, [CHRISTMAS])).toBeNull();
+  });
+
+  // The three tests below pin ADR 0032's chosen window with literal dates —
+  // deliberately NOT derived from LOOKAHEAD_DAYS, so silently changing the
+  // constant (e.g. the today-only alternative ADR 0032 rejects) fails them
+  // even though the relative boundary tests above would stay green.
+  test("LOOKAHEAD_DAYS is exactly 6 (today + 6 = a 7-calendar-day window, ADR 0032)", () => {
+    expect(LOOKAHEAD_DAYS).toBe(6);
+  });
+
+  test("finds a holiday six literal days ahead: today 2026-12-19, holiday 2026-12-25", () => {
+    const result = findUpcomingShift(new Date(Date.UTC(2026, 11, 19)), [
+      CHRISTMAS,
+    ]);
+
+    expect(result).toEqual({
+      holiday: CHRISTMAS,
+      originalDate: "2026-12-25",
+      shiftedDate: "2026-12-26",
+    });
+  });
+
+  test("does not find a holiday seven literal days ahead: today 2026-12-18, holiday 2026-12-25", () => {
+    expect(
+      findUpcomingShift(new Date(Date.UTC(2026, 11, 18)), [CHRISTMAS]),
+    ).toBeNull();
   });
 
   test("chained holidays resolve to the fully-shifted date (ADR 0030)", () => {
@@ -189,6 +219,19 @@ describe("ShiftAlertBanner", () => {
     expect(liveRegion).not.toBeNull();
     expect(liveRegion).toHaveAttribute("aria-live", "polite");
     expect(liveRegion).toHaveAttribute("aria-atomic", "true");
+  });
+
+  test("alerts proactively for a genuinely future holiday: now is 2026-12-19, holiday is 2026-12-25", () => {
+    // AC1's "upcoming": every other visible-alert test uses now = the
+    // holiday's own date (offset 0); this one renders the banner six days
+    // early, which the today-only alternative ADR 0032 rejects would miss.
+    renderBanner({
+      address: KARORI,
+      now: SIX_DAYS_BEFORE_CHRISTMAS,
+      holidays: [CHRISTMAS],
+    });
+
+    expect(screen.getByText(EN_CHRISTMAS_MESSAGE)).toBeInTheDocument();
   });
 
   test("switching the stored locale to Te Reo renders the Māori holiday name and connective text", () => {
