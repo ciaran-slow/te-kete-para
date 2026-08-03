@@ -107,7 +107,7 @@
   navigations, cache-first for the other precached assets, with older
   `tkp-shell-*` caches deleted on `activate`) — NFR-02's core-asset half;
   user-selected address-schedule offline caching is a separate,
-  `localStorage`-backed piece of NFR-02 tracked by a future issue (ADR 0041).
+  `localStorage`-backed piece of NFR-02 tracked by #30 (ADR 0041).
 * **Localization State:** `LanguageProvider` (`src/lib/i18n/language-provider.tsx`) holds the selected locale and exposes `useTranslation()` → `{ locale, setLocale, t }`. Flat dot-delimited keys live in `src/lib/i18n/dictionaries.ts`, where `en` is the source of truth (`as const`) and `mi` is typed `Record<TranslationKey, string>`, so drift fails `tsc` as well as the runtime parity test (ADR 0010). The locale is read from `localStorage` (`tkp.locale`) through `useSyncExternalStore`, never during render and never via `setState` in an effect — `react-hooks/set-state-in-effect` is an error in this repo (ADR 0009). `getServerSnapshot` returns `en` so `/` stays statically prerendered, which costs a brief flash of English before Te Reo on a hard load; the inline-script alternative that would remove it is recorded as rejected in ADR 0009. The provider mirrors the locale onto `<html lang>` in an effect so screen readers pick the right voice (vision.md §3). Macron-safe rendering comes from the Inter / Plus Jakarta Sans `latin-ext` subsets (ADR 0005).
 * **Client Testing Strategy (Vitest + Testing Library + Axe):**
   * Unit tests verify bilingual UI component rendering, dictionary interpolation, and macron preservation.
