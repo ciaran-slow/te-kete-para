@@ -119,16 +119,36 @@
 * **Data Abstraction:** **Knex.js** query builder managing secure, parameterized SQL query generation and automated schema migrations.
 * **API Testing Strategy (Vitest + Supertest, ADR 0002 / ADR 0003):** Integration tests share the helper `__tests__/helpers/api.ts`. `setupTestDb()` / `teardownTestDb()` give each test file its own in-memory SQLite3 database with all Knex migrations applied and `PRAGMA foreign_keys = ON` in force, because the instance is built from `knexfile.js`'s `test` config rather than a hand-rolled one. `createRequestListener(routeModule)` adapts this fork's Web-API route handlers (`Request` → `Response`) into a Node request listener that Supertest drives **in-process** — the only way the handler under test can see a `:memory:` database that lives inside the test process's single connection. API test files therefore run under `// @vitest-environment node` (Vitest's global environment is jsdom), and app code reaches the database only through `src/lib/db.ts` (`getDb()`), so handler and fixtures share one Knex instance. Supertest validates endpoint behaviour (`/api/suburbs/search`, `/api/notifications/subscribe`) — schedule math, holiday overrides, JSON payloads — plus each route's failure path; `/api/health` is the reference example.
 * **Suburb Search Endpoint:** `GET /api/suburbs/search?q=` (`src/app/api/suburbs/search/route.ts`)
-  does a case-insensitive, wildcard-escaped partial match on `addresses.street_name` via
-  Knex, returning `{ results: [...] }` with camelCase fields; every JSON API response in this
+  fetches every `addresses` row ordered by `street_name` and does a macron- and
+  case-insensitive partial match on `street_name` in JavaScript via
+  `foldDiacritics` (`src/lib/api/fold-diacritics.ts`, ADR 0040), returning
+  `{ results: [...] }` with camelCase fields; every JSON API response in this
   app follows the envelope and casing convention in ADR 0013, established here as the first
   data-returning endpoint.
 * **Sorting Search Endpoint:** `GET /api/sorting/search?q=` (`src/app/api/sorting/search/route.ts`)
-  does a case-insensitive, wildcard-escaped partial match on `sorting_rules.item_key`,
-  `description_en`, and `description_mi` via Knex, returning `{ results: [...] }` with
-  camelCase fields and both locales' description/disposal-instructions text in every
-  result (ADR 0013, ADR 0025). `escapeLikePattern` is shared with `/api/suburbs/search`
-  via `src/lib/api/escape-like-pattern.ts` rather than duplicated.
+  fetches every `sorting_rules` row ordered by `item_key` and matches entirely
+  in JavaScript: `q` is tokenized on whitespace (`tokenizeSearchQuery`,
+  `src/lib/api/tokenize-search-query.ts`), and every term must match (AND
+  across terms) at least one of `item_key`, `description_en`,
+  `description_mi`, or `keywords` (OR across columns) — replacing the old
+  single-contiguous-substring match (ADR 0035). Both sides of every
+  comparison are normalized through the same function (`src/app/api/sorting/search/route.ts`'s
+  `normalizeForMatch`): hyphens are stripped first (so a hyphen-free query
+  matches a hyphenated stored value and vice versa, ADR 0035), then case and
+  diacritics are folded via `foldDiacritics` (ADR 0040), so `KĒNE`/`kene` match
+  `kēne` the same way `battery` matches `household-batteries`'s `keywords`.
+  Matching moved from SQL `LIKE`/`REPLACE` to a post-fetch JS filter when the
+  macron/case fold was added: both tables are small enough (16–30 rows) that
+  fetching every row costs nothing, and the project's pinned `sqlite3` driver
+  has no way to register a custom SQL scalar function, which foreclosed
+  folding diacritics inside SQL (ADR 0040). Returns `{ results: [...] }` with
+  camelCase fields and both locales' description/disposal-instructions text in
+  every result (ADR 0013, ADR 0025, ADR 0035, ADR 0040); `keywords` is
+  match-only and never appears in the response. `escapeLikePattern`
+  (`src/lib/api/escape-like-pattern.ts`) remains a standalone, independently
+  tested helper shared with `/api/suburbs/search` but is no longer invoked by
+  either route's matching logic, since a plain JS substring check has no
+  wildcard syntax to escape.
 * **Holidays Endpoint:** `GET /api/holidays` (`src/app/api/holidays/route.ts`)
   takes no query parameters and returns every row of the `holidays` table
   (§2C) ordered by `holiday_date` ascending, camelCase-mapped to
@@ -141,6 +161,25 @@
   reachable, but nothing user-facing calls it yet — its only consumer,
   `<ShiftAlertBanner>`, is not composed into any route until #78 closes
   (ADR 0031).
+* **Push Subscription Endpoints:** `POST` and `DELETE`
+  `/api/notifications/subscribe`
+  (`src/app/api/notifications/subscribe/route.ts`) create/update and remove
+  rows in `push_subscriptions` (§2C). `POST` upserts on the unique
+  `endpoint` column (`.onConflict("endpoint").merge([...])`), always
+  responding `200 { subscription: { id, endpoint, languagePreference,
+  addressId } }` (camelCase, ADR 0013) whether the row was inserted or
+  updated, so a re-subscribe after a Web Push key rotation never needs to
+  branch on "was this new" (ADR 0033); the response omits `p256dh`/`auth`,
+  which the client already has. Validation (missing/empty `endpoint`,
+  missing `keys`/`keys.p256dh`/`keys.auth`, an unsupported
+  `languagePreference`, or a non-positive-integer `addressId`) returns
+  `400 { error }`; an `addressId` with no matching `addresses` row is
+  caught as a `FOREIGN KEY constraint failed` error and also mapped to
+  `400`, not `503`. `DELETE` removes by `{ endpoint }` in the JSON body and
+  always responds `200 { deleted: boolean }` — deleting an endpoint that
+  was never subscribed, or was already removed, is not an error (ADR
+  0034). Both verbs' catch-all failure path (e.g. a broken DB connection)
+  returns `503 { error }`, matching every other route.
 * **Collection Rule Engine:** `src/lib/schedule/rules.ts` exports a pure
   `computeCollectionRuleSet(zone, date)` that maps a zone's classification
   (`{ zone, isInnerCityNightCollection }`, sourced from `addresses`) and a
@@ -163,9 +202,13 @@
   itself, following the same explicit-input shape as
   `computeCollectionRuleSet` (ADR 0015, ADR 0029). A matched shift is
   re-checked against the same holiday list, so adjacent holiday dates
-  (e.g. New Year's Day into the Day after New Year's Day) chain into a
-  single resolved date instead of stopping after one shift (ADR 0030).
-  Like the rule engine, it reads only the UTC calendar date of the
+  chain into a single resolved date instead of stopping after one shift
+  (ADR 0030) — no row in the confirmed 2026 `holidays` seed (issue #78,
+  ADR 0038) is currently adjacent to another, so this path is exercised
+  by a synthetic test fixture rather than any real seeded date, but
+  remains load-bearing for any future year whose confirmed holidays do
+  land on consecutive calendar dates. Like the rule engine, it reads only
+  the UTC calendar date of the
   `Date` passed in and of every `holidays[].date` string.
 
 ### C. Data Persistence Layer
@@ -174,19 +217,19 @@
   * `addresses`: Wellington street indices, council zones, suburb classifications (Suburban vs. CBD night collection).
   * `schedules`: Date-mapped bin collection calendars, alternating recycling flags, and holiday override rules.
   * `i18n_strings`: Relational translation keys with explicit English (`en`) and Te Reo Māori (`mi`) text columns.
-  * `sorting_rules`: Item keys, bilingual descriptions, and WCC disposal instructions. The seed dataset (`db/seeds/02_sorting_rules.js`) is unverified placeholder content — drafted from the 2024 national kerbside standardisation and WCC's published guidance, but not confirmed against a live WCC page — wellington.govt.nz returns HTTP 403 to direct fetches — though cross-checked against the national standard and indexed secondary sources, with one row corrected (tracked by issue #70), and the Te Reo Māori text awaits review by a fluent speaker (tracked by issue #69) — the same status as the schedule epoch pending real WCC calendar data (§2B, issue #59). Both #69 and #70 block #21 surfacing this text to users. Queried by `GET /api/sorting/search` (ADR 0025).
+  * `sorting_rules`: Item keys, bilingual descriptions, WCC disposal instructions, and a `keywords` column — a curated, author-added set of extra search terms included in `GET /api/sorting/search`'s match scope (ADR 0035), populated incrementally as real recall gaps are found rather than translated/verified content, so it isn't blocked by #69/#70. The rest of the seed dataset (`db/seeds/02_sorting_rules.js`) is unverified placeholder content — drafted from the 2024 national kerbside standardisation and WCC's published guidance, but not confirmed against a live WCC page — wellington.govt.nz returns HTTP 403 to direct fetches — though cross-checked against the national standard and indexed secondary sources, with one row corrected (tracked by issue #70), and the Te Reo Māori text awaits review by a fluent speaker (tracked by issue #69) — the same status as the schedule epoch pending real WCC calendar data (§2B, issue #59). Both #69 and #70 block #21 surfacing this text to users. Queried by `GET /api/sorting/search` (ADR 0025, ADR 0035).
   * `holidays`: NZ/Wellington public holiday dates relevant to WCC
     collection shifts, bilingual names, and the number of days collection
     shifts by (ADR 0029). No foreign key to `addresses` or `schedules` — a
     public holiday is council-wide, not per-zone. Seed data
-    (`db/seeds/03_holidays.js`) is unverified placeholder content for
-    calendar year 2026, the same status as the recycling-week epoch
-    (issue #59) and the `sorting_rules` seed (issues #69/#70): dates and
-    Te Reo Māori names are unconfirmed, and holidays may be missing
-    entirely — a missing row silently means "no collection shift".
-    Issue #78 tracks confirming the calendar against WCC's published
-    collection pages and the Te Reo review, and blocks #23/#24 surfacing
-    holiday shift alerts to users.
+    (`db/seeds/03_holidays.js`) is confirmed for calendar year 2026
+    against WCC's published collection policy (issue #78, ADR 0038):
+    exactly 3 rows — New Year's Day, Good Friday, Christmas Day — each
+    with `shift_days` derived from that date's actual 2026 weekday, not a
+    uniform 1. The Te Reo Māori names remain an unreviewed draft pending a
+    fluent-speaker review — the same open status as `sorting_rules` (issue
+    #69) — so `name_mi` should still be treated as provisional by any
+    future consumer.
   * `users` & `push_subscriptions`: User preferences, language toggles, address foreign keys, and Web Push tokens.
   * *Database Testing:* Vitest verifies migration up/down cycles against clean test databases before test execution.
 * **Dependencies:** `knex` (query builder + migration runner) and `sqlite3` (driver). `sqlite3` is already on Next.js's auto-external package list; `knex` is not, and its dynamic dialect requires break when bundled into a route handler, so `next.config.ts` sets `serverExternalPackages: ["knex"]` (ADR 0002).
@@ -215,7 +258,7 @@
 ## 4. Testing Infrastructure & Quality Assurance Pipelines
 * **Execution Engine:** **Vitest** configured for fast parallel execution across client unit tests, accessibility hooks, and API integration suites.
 * **Suite Time Zone:** the whole Vitest suite runs at **`TZ=Pacific/Auckland`** (UTC+12/+13, never UTC), pinned by `process.env.TZ` at the top of `vitest.setup.ts` before any test module is imported. This is deliberate: CI's `ubuntu-latest` runs at UTC, where local-time `Date` getters (`getDay`, `getFullYear`, ...) are indistinguishable from their `getUTC*` twins, so the "UTC calendar date only" contract in `src/lib/schedule/rules.ts` (§2B) could never fail there — a `getUTCDay()` → local `getDay()` regression would pass CI and shift every Wellington collection result by a day in production. Consequence for test authors (including future date math in #22/#23): `new Date(...)` local-time constructors and local getters in tests resolve at Pacific/Auckland; construct instants with `Date.UTC(...)` or `Z`-suffixed ISO strings when you mean UTC (ADR 0017).
-* **Continuous Integration:** `.github/workflows/ci.yml` runs four gates on every pull request and every push to `main`, as one sequential job on `ubuntu-latest` with Node 24: `npm run lint`, `npm run typecheck`, `npm run test:coverage`, `npm run build`. Playwright is deliberately not wired in here — E2E stays a separate script (§2A). A second job, `a11y` (`name: a11y (axe)`), runs the Playwright axe suite against a production build in parallel with `gates`; it is not currently a required status check (ADR 0023) and Playwright's full E2E suite otherwise still runs only via the separate `npm run test:e2e` script.
+* **Continuous Integration:** `.github/workflows/ci.yml` runs four gates on every pull request and every push to `main`, as one sequential job on `ubuntu-latest` with Node 24: `npm run lint`, `npm run typecheck`, `npm run test:coverage`, `npm run build`. Playwright is deliberately not wired in here — E2E stays a separate script (§2A). A second job, `a11y` (`name: a11y (axe)`), runs the Playwright axe suite against a production build in parallel with `gates`; it is not currently a required status check (ADR 0023) and Playwright's full E2E suite otherwise still runs only via the separate `npm run test:e2e` script. A third job, `lighthouse` (`name: lighthouse (perf & a11y budget)`), also runs in parallel with `gates`, asserting NFR-01's First Contentful Paint, Accessibility, and Best Practices budgets via `@lhci/cli` against the production build's `/` route (`lighthouserc.js`, ADR 0036); like `a11y`, it is not currently a required status check.
 * **Merge Enforcement:** the `lint, typecheck, test, build` check is a **required** status check on `main` (branch protection, #45), so a red pull request cannot be merged — including by repository admins (`enforce_admins`), and including a PR that is green against a stale `main` (`strict`). This is what makes the coverage number below binding rather than advisory; verified by a probe PR whose merge was refused with "the base branch policy prohibits the merge". The check name in the protection rule must stay byte-identical to the job's `name:` in `ci.yml` — a mismatch produces a rule that silently matches nothing.
 * **Coverage Enforcement:** `npm run test:coverage` (`vitest run --coverage`) measures product code only — `src/**/*.{ts,tsx}`, via `@vitest/coverage-v8` (ADR 0008) — and fails the run if **lines or statements** fall below **90%**; both currently sit at 100%. Branches and functions are reported in the CI log but not gated: `src/lib/db.ts` selects its Knex config on `NODE_ENV === "test"`, and Vitest always sets `NODE_ENV=test`, so the `development` side of that branch is unreachable from the suite (ADR 0008 §Trade-offs and consequences).
 * **Automated Linting & Type Safety:** TypeScript strict mode enabled across the entire codebase to prevent runtime type errors and ensure bulletproof database entity mapping.

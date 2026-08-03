@@ -70,6 +70,11 @@
  *   dataset still needs review by a fluent Te Reo Māori speaker before
  *   it ships to users.
  *
+ * `keywords` (issue #73, ADR 0035) is a separate, curated search-recall
+ * aid, not translated/verified content like the rest of the row — it is
+ * populated incrementally as real search-recall gaps are found, not
+ * backfilled in bulk.
+ *
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
@@ -85,6 +90,7 @@ exports.seed = async function seed(knex) {
         "If the box is greasy or has food stuck to it, put it in your general rubbish — food oil stops cardboard from being recycled. Clean, dry sections of the lid can go in your mixed recycling with other paper and cardboard.",
       disposal_instructions_mi:
         "Mehemea he hinu, he kai rānei kei runga, whakauruhia ki tō para whānui — mā te hinu kai e aukati ai te hangarua o te kāta. Ki te mā, ki te maroke hoki tētahi wāhanga o te uwhi, ka taea te whakauru ki tō rauemi hangarua me ērā atu pepa, kāta hoki.",
+      keywords: "",
     },
     {
       item_key: "coffee-cup",
@@ -96,6 +102,7 @@ exports.seed = async function seed(knex) {
         "Put the whole cup, including the lid, in your general rubbish — the plastic lining cannot be separated by WCC's recycling plant. Bring a reusable cup next time to avoid this waste.",
       disposal_instructions_mi:
         "Whakauruhia te kapu me tōna uwhi katoa ki tō para whānui — kāore e taea e te wheketere hangarua a WCC te wehewehe i te kirihou o roto. Kawea mai he kapu whakamahi anō ā muri ake nei kia kore ai tēnei para e puta.",
+      keywords: "",
     },
     {
       item_key: "aerosol-can",
@@ -107,6 +114,7 @@ exports.seed = async function seed(knex) {
         "Aerosol cans are not accepted in kerbside recycling under the 2024 national kerbside standard. Put completely empty cans in your general rubbish. If the can still contains product or you're unsure, take it to a WCC transfer station as hazardous waste — never puncture or burn it.",
       disposal_instructions_mi:
         "Kāore ngā kēne rehu matūriki e whakaaetia ki te hangarua ā-huarahi i raro i te paerewa ā-motu o te tau 2024. Whakauruhia ngā kēne kua tino watea ki tō para whānui. Mēnā kei roto tonu he rawa, kāore rānei koe i te mōhio, kawea ki tētahi teihana whakawhiti a WCC hei para mōrearea — kaua rawa e wero, e tahu rānei.",
+      keywords: "",
     },
     {
       item_key: "glass-bottle",
@@ -118,6 +126,7 @@ exports.seed = async function seed(knex) {
         "Give it a rinse, remove the lid, and place the bottle or jar in your fortnightly glass recycling crate — the crate takes glass bottles and jars only. Lids are not accepted in kerbside recycling, so put them in your general rubbish.",
       disposal_instructions_mi:
         "Horoia, tangohia te uwhi, ka whakauru ai i te pātara, i te ipu rānei ki tō kete karāhe hangarua e rua wiki ai — mō ngā pātara me ngā ipu karāhe anake te kete. Kāore ngā uwhi e whakaaetia ki te hangarua ā-huarahi, nō reira whakauruhia ki tō para whānui.",
+      keywords: "",
     },
     {
       item_key: "plastic-bottle",
@@ -129,6 +138,7 @@ exports.seed = async function seed(knex) {
         "Rinse it out and place it in your mixed recycling. Remove the lid first — lids are not accepted in kerbside recycling, so the lid goes in your general rubbish.",
       disposal_instructions_mi:
         "Horoia, ka whakauru ai ki tō rauemi hangarua. Tangohia te uwhi i te tuatahi — kāore ngā uwhi e whakaaetia ki te hangarua ā-huarahi, nō reira ka haere te uwhi ki tō para whānui.",
+      keywords: "",
     },
     {
       item_key: "tin-can",
@@ -139,6 +149,7 @@ exports.seed = async function seed(knex) {
         "Rinse it out and place it in your mixed recycling. Fold any sharp lid edges inward so it's safe to handle.",
       disposal_instructions_mi:
         "Horoia, ka whakauru ai ki tō rauemi hangarua. Whakapikoa ngā tapa koi o te uwhi ki roto kia haumaru ai te hopu.",
+      keywords: "",
     },
     {
       item_key: "soft-plastic-bag",
@@ -150,6 +161,7 @@ exports.seed = async function seed(knex) {
         "Never put soft plastics in your kerbside recycling — they jam the sorting machinery. Reuse them where you can, or drop them off at a soft-plastic recycling point at participating supermarkets.",
       disposal_instructions_mi:
         "Kaua rawa e whakauru i ngā kirihou ngohengohe ki tō rauemi hangarua ā-huarahi — ka aukatihia e rātou ngā mīhini wehewehe. Whakamahia anō mēnā ka taea, whakaurua rānei ki tētahi wāhi hangarua kirihou ngohengohe kei ētahi toa nui e whai wāhi ana.",
+      keywords: "",
     },
     {
       item_key: "polystyrene-packaging",
@@ -161,6 +173,7 @@ exports.seed = async function seed(knex) {
         "Polystyrene is not accepted in kerbside recycling. Put it in your general rubbish, or check whether your nearest WCC transfer station has a dedicated foam recycling drop-off.",
       disposal_instructions_mi:
         "Kāore te kirihou pahuka (polystyrene) e whakaaetia ki te hangarua ā-huarahi. Whakauruhia ki tō para whānui, tirohia rānei mēnā he wāhi hangarua motuhake mō te kirihou pahuka kei te teihana whakawhiti a WCC e tata ana ki a koe.",
+      keywords: "",
     },
     {
       item_key: "milk-carton",
@@ -172,6 +185,7 @@ exports.seed = async function seed(knex) {
         "Liquid paperboard cartons are not accepted in kerbside recycling under the 2024 national kerbside standard. Put them in your general rubbish, or rinse and flatten them and take them to a specialist drop-off point (such as saveBOARD) if one is available.",
       disposal_instructions_mi:
         "Kāore ngā pouaka pepa mō te wai e whakaaetia ki te hangarua ā-huarahi i raro i te paerewa ā-motu o te tau 2024. Whakauruhia ki tō para whānui, horoia rānei, whakaparetia, ka kawe ai ki tētahi wāhi tuku motuhake (pēnei i a saveBOARD) mēnā kei reira tētahi.",
+      keywords: "",
     },
     {
       item_key: "food-scraps",
@@ -183,6 +197,7 @@ exports.seed = async function seed(knex) {
         "Compost at home if you can. Wellington City Council's kerbside collection does not currently include a food scraps bin, so anything you can't compost goes in general rubbish.",
       disposal_instructions_mi:
         "Whakaputahia hei wairākau mēnā ka taea. Kāore anō te kohinga ā-huarahi a Te Kaunihera o Pōneke i whai pēke toenga kai, nō reira ko ngā mea kāore e taea te whakaputa hei wairākau ka haere ki te para whānui.",
+      keywords: "",
     },
     {
       item_key: "household-batteries",
@@ -194,6 +209,7 @@ exports.seed = async function seed(knex) {
         "Never put batteries in your kerbside bins — they're a fire risk in rubbish trucks. Take them to a battery recycling drop-off point or a WCC transfer station.",
       disposal_instructions_mi:
         "Kaua rawa e whakauru pūhiko ki ō kete ā-huarahi — he mōrearea ahi ki roto i ngā taraka para. Kawea ki tētahi wāhi hangarua pūhiko, ki tētahi teihana whakawhiti a WCC rānei.",
+      keywords: "battery",
     },
     {
       item_key: "light-bulb",
@@ -205,6 +221,7 @@ exports.seed = async function seed(knex) {
         "Fluorescent and CFL bulbs contain mercury and must never go in kerbside bins. Take all bulb types to a WCC transfer station or a participating retailer for recycling.",
       disposal_instructions_mi:
         "Kei roto i ngā rama kōrekoreko, CFL hoki he konutai, nō reira kaua rawa e whakaurua ki ngā kete ā-huarahi. Kawea ngā momo rama katoa ki tētahi teihana whakawhiti a WCC, ki tētahi toa e whai wāhi ana rānei, hei hangarua.",
+      keywords: "",
     },
     {
       item_key: "small-e-waste",
@@ -216,6 +233,7 @@ exports.seed = async function seed(knex) {
         "Never put e-waste in your kerbside bins. Take it to a WCC transfer station e-waste drop-off or a retailer take-back scheme.",
       disposal_instructions_mi:
         "Kaua rawa e whakauru para hiko ki ō kete ā-huarahi. Kawea ki tētahi wāhi tuku para hiko kei tētahi teihana whakawhiti a WCC, ki tētahi kaupapa whakahoki-ki-te-toa rānei.",
+      keywords: "",
     },
     {
       item_key: "paint-tin",
@@ -225,6 +243,7 @@ exports.seed = async function seed(knex) {
         "Never put paint tins with leftover paint in your kerbside bins. Take them to a Resene PaintWise collection centre (any brand accepted, Resene-brand paint is free) or drop them off as domestic hazardous waste at WCC's Southern Landfill (free up to 20kg/20L). An empty, fully dried tin can go in your mixed recycling.",
       disposal_instructions_mi:
         "Kaua rawa e whakauru kēne peita whai toenga ki ō kete ā-huarahi. Kawea ki tētahi pokapū kohi peita a Resene PaintWise (ka whakaaetia ngā momo peita katoa, kāore he utu mō te peita a Resene), ki te teihana whakawhiti Southern Landfill a WCC rānei hei para mōrearea kāinga (kore utu tae atu ki te 20kg/20L). Ka taea e te kēne watea, kua maroke katoa te whakauru ki tō rauemi hangarua.",
+      keywords: "",
     },
     {
       item_key: "textiles-clothing",
@@ -235,6 +254,7 @@ exports.seed = async function seed(knex) {
         "Donate anything still wearable to an op shop. Worn-out textiles can go in your general rubbish, or a dedicated textile recycling bin where one is available.",
       disposal_instructions_mi:
         "Tukuna ngā mea e taea tonu ana te mau ki tētahi toa hokohoko (op shop). Ka taea ngā kākahu kua ngenge te whakauru ki tō para whānui, ki tētahi pēke hangarua kākahu motuhake rānei mēnā kei reira tētahi.",
+      keywords: "",
     },
   ]);
 };

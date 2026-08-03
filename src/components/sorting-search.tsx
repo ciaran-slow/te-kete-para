@@ -117,6 +117,7 @@ export function SortingSearch() {
     const value = event.target.value;
     setQuery(value);
     cancelPending();
+    setVoiceError(false);
 
     const trimmed = value.trim();
     if (trimmed.length === 0) {
