@@ -1,0 +1,363 @@
+import { afterEach, describe, expect, test, vi } from "vitest";
+import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
+import {
+  ShiftAlertBanner,
+  findUpcomingShift,
+  LOOKAHEAD_DAYS,
+  type HolidayApiRecord,
+  type ShiftAlertBannerProps,
+} from "../../src/components/shift-alert-banner";
+import type { SuburbSearchResult } from "../../src/components/address-search";
+import { LanguageProvider } from "../../src/lib/i18n/language-provider";
+import { writeStoredLocale } from "../../src/lib/i18n/locale-storage";
+import { expectNoA11yViolations } from "../helpers/a11y";
+
+const KARORI: SuburbSearchResult = {
+  id: 10,
+  streetName: "Karori Road",
+  suburb: "Karori",
+  zone: "SUBURBAN-WEST",
+  isInnerCityNightCollection: false,
+};
+const CUBA_STREET: SuburbSearchResult = {
+  id: 20,
+  streetName: "Cuba Street",
+  suburb: "Te Aro",
+  zone: "CBD-INNER",
+  isInnerCityNightCollection: true,
+};
+
+const CHRISTMAS: HolidayApiRecord = {
+  date: "2026-12-25",
+  nameEn: "Christmas Day",
+  nameMi: "Te Rā Kirihimete",
+  shiftDays: 1,
+};
+// ADR 0030 chain fixture, reused from holiday-shift.test.ts's dates: Jan 1
+// shifts to Jan 2, itself a listed holiday, so the chain resolves to Jan 3.
+const NEW_YEARS_CHAIN: HolidayApiRecord[] = [
+  {
+    date: "2026-01-01",
+    nameEn: "New Year's Day",
+    nameMi: "Te Rā Tau Hou",
+    shiftDays: 1,
+  },
+  {
+    date: "2026-01-02",
+    nameEn: "Day after New Year's Day",
+    nameMi: "Te Rā i muri i te Tau Hou",
+    shiftDays: 1,
+  },
+];
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+// Mid-UTC-day so the viewer's local (Pacific/Auckland, ADR 0017) calendar
+// date matches the UTC one — no day-rollover ambiguity, same technique as
+// schedule-display.test.tsx.
+const CHRISTMAS_DAY = new Date(Date.UTC(2026, 11, 25, 1));
+const MID_JUNE = new Date(Date.UTC(2026, 5, 15, 1));
+
+const EN_CHRISTMAS_MESSAGE =
+  "Your collection due 25/12/2026 (Christmas Day) shifts to 26/12/2026.";
+const MI_CHRISTMAS_MESSAGE =
+  "Ko tō kohinga e tika ana mō te 25/12/2026 (Te Rā Kirihimete) ka huri ki te 26/12/2026.";
+const EN_ERROR_MESSAGE =
+  "We couldn't check for upcoming collection changes right now. Please try again.";
+
+function jsonResponse(body: unknown, ok = true) {
+  return { ok, status: ok ? 200 : 503, json: async () => body };
+}
+
+function renderBanner(props: ShiftAlertBannerProps) {
+  return render(
+    <LanguageProvider>
+      <ShiftAlertBanner {...props} />
+    </LanguageProvider>,
+  );
+}
+
+afterEach(() => {
+  cleanup();
+  vi.unstubAllGlobals();
+  window.localStorage.clear();
+});
+
+describe("findUpcomingShift", () => {
+  test("finds a holiday exactly on todayUtc (offset 0)", () => {
+    const result = findUpcomingShift(new Date(Date.UTC(2026, 11, 25)), [
+      CHRISTMAS,
+    ]);
+
+    expect(result).toEqual({
+      holiday: CHRISTMAS,
+      originalDate: "2026-12-25",
+      shiftedDate: "2026-12-26",
+    });
+  });
+
+  test("finds a holiday on the last day in the window (todayUtc + LOOKAHEAD_DAYS)", () => {
+    const today = new Date(
+      Date.UTC(2026, 11, 25) - LOOKAHEAD_DAYS * MS_PER_DAY,
+    );
+
+    const result = findUpcomingShift(today, [CHRISTMAS]);
+
+    expect(result).toEqual({
+      holiday: CHRISTMAS,
+      originalDate: "2026-12-25",
+      shiftedDate: "2026-12-26",
+    });
+  });
+
+  test("does not find a holiday one day past the window (todayUtc + LOOKAHEAD_DAYS + 1)", () => {
+    const today = new Date(
+      Date.UTC(2026, 11, 25) - (LOOKAHEAD_DAYS + 1) * MS_PER_DAY,
+    );
+
+    expect(findUpcomingShift(today, [CHRISTMAS])).toBeNull();
+  });
+
+  test("chained holidays resolve to the fully-shifted date (ADR 0030)", () => {
+    const result = findUpcomingShift(
+      new Date(Date.UTC(2026, 0, 1)),
+      NEW_YEARS_CHAIN,
+    );
+
+    expect(result).toEqual({
+      holiday: NEW_YEARS_CHAIN[0],
+      originalDate: "2026-01-01",
+      shiftedDate: "2026-01-03",
+    });
+  });
+
+  test("returns null for an empty holidays array", () => {
+    expect(findUpcomingShift(new Date(Date.UTC(2026, 11, 25)), [])).toBeNull();
+  });
+
+  test("returns null when no holiday falls anywhere in the window", () => {
+    expect(
+      findUpcomingShift(new Date(Date.UTC(2026, 5, 15)), [CHRISTMAS]),
+    ).toBeNull();
+  });
+
+  test("repeat calls are deterministic and never mutate the caller's holidays", () => {
+    const holidays = [...NEW_YEARS_CHAIN];
+    const expected = {
+      holiday: NEW_YEARS_CHAIN[0],
+      originalDate: "2026-01-01",
+      shiftedDate: "2026-01-03",
+    };
+
+    for (let attempt = 0; attempt < 3; attempt++) {
+      expect(
+        findUpcomingShift(new Date(Date.UTC(2026, 0, 1)), holidays),
+      ).toEqual(expected);
+    }
+
+    expect(holidays).toEqual(NEW_YEARS_CHAIN);
+  });
+});
+
+describe("ShiftAlertBanner", () => {
+  test("with no address selected, renders no visible alert and never fetches", () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const view = renderBanner({ address: null });
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(view.container.textContent).toBe("");
+  });
+
+  test("with an address and an injected shift inside the window, shows the EN message and never fetches", () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    renderBanner({
+      address: KARORI,
+      now: CHRISTMAS_DAY,
+      holidays: [CHRISTMAS],
+    });
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(screen.getByText(EN_CHRISTMAS_MESSAGE)).toBeInTheDocument();
+  });
+
+  test("switching the stored locale to Te Reo renders the Māori holiday name and connective text", () => {
+    renderBanner({
+      address: KARORI,
+      now: CHRISTMAS_DAY,
+      holidays: [CHRISTMAS],
+    });
+
+    act(() => writeStoredLocale("mi"));
+
+    expect(screen.getByText(MI_CHRISTMAS_MESSAGE)).toBeInTheDocument();
+    expect(screen.queryByText(EN_CHRISTMAS_MESSAGE)).not.toBeInTheDocument();
+  });
+
+  test("with an address and an injected holidays prop with no shift in range, renders no visible alert", () => {
+    const view = renderBanner({
+      address: KARORI,
+      now: MID_JUNE,
+      holidays: [CHRISTMAS],
+    });
+
+    expect(view.container.textContent).toBe("");
+  });
+
+  test("fetches GET /api/holidays exactly once when an address is selected and no override is given, then shows the resulting alert", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(jsonResponse({ results: [CHRISTMAS] }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    renderBanner({ address: KARORI, now: CHRISTMAS_DAY });
+
+    expect(await screen.findByText(EN_CHRISTMAS_MESSAGE)).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/holidays",
+      expect.objectContaining({ signal: expect.anything() }),
+    );
+  });
+
+  test("reselecting the same address (new object, same id) does not re-fetch", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(jsonResponse({ results: [CHRISTMAS] }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const view = renderBanner({ address: KARORI, now: CHRISTMAS_DAY });
+    await screen.findByText(EN_CHRISTMAS_MESSAGE);
+
+    view.rerender(
+      <LanguageProvider>
+        <ShiftAlertBanner address={{ ...KARORI }} now={CHRISTMAS_DAY} />
+      </LanguageProvider>,
+    );
+    await act(async () => {});
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(screen.getByText(EN_CHRISTMAS_MESSAGE)).toBeInTheDocument();
+  });
+
+  test("switching to a different address fetches again and does not leave a stale alert from the previous address visible", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse({ results: [CHRISTMAS] }))
+      .mockResolvedValueOnce(jsonResponse({ results: [] }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const view = renderBanner({ address: KARORI, now: CHRISTMAS_DAY });
+    await screen.findByText(EN_CHRISTMAS_MESSAGE);
+
+    view.rerender(
+      <LanguageProvider>
+        <ShiftAlertBanner address={CUBA_STREET} now={CHRISTMAS_DAY} />
+      </LanguageProvider>,
+    );
+
+    await waitFor(() =>
+      expect(screen.queryByText(EN_CHRISTMAS_MESSAGE)).not.toBeInTheDocument(),
+    );
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  test("a failed fetch shows the translated error message", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi
+        .fn()
+        .mockResolvedValue(jsonResponse({ error: "Unable to load public holidays." }, false)),
+    );
+
+    renderBanner({ address: KARORI, now: CHRISTMAS_DAY });
+
+    expect(await screen.findByText(EN_ERROR_MESSAGE)).toBeInTheDocument();
+  });
+
+  test("a rejected fetch (network failure) shows the same translated error message, consistently across two separate renders", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockRejectedValue(new Error("network down")),
+    );
+
+    const first = renderBanner({ address: KARORI, now: CHRISTMAS_DAY });
+    expect(await screen.findByText(EN_ERROR_MESSAGE)).toBeInTheDocument();
+    first.unmount();
+
+    renderBanner({ address: KARORI, now: CHRISTMAS_DAY });
+    expect(await screen.findByText(EN_ERROR_MESSAGE)).toBeInTheDocument();
+  });
+
+  test("an injected holidays entry computeHolidayShift rejects shows the translated error message", () => {
+    // Defensive path only — real /api/holidays rows always pass
+    // computeHolidayShift's validation ("2026-13-01" cannot exist in a
+    // seeded holidays table).
+    renderBanner({
+      address: KARORI,
+      now: CHRISTMAS_DAY,
+      holidays: [
+        { date: "2026-13-01", nameEn: "Bad", nameMi: "Bad", shiftDays: 1 },
+      ],
+    });
+
+    expect(screen.getByText(EN_ERROR_MESSAGE)).toBeInTheDocument();
+  });
+
+  test("unmounting while a fetch is pending aborts it and does not update state after unmount", async () => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    let resolveFetch: ((value: unknown) => void) | undefined;
+    const fetchMock = vi.fn((_url: string, init?: RequestInit) => {
+      return new Promise((resolve, reject) => {
+        resolveFetch = resolve;
+        // Mirror real fetch: an aborted request rejects with an AbortError.
+        (init?.signal as AbortSignal).addEventListener("abort", () =>
+          reject(new DOMException("The operation was aborted.", "AbortError")),
+        );
+      });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const view = renderBanner({ address: KARORI, now: CHRISTMAS_DAY });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const signal = fetchMock.mock.calls[0]![1]!.signal as AbortSignal;
+    expect(signal.aborted).toBe(false);
+
+    view.unmount();
+    expect(signal.aborted).toBe(true);
+
+    // Settling the promise after unmount must not update state, warn, or
+    // throw.
+    await act(async () => {
+      resolveFetch?.(jsonResponse({ results: [CHRISTMAS] }));
+    });
+
+    expect(errorSpy).not.toHaveBeenCalled();
+    errorSpy.mockRestore();
+  });
+
+  test("passes the accessibility audit in the empty, visible-alert, and error states", async () => {
+    const empty = renderBanner({ address: null });
+    await expectNoA11yViolations(empty.container);
+    cleanup();
+
+    const visible = renderBanner({
+      address: KARORI,
+      now: CHRISTMAS_DAY,
+      holidays: [CHRISTMAS],
+    });
+    await expectNoA11yViolations(visible.container);
+    cleanup();
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockRejectedValue(new Error("network down")),
+    );
+    const errorView = renderBanner({ address: KARORI, now: CHRISTMAS_DAY });
+    await screen.findByText(EN_ERROR_MESSAGE);
+    await expectNoA11yViolations(errorView.container);
+  });
+});

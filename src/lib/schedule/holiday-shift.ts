@@ -22,6 +22,10 @@
  * contract. Always construct `date` with `Date.UTC(...)` or a `Z`-suffixed
  * ISO string; a local-time constructor can resolve to the *previous* UTC
  * calendar day in NZDT and silently shift every result by one day.
+ *
+ * `formatUtcDateString` is exported for `src/components/shift-alert-banner.tsx`
+ * (issue #24), which reuses it instead of reimplementing UTC "YYYY-MM-DD"
+ * formatting a second time.
  */
 
 /**
@@ -50,7 +54,7 @@ const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 const HOLIDAY_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
-function formatUtcDateString(utcMs: number): string {
+export function formatUtcDateString(utcMs: number): string {
   const d = new Date(utcMs);
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
 }
