@@ -5,7 +5,7 @@ import knexConfigs from "../../../knexfile.js";
 /**
  * db/seeds/03_holidays.js: the fixed 3-row NZ/Wellington public holiday
  * calendar for 2026 — the holidays that shift WCC collection days
- * (vision.md §4B, issue #78, ADR 0033). Idempotency is delete-then-reinsert
+ * (vision.md §4B, issue #78, ADR 0038). Idempotency is delete-then-reinsert
  * (ADR 0012), which these tests pin down as deliberate behaviour: repeated
  * runs and destructive re-seed are asserted, not just documented. Unlike
  * addresses, no other table has a foreign key into holidays, so there is

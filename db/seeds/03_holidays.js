@@ -7,7 +7,7 @@
  * no downstream ON DELETE SET NULL effect from a re-run.
  *
  * Row set and shift_days confirmed against WCC's published collection
- * policy (issue #78, ADR 0033): "Rubbish and recycling are not collected
+ * policy (issue #78, ADR 0038): "Rubbish and recycling are not collected
  * on: Christmas Day, New Year's Day, Good Friday. Instead, the collection
  * is moved to the following Saturday. On all other holidays, collection
  * days are as normal."
@@ -19,7 +19,7 @@
  * Day are added, all per the same "on all other holidays, collection days
  * are as normal" rule. `shift_days` is derived per row from how many days
  * separate the holiday's actual 2026 weekday from "the following
- * Saturday" (ADR 0033) — not a uniform 1: New Year's Day 2026-01-01 is a
+ * Saturday" (ADR 0038) — not a uniform 1: New Year's Day 2026-01-01 is a
  * Thursday, so it shifts 2 days to Saturday 2026-01-03; Good Friday and
  * Christmas Day both fall on a Friday in 2026, so each shifts 1 day to
  * Saturday.

@@ -8,7 +8,7 @@ import {
 // db/seeds/03_holidays.js — used to exercise computeHolidayShift's general
 // contract: independent per-row shifts, chaining through calendar-adjacent
 // holidays (ADR 0030), and UTC-only date reading. The confirmed 2026 seed
-// (issue #78, ADR 0033) has no adjacent rows, so this fixture keeps that
+// (issue #78, ADR 0038) has no adjacent rows, so this fixture keeps that
 // path covered without requiring it of real data.
 const SYNTHETIC_HOLIDAYS: HolidayRecord[] = [
   { date: "2026-01-01", shiftDays: 1 }, // New Year's Day
