@@ -1,4 +1,4 @@
-# ADR 0033: push_subscriptions timestamps added via direct ALTER, not a table rebuild
+# ADR 0039: push_subscriptions timestamps added via direct ALTER, not a table rebuild
 
 - **Status:** accepted
 - **Date:** 2026-08-03

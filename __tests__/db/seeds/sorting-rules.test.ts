@@ -117,6 +117,18 @@ describe("sorting_rules seed", () => {
     expect(coffeeCup.disposal_instructions_en).toContain("general rubbish");
   });
 
+  it("seeds a 'battery' keyword on household-batteries to fix issue #73's search-recall gap", async () => {
+    db = Knex(knexConfigs.test);
+    await db.migrate.latest();
+    await db.seed.run();
+
+    const batteries = await db("sorting_rules")
+      .where({ item_key: "household-batteries" })
+      .first("keywords");
+    if (!batteries) throw new Error("seed did not insert household-batteries");
+    expect(batteries.keywords).toBe("battery");
+  });
+
   it("rejects when run before the sorting_rules table has been migrated", async () => {
     db = Knex(knexConfigs.test);
     // `specific` targets this seed file: a plain seed.run() against an

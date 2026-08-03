@@ -8,14 +8,19 @@
  *
  * A shift is resolved by re-checking the new date against the same
  * `holidays` list and shifting again if it, too, is a listed holiday (ADR
- * 0030) — e.g. a collection due on New Year's Day (2026-01-01) shifts to
- * 2026-01-02, which is itself "Day after New Year's Day," so it shifts
- * again to 2026-01-03. Termination is guaranteed by validating every
- * `holidays[].shiftDays` as a positive integer: each shift strictly
- * advances the calendar date, and a calendar date can match at most one
- * entry in `holidays`, so the chain visits a strictly increasing, finite
- * sequence of dates and must exit once it reaches one absent from the
- * list — no iteration cap is needed or added.
+ * 0030) — e.g. if two calendar-adjacent dates were both listed holidays, a
+ * collection due on the first would chain through the second before
+ * landing on the first non-holiday date. Termination is guaranteed by
+ * validating every `holidays[].shiftDays` as a positive integer: each
+ * shift strictly advances the calendar date, and a calendar date can
+ * match at most one entry in `holidays`, so the chain visits a strictly
+ * increasing, finite sequence of dates and must exit once it reaches one
+ * absent from the list — no iteration cap is needed or added. (No row in
+ * the confirmed 2026 `holidays` seed is currently adjacent to another —
+ * issue #78, ADR 0038 — so in production this path is reachable only in a
+ * future year whose confirmed holidays do land on consecutive dates; it's
+ * covered today by a synthetic fixture in
+ * `__tests__/schedule/holiday-shift.test.ts`.)
  *
  * Dates are read as their UTC calendar date only (`getUTCFullYear` /
  * `getUTCMonth` / `getUTCDate`), matching `src/lib/schedule/rules.ts`'s

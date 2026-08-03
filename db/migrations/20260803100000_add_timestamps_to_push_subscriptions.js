@@ -6,7 +6,7 @@
  * Added via a direct ALTER TABLE ADD COLUMN, not a table rebuild: SQLite
  * refuses NOT NULL + a non-constant default (CURRENT_TIMESTAMP) once a
  * table has rows, but push_subscriptions has none in any environment that
- * will run this migration — #25's write path does not exist yet (ADR 0033).
+ * will run this migration — #25's write path does not exist yet (ADR 0039).
  * This migration must not be re-run against a populated table.
  *
  * @param { import("knex").Knex } knex

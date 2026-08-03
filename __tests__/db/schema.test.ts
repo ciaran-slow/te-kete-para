@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, it } from "vitest";
 import Knex from "knex";
 import knexConfigs from "../../knexfile.js";
+import createPushSubscriptions from "../../db/migrations/20260729100006_create_push_subscriptions.js";
+import widenPushSubscriptionsEndpoint from "../../db/migrations/20260803120000_widen_push_subscriptions_endpoint_to_text.js";
 
 /**
  * The full shape each core table is expected to have — not just column names.
@@ -53,6 +55,7 @@ const SCHEMA = {
       description_mi: { nullable: false, defaultValue: null },
       disposal_instructions_en: { nullable: false, defaultValue: null },
       disposal_instructions_mi: { nullable: false, defaultValue: null },
+      keywords: { nullable: false, defaultValue: "''" },
     },
     indexes: [{ name: "sorting_rules_item_key_unique", unique: true }],
     foreignKeys: [],
@@ -71,7 +74,7 @@ const SCHEMA = {
   push_subscriptions: {
     columns: {
       id: { nullable: false, defaultValue: null },
-      endpoint: { nullable: false, defaultValue: null },
+      endpoint: { nullable: false, defaultValue: null, type: "text" },
       p256dh: { nullable: false, defaultValue: null },
       auth: { nullable: false, defaultValue: null },
       language_preference: { nullable: false, defaultValue: "'en'" },
@@ -124,24 +127,32 @@ describe("core schema migrations", () => {
     }
   });
 
-  it("gives every column its documented nullability and default", async () => {
+  it("gives every column its documented nullability, default, and (where specified) type", async () => {
     db = Knex(knexConfigs.test);
     await db.migrate.latest();
 
     for (const [table, spec] of Object.entries(SCHEMA)) {
       const info = await db(table).columnInfo();
       for (const [column, expected] of Object.entries(spec.columns)) {
-        expect({
+        const columnInfo = info[column as keyof typeof info];
+        const expectedType = (expected as { type?: string }).type;
+        const actual: Record<string, unknown> = {
           table,
           column,
-          nullable: info[column as keyof typeof info].nullable,
-          defaultValue: info[column as keyof typeof info].defaultValue,
-        }).toEqual({
+          nullable: columnInfo.nullable,
+          defaultValue: columnInfo.defaultValue,
+        };
+        const wanted: Record<string, unknown> = {
           table,
           column,
           nullable: expected.nullable,
           defaultValue: expected.defaultValue,
-        });
+        };
+        if (expectedType !== undefined) {
+          actual.type = columnInfo.type;
+          wanted.type = expectedType;
+        }
+        expect(actual).toEqual(wanted);
       }
     }
   });
@@ -297,6 +308,72 @@ describe("core schema migrations", () => {
     // inserts each get their own populated pair.
     expect(rows[0].created_at).toEqual(rows[0].updated_at);
     expect(rows[1].created_at).toEqual(rows[1].updated_at);
+  });
+
+  it("widening push_subscriptions.endpoint preserves rows, the unique index, and constraints across up and down", async () => {
+    db = Knex(knexConfigs.test);
+    // push_subscriptions.address_id references addresses(id); SQLite needs
+    // the parent table to exist to plan the FK check even when address_id
+    // itself is left null on insert.
+    await db.schema.createTable("addresses", (t) => {
+      t.increments("id");
+    });
+    await createPushSubscriptions.up(db);
+
+    const longEndpoint = `https://fcm.googleapis.com/fcm/send/${"x".repeat(280)}`;
+    await db("push_subscriptions").insert({
+      endpoint: longEndpoint,
+      p256dh: "key",
+      auth: "auth",
+    });
+
+    // up: widened to text, long endpoint and constraints survive
+    await widenPushSubscriptionsEndpoint.up(db);
+    expect((await db("push_subscriptions").columnInfo("endpoint")).type).toBe(
+      "text",
+    );
+    expect(await db("push_subscriptions").select("endpoint")).toEqual([
+      { endpoint: longEndpoint },
+    ]);
+    const indexesAfterUp: IndexRow[] = await db.raw(
+      "PRAGMA index_list(push_subscriptions)",
+    );
+    expect(
+      indexesAfterUp.map((i) => ({ name: i.name, unique: i.unique })),
+    ).toEqual([{ name: "push_subscriptions_endpoint_unique", unique: 1 }]);
+    await expect(
+      db("push_subscriptions").insert({
+        endpoint: longEndpoint,
+        p256dh: "key2",
+        auth: "auth2",
+      }),
+    ).rejects.toThrow(/UNIQUE constraint failed/);
+    await expect(
+      db("push_subscriptions").insert({ p256dh: "key3", auth: "auth3" }),
+    ).rejects.toThrow(/NOT NULL constraint failed/);
+
+    // down: back to varchar(255), row and constraints still intact
+    await widenPushSubscriptionsEndpoint.down(db);
+    expect((await db("push_subscriptions").columnInfo("endpoint")).type).toBe(
+      "varchar",
+    );
+    expect(await db("push_subscriptions").select("endpoint")).toEqual([
+      { endpoint: longEndpoint },
+    ]);
+
+    // repetition: a second up/down cycle must not duplicate the index or
+    // otherwise drift from the first cycle's end state
+    await widenPushSubscriptionsEndpoint.up(db);
+    await widenPushSubscriptionsEndpoint.down(db);
+    const indexesAfterSecondCycle: IndexRow[] = await db.raw(
+      "PRAGMA index_list(push_subscriptions)",
+    );
+    expect(
+      indexesAfterSecondCycle.map((i) => ({ name: i.name, unique: i.unique })),
+    ).toEqual([{ name: "push_subscriptions_endpoint_unique", unique: 1 }]);
+    expect(await db("push_subscriptions").select("endpoint")).toEqual([
+      { endpoint: longEndpoint },
+    ]);
   });
 
   it("rejects rows missing a required column", async () => {

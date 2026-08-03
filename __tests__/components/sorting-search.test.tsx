@@ -433,6 +433,49 @@ describe("SortingSearch", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
+  test("typing a query that succeeds clears a stale voice-error message (#76)", async () => {
+    stubSpeechRecognition();
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ results: [PIZZA_BOX] }));
+    vi.stubGlobal("fetch", fetchMock);
+    renderSearch();
+
+    fireEvent.click(screen.getByRole("button", { name: "Search by voice" }));
+    const recognition = FakeSpeechRecognition.instances[0]!;
+    act(() => {
+      recognition.onerror?.(speechErrorEvent());
+    });
+    expect(
+      screen.getByText("We couldn't hear you clearly. Please try again or type your search."),
+    ).toBeInTheDocument();
+
+    await typeAndSettle("pizza");
+
+    expect(
+      screen.queryByText("We couldn't hear you clearly. Please try again or type your search."),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("Pizza box")).toBeInTheDocument();
+  });
+
+  test("clicking the mic again after a voice error clears the stale message (#76)", () => {
+    stubSpeechRecognition();
+    renderSearch();
+
+    fireEvent.click(screen.getByRole("button", { name: "Search by voice" }));
+    const recognition = FakeSpeechRecognition.instances[0]!;
+    act(() => {
+      recognition.onerror?.(speechErrorEvent());
+    });
+    expect(
+      screen.getByText("We couldn't hear you clearly. Please try again or type your search."),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Search by voice" }));
+
+    expect(
+      screen.queryByText("We couldn't hear you clearly. Please try again or type your search."),
+    ).not.toBeInTheDocument();
+  });
+
   test("the listening and voice-error live regions exist in the DOM before their messages do, so aria-live can announce them", () => {
     stubSpeechRecognition();
     renderSearch();
