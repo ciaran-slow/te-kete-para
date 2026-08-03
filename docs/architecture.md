@@ -119,23 +119,36 @@
 * **Data Abstraction:** **Knex.js** query builder managing secure, parameterized SQL query generation and automated schema migrations.
 * **API Testing Strategy (Vitest + Supertest, ADR 0002 / ADR 0003):** Integration tests share the helper `__tests__/helpers/api.ts`. `setupTestDb()` / `teardownTestDb()` give each test file its own in-memory SQLite3 database with all Knex migrations applied and `PRAGMA foreign_keys = ON` in force, because the instance is built from `knexfile.js`'s `test` config rather than a hand-rolled one. `createRequestListener(routeModule)` adapts this fork's Web-API route handlers (`Request` → `Response`) into a Node request listener that Supertest drives **in-process** — the only way the handler under test can see a `:memory:` database that lives inside the test process's single connection. API test files therefore run under `// @vitest-environment node` (Vitest's global environment is jsdom), and app code reaches the database only through `src/lib/db.ts` (`getDb()`), so handler and fixtures share one Knex instance. Supertest validates endpoint behaviour (`/api/suburbs/search`, `/api/notifications/subscribe`) — schedule math, holiday overrides, JSON payloads — plus each route's failure path; `/api/health` is the reference example.
 * **Suburb Search Endpoint:** `GET /api/suburbs/search?q=` (`src/app/api/suburbs/search/route.ts`)
-  does a case-insensitive, wildcard-escaped partial match on `addresses.street_name` via
-  Knex, returning `{ results: [...] }` with camelCase fields; every JSON API response in this
+  fetches every `addresses` row ordered by `street_name` and does a macron- and
+  case-insensitive partial match on `street_name` in JavaScript via
+  `foldDiacritics` (`src/lib/api/fold-diacritics.ts`, ADR 0040), returning
+  `{ results: [...] }` with camelCase fields; every JSON API response in this
   app follows the envelope and casing convention in ADR 0013, established here as the first
   data-returning endpoint.
 * **Sorting Search Endpoint:** `GET /api/sorting/search?q=` (`src/app/api/sorting/search/route.ts`)
-  tokenizes `q` on whitespace (`tokenizeSearchQuery`,
-  `src/lib/api/tokenize-search-query.ts`) and requires every term to match,
-  case-insensitively, in at least one of `sorting_rules.item_key`,
-  `description_en`, `description_mi`, or `keywords` (AND across terms, OR
-  across columns) — replacing the old single-contiguous-substring match
-  (ADR 0035). Both sides of each comparison are hyphen-normalized via SQL
-  `REPLACE(column, '-', '')` against a hyphen-stripped term, so a hyphen-free
-  query matches a hyphenated stored value and vice versa. Returns
-  `{ results: [...] }` with camelCase fields and both locales'
-  description/disposal-instructions text in every result (ADR 0013, ADR
-  0025, ADR 0035). `escapeLikePattern` is shared with `/api/suburbs/search`
-  via `src/lib/api/escape-like-pattern.ts` rather than duplicated.
+  fetches every `sorting_rules` row ordered by `item_key` and matches entirely
+  in JavaScript: `q` is tokenized on whitespace (`tokenizeSearchQuery`,
+  `src/lib/api/tokenize-search-query.ts`), and every term must match (AND
+  across terms) at least one of `item_key`, `description_en`,
+  `description_mi`, or `keywords` (OR across columns) — replacing the old
+  single-contiguous-substring match (ADR 0035). Both sides of every
+  comparison are normalized through the same function (`src/app/api/sorting/search/route.ts`'s
+  `normalizeForMatch`): hyphens are stripped first (so a hyphen-free query
+  matches a hyphenated stored value and vice versa, ADR 0035), then case and
+  diacritics are folded via `foldDiacritics` (ADR 0040), so `KĒNE`/`kene` match
+  `kēne` the same way `battery` matches `household-batteries`'s `keywords`.
+  Matching moved from SQL `LIKE`/`REPLACE` to a post-fetch JS filter when the
+  macron/case fold was added: both tables are small enough (16–30 rows) that
+  fetching every row costs nothing, and the project's pinned `sqlite3` driver
+  has no way to register a custom SQL scalar function, which foreclosed
+  folding diacritics inside SQL (ADR 0040). Returns `{ results: [...] }` with
+  camelCase fields and both locales' description/disposal-instructions text in
+  every result (ADR 0013, ADR 0025, ADR 0035, ADR 0040); `keywords` is
+  match-only and never appears in the response. `escapeLikePattern`
+  (`src/lib/api/escape-like-pattern.ts`) remains a standalone, independently
+  tested helper shared with `/api/suburbs/search` but is no longer invoked by
+  either route's matching logic, since a plain JS substring check has no
+  wildcard syntax to escape.
 * **Holidays Endpoint:** `GET /api/holidays` (`src/app/api/holidays/route.ts`)
   takes no query parameters and returns every row of the `holidays` table
   (§2C) ordered by `holiday_date` ascending, camelCase-mapped to

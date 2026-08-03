@@ -24,6 +24,7 @@ describe("GET /api/suburbs/search", () => {
       { street_name: "Cuba Street", suburb: "Te Aro", zone: "CBD-INNER", is_inner_city_night_collection: true },
       { street_name: "Karori Road", suburb: "Karori", zone: "SUBURBAN-WEST", is_inner_city_night_collection: false },
       { street_name: "Cuba Mall", suburb: "Te Aro", zone: "CBD-INNER", is_inner_city_night_collection: true },
+      { street_name: "Ōwhiro Bay Parade", suburb: "Owhiro Bay", zone: "SUBURBAN-SOUTH", is_inner_city_night_collection: false },
     ]);
   });
 
@@ -72,6 +73,45 @@ describe("GET /api/suburbs/search", () => {
       expect(result.isInnerCityNightCollection).toBe(true);
       expect(typeof result.isInnerCityNightCollection).toBe("boolean");
     }
+  });
+
+  it("matches a macron-less query against macron-bearing street_name (owhiro)", async () => {
+    const response = await request(app).get(
+      `/api/suburbs/search?q=${encodeURIComponent("owhiro")}`,
+    );
+
+    expect(response.status).toBe(200);
+    expect(
+      response.body.results.map(
+        (result: { streetName: string }) => result.streetName,
+      ),
+    ).toEqual(["Ōwhiro Bay Parade"]);
+  });
+
+  it("matches an all-caps macron query (ŌWHIRO BAY PARADE)", async () => {
+    const response = await request(app).get(
+      `/api/suburbs/search?q=${encodeURIComponent("ŌWHIRO BAY PARADE")}`,
+    );
+
+    expect(response.status).toBe(200);
+    expect(
+      response.body.results.map(
+        (result: { streetName: string }) => result.streetName,
+      ),
+    ).toEqual(["Ōwhiro Bay Parade"]);
+  });
+
+  it("matches the exact macron-bearing text unchanged (Ōwhiro Bay Parade)", async () => {
+    const response = await request(app).get(
+      `/api/suburbs/search?q=${encodeURIComponent("Ōwhiro Bay Parade")}`,
+    );
+
+    expect(response.status).toBe(200);
+    expect(
+      response.body.results.map(
+        (result: { streetName: string }) => result.streetName,
+      ),
+    ).toEqual(["Ōwhiro Bay Parade"]);
   });
 
   it("returns an empty result set for a typo, not an error", async () => {

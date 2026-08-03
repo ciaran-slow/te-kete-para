@@ -1,5 +1,5 @@
 import { getDb } from "@/lib/db";
-import { escapeLikePattern } from "@/lib/api/escape-like-pattern";
+import { foldDiacritics } from "@/lib/api/fold-diacritics";
 
 interface AddressRow {
   id: number;
@@ -47,13 +47,16 @@ export async function GET(request: Request): Promise<Response> {
 
   try {
     const db = getDb();
-    const pattern = `%${escapeLikePattern(q)}%`;
+    const foldedQuery = foldDiacritics(q);
     const rows: AddressRow[] = await db("addresses")
-      .whereRaw("street_name LIKE ? ESCAPE '\\'", [pattern])
       .orderBy("street_name")
       .select("id", "street_name", "suburb", "zone", "is_inner_city_night_collection");
 
-    return Response.json({ results: rows.map(toSuburbSearchResult) });
+    const matches = rows.filter((row) =>
+      foldDiacritics(row.street_name).includes(foldedQuery),
+    );
+
+    return Response.json({ results: matches.map(toSuburbSearchResult) });
   } catch {
     return Response.json(
       { error: "Unable to search addresses." },
