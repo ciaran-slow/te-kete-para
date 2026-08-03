@@ -1,6 +1,7 @@
 # ADR 0025: Sorting search match columns and bilingual response shape
 
-- **Status:** accepted
+- **Status:** accepted — decision 1 (match columns) superseded by ADR 0033;
+  decisions 2–4 (response shape, ordering, identifier) unchanged.
 - **Date:** 2026-08-02
 - **Issue:** #20
 

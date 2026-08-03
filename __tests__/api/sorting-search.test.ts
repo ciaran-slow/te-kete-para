@@ -24,6 +24,7 @@ describe("GET /api/sorting/search", () => {
         description_mi: "He kēne rino mō te kai.",
         disposal_instructions_en: "Rinse and put it in mixed recycling.",
         disposal_instructions_mi: "Horoia, whakauruhia ki te rauemi hangarua.",
+        keywords: "",
       },
       {
         item_key: "coffee-cup",
@@ -31,6 +32,7 @@ describe("GET /api/sorting/search", () => {
         description_mi: "He kapu kawhe kotahi noa te whakamahi.",
         disposal_instructions_en: "Put the whole cup in general rubbish.",
         disposal_instructions_mi: "Whakauruhia te kapu katoa ki te para whānui.",
+        keywords: "",
       },
       {
         item_key: "aerosol-can",
@@ -38,6 +40,7 @@ describe("GET /api/sorting/search", () => {
         description_mi: "He kēne rehu matūriki, hei tauira te wai kakara.",
         disposal_instructions_en: "Empty cans go in general rubbish.",
         disposal_instructions_mi: "Ka haere ngā kēne watea ki te para whānui.",
+        keywords: "",
       },
       // Mirrors the real seed row (db/seeds/02_sorting_rules.js): "e-waste"
       // appears ONLY in item_key and disposal_instructions_en, never in
@@ -52,6 +55,18 @@ describe("GET /api/sorting/search", () => {
           "Never put e-waste in your kerbside bins. Take it to a WCC transfer station e-waste drop-off or a retailer take-back scheme.",
         disposal_instructions_mi:
           "Kaua rawa e whakauru para hiko ki ō kete ā-huarahi. Kawea ki tētahi wāhi tuku para hiko kei tētahi teihana whakawhiti a WCC, ki tētahi kaupapa whakahoki-ki-te-toa rānei.",
+        keywords: "",
+      },
+      // Proves the new `keywords` column (ADR 0033) participates in the
+      // match: "gizmo" appears nowhere else on this row or any other
+      // fixture here.
+      {
+        item_key: "wobble-widget",
+        description_en: "A small hardware clip.",
+        description_mi: "He mea nohinohi.",
+        disposal_instructions_en: "Put it in general rubbish.",
+        disposal_instructions_mi: "Whakauruhia ki te para whānui.",
+        keywords: "gizmo",
       },
     ]);
   });
@@ -121,6 +136,37 @@ describe("GET /api/sorting/search", () => {
 
     expect(response.status).toBe(200);
     expect(response.body.results).toEqual([]);
+  });
+
+  it("matches a term found only in the keywords column", async () => {
+    const response = await request(app).get(
+      `/api/sorting/search?q=${encodeURIComponent("gizmo")}`,
+    );
+    expect(response.status).toBe(200);
+    expect(
+      response.body.results.map((r: { itemKey: string }) => r.itemKey),
+    ).toEqual(["wobble-widget"]);
+  });
+
+  it("requires every term to match, not just one (AND across terms)", async () => {
+    // "tin" only matches tin-can, "coffee" only matches coffee-cup — no row
+    // matches both, so a correct AND-per-term implementation returns
+    // nothing. An accidental OR-across-terms regression would return both.
+    const response = await request(app).get(
+      `/api/sorting/search?q=${encodeURIComponent("tin coffee")}`,
+    );
+    expect(response.status).toBe(200);
+    expect(response.body.results).toEqual([]);
+  });
+
+  it("collapses repeated whitespace between terms", async () => {
+    const response = await request(app).get(
+      `/api/sorting/search?q=${encodeURIComponent("coffee    cup")}`,
+    );
+    expect(response.status).toBe(200);
+    expect(
+      response.body.results.map((r: { itemKey: string }) => r.itemKey),
+    ).toEqual(["coffee-cup"]);
   });
 
   it("does not match a keyword that only appears in disposal_instructions", async () => {

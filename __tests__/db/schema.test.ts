@@ -53,6 +53,7 @@ const SCHEMA = {
       description_mi: { nullable: false, defaultValue: null },
       disposal_instructions_en: { nullable: false, defaultValue: null },
       disposal_instructions_mi: { nullable: false, defaultValue: null },
+      keywords: { nullable: false, defaultValue: "''" },
     },
     indexes: [{ name: "sorting_rules_item_key_unique", unique: true }],
     foreignKeys: [],
