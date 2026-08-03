@@ -121,7 +121,7 @@
 * **Suburb Search Endpoint:** `GET /api/suburbs/search?q=` (`src/app/api/suburbs/search/route.ts`)
   fetches every `addresses` row ordered by `street_name` and does a macron- and
   case-insensitive partial match on `street_name` in JavaScript via
-  `foldDiacritics` (`src/lib/api/fold-diacritics.ts`, ADR 0037), returning
+  `foldDiacritics` (`src/lib/api/fold-diacritics.ts`, ADR 0040), returning
   `{ results: [...] }` with camelCase fields; every JSON API response in this
   app follows the envelope and casing convention in ADR 0013, established here as the first
   data-returning endpoint.
@@ -135,15 +135,15 @@
   comparison are normalized through the same function (`src/app/api/sorting/search/route.ts`'s
   `normalizeForMatch`): hyphens are stripped first (so a hyphen-free query
   matches a hyphenated stored value and vice versa, ADR 0035), then case and
-  diacritics are folded via `foldDiacritics` (ADR 0037), so `KĒNE`/`kene` match
+  diacritics are folded via `foldDiacritics` (ADR 0040), so `KĒNE`/`kene` match
   `kēne` the same way `battery` matches `household-batteries`'s `keywords`.
   Matching moved from SQL `LIKE`/`REPLACE` to a post-fetch JS filter when the
   macron/case fold was added: both tables are small enough (16–30 rows) that
   fetching every row costs nothing, and the project's pinned `sqlite3` driver
   has no way to register a custom SQL scalar function, which foreclosed
-  folding diacritics inside SQL (ADR 0037). Returns `{ results: [...] }` with
+  folding diacritics inside SQL (ADR 0040). Returns `{ results: [...] }` with
   camelCase fields and both locales' description/disposal-instructions text in
-  every result (ADR 0013, ADR 0025, ADR 0035, ADR 0037); `keywords` is
+  every result (ADR 0013, ADR 0025, ADR 0035, ADR 0040); `keywords` is
   match-only and never appears in the response. `escapeLikePattern`
   (`src/lib/api/escape-like-pattern.ts`) remains a standalone, independently
   tested helper shared with `/api/suburbs/search` but is no longer invoked by

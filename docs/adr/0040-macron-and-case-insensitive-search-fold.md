@@ -1,4 +1,4 @@
-# ADR 0037: Macron- and case-insensitive search via post-fetch JS folding
+# ADR 0040: Macron- and case-insensitive search via post-fetch JS folding
 
 - **Status:** accepted
 - **Date:** 2026-08-03

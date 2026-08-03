@@ -37,7 +37,7 @@ export function toSortingRuleSearchResult(
   };
 }
 
-// Every column a query term may match against (ADR 0035, ADR 0037).
+// Every column a query term may match against (ADR 0035, ADR 0040).
 const MATCH_COLUMNS = [
   "item_key",
   "description_en",
@@ -48,7 +48,7 @@ const MATCH_COLUMNS = [
 /**
  * Normalizes a column value or query term for matching: strips hyphens (so
  * a hyphen-free query matches hyphenated stored text and vice versa, ADR
- * 0035) then folds case and diacritics (ADR 0037). Both sides of every
+ * 0035) then folds case and diacritics (ADR 0040). Both sides of every
  * comparison go through this same function, so there's no way for a
  * column's stored form and the query's typed form to drift out of sync.
  */
