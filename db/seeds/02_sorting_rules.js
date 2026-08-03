@@ -18,8 +18,52 @@
  *   and from Wellington City Council's published guidance ("What can go
  *   in kerbside recycling" and "Recycling crates", wellington.govt.nz —
  *   the glass crate takes clean glass bottles and jars only, no lids).
- *   They have NOT been confirmed row-by-row against WCC's live pages and
- *   must be verified before this content is surfaced to end users.
+ *   wellington.govt.nz returns HTTP 403 to every direct fetch attempted
+ *   (this pass and PR #68's verify pass both hit it; web.archive.org is
+ *   also unreachable from this environment), so no row here has been
+ *   confirmed against a live WCC page. This pass instead cross-checked
+ *   every row against the national standard and search-engine-indexed
+ *   WCC/council/industry sources, and corrected one row (paint-tin:
+ *   Resene PaintWise is a manufacturer scheme, not a WCC service).
+ *   Row-by-row sources:
+ *     - pizza-box, coffee-cup: WCC "What can go in kerbside recycling"
+ *       (indexed, not directly fetchable); grease/lining contamination
+ *       corroborated by Hamilton City Council and Stuff/NZ Herald
+ *       reporting.
+ *     - aerosol-can: MfE 2024 standard (aerosols excluded nationwide);
+ *       empty/depressurised-to-general-rubbish corroborated by Auckland
+ *       Council and Palmerston North City Council guidance.
+ *     - glass-bottle, plastic-bottle: WCC "Recycling crates" and "What
+ *       can go in kerbside recycling" (indexed); Sustainability Trust's
+ *       lid-recycling programme confirms lids are out of the kerbside
+ *       stream regionally.
+ *     - tin-can: MfE national tins-and-cans guidance plus Porirua City
+ *       Council's "Recycling tips for lids" (fold/squash the lid inside
+ *       the can) — the same standard WCC follows.
+ *     - soft-plastic-bag: recycling.kiwi.nz store locator confirms
+ *       Wellington-area supermarket drop-off points are still active.
+ *     - polystyrene-packaging: MfE 2024 standard (EPS excluded
+ *       nationwide); the WCC-transfer-station claim stays conditional
+ *       ("check whether") because no source confirmed a dedicated
+ *       line-item at Southern Landfill.
+ *     - milk-carton: MfE 2024 standard (liquid paperboard excluded
+ *       nationwide); saveBOARD/Wastebusters confirm the specialist
+ *       drop-off alternative.
+ *     - food-scraps: RNZ/Beehive reporting confirms central government
+ *       scrapped the mandatory nationwide kerbside food-scraps rollout
+ *       (Jan 2025); WCC's own "Let's Talk" waste-collection consultation
+ *       (Key Proposal 2) shows a food/garden bin is still only proposed,
+ *       not live, as of Aug 2026 — the existing wording holds.
+ *     - household-batteries, light-bulb, small-e-waste: WCC's own
+ *       "Household battery recycling", "Domestic hazardous waste", and
+ *       "Electrical waste (ewaste)" pages (indexed, not fetchable) place
+ *       these at the Southern Landfill hazardous/e-waste drop-off.
+ *     - paint-tin: corrected this pass, see above.
+ *     - textiles-clothing: WCC's own "Organisations that accept donated
+ *       items" page (indexed, not fetchable).
+ *   None of the above is a live-page fetch, so the caveat above stays
+ *   until a live WCC fetch — or a human browsing the pages directly —
+ *   confirms these rows first-hand.
  * - Issue #69: the Te Reo Māori text is a machine draft. Key vocabulary
  *   was checked against Te Aka (pātara "bottle", pūhiko "battery",
  *   rehu matūriki "aerosol", kōrekoreko "fluorescent"), but the full
@@ -178,9 +222,9 @@ exports.seed = async function seed(knex) {
       description_en: "A tin of leftover paint, or an empty paint tin.",
       description_mi: "He kēne peita toenga, he kēne peita watea rānei.",
       disposal_instructions_en:
-        "Never put paint tins with leftover paint in your kerbside bins — take them to a WCC paint recovery drop-off point. An empty, fully dried tin can go in your mixed recycling.",
+        "Never put paint tins with leftover paint in your kerbside bins. Take them to a Resene PaintWise collection centre (any brand accepted, Resene-brand paint is free) or drop them off as domestic hazardous waste at WCC's Southern Landfill (free up to 20kg/20L). An empty, fully dried tin can go in your mixed recycling.",
       disposal_instructions_mi:
-        "Kaua rawa e whakauru kēne peita whai toenga ki ō kete ā-huarahi — kawea ki tētahi wāhi whakahoki peita a WCC. Ka taea e te kēne watea, kua maroke katoa te whakauru ki tō rauemi hangarua.",
+        "Kaua rawa e whakauru kēne peita whai toenga ki ō kete ā-huarahi. Kawea ki tētahi pokapū kohi peita a Resene PaintWise (ka whakaaetia ngā momo peita katoa, kāore he utu mō te peita a Resene), ki te teihana whakawhiti Southern Landfill a WCC rānei hei para mōrearea kāinga (kore utu tae atu ki te 20kg/20L). Ka taea e te kēne watea, kua maroke katoa te whakauru ki tō rauemi hangarua.",
     },
     {
       item_key: "textiles-clothing",
