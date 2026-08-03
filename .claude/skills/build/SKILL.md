@@ -114,6 +114,17 @@ failed build.
   never by test id.
 - A test that passes whether or not the code works is worse than no test. For
   each one, ask what change to the source would make it fail.
+- **A tunable numeric/date constant (a lookahead window, a retry count, a
+  timeout) is not pinned by a fixture derived from that same constant.**
+  `today = Date.UTC(...) - LOOKAHEAD_DAYS * MS_PER_DAY` only proves the loop's
+  boundary is inclusive — it cannot fail if `LOOKAHEAD_DAYS` itself silently
+  regresses to a smaller (or zero) value, because the fixture shrinks right
+  along with it (#24: `LOOKAHEAD_DAYS = 0` — the rejected today-only
+  alternative in that issue's own ADR — passed the entire suite). Pin the
+  constant with at least one assertion built from literal, independent
+  values on each side of the boundary (a concrete date/number the test
+  chose, not one computed from the constant), so a regression to the
+  constant's value itself is what the test is protecting.
 
 ## 6. Gates — all four, all green, all together, last
 

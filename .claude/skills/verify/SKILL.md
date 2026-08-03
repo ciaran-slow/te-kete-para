@@ -88,6 +88,16 @@ This is where reviews are usually weakest.
   share an in-memory SQLite DB per test file (docs/architecture.md §2B) —
   confirm it's reset between tests. jsdom also keeps `localStorage` between
   tests in a file.
+- **Is a tunable constant's "boundary" fixture actually derived from that
+  constant** (e.g. `today = holidayDate - LOOKAHEAD_DAYS * MS_PER_DAY`)? That
+  proves only that the loop's bound is inclusive, not that the constant holds
+  any particular value — try mutating the constant alone (a lookahead window,
+  a retry count, a timeout) while leaving the surrounding logic untouched; if
+  the suite stays green, the constant itself is unpinned even though
+  "boundary" tests exist (#24: collapsing `LOOKAHEAD_DAYS` from 6 to 0 — the
+  issue's own ADR-rejected today-only alternative — passed all 259 tests on
+  the first pass). Confirm at least one assertion uses literal, independent
+  values on each side of the boundary before treating the window as tested.
 
 ## 6. Look specifically for
 
