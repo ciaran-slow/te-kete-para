@@ -211,6 +211,47 @@ unmodified from inside any worktree — if this error reappears, check
 `next.config.ts` still sets `turbopack.root` before assuming a fresh
 workaround is needed.
 
+### `/merge` cleans up the worktree even when the push silently failed
+
+`/merge`'s cleanup (removing the worktree, branch, and tmux window) can
+proceed even when the underlying push to `main` was rejected — most
+commonly because `main` is a protected branch requiring PRs and status
+checks, which a direct push bypasses. No error surfaces in the agent's own
+output; the only symptom is that local `main`'s shared ref (visible across
+every worktree, since they share refs) ends up ahead of `origin/main` with
+an unpushed commit, while the PR that was supposedly merged is still open
+on GitHub.
+
+Always verify the commit actually reached `origin/main` after any `/merge`,
+before treating the lane as done:
+
+```bash
+git fetch origin main --quiet
+git log --oneline origin/main -3   # does it have the commit /merge claimed to land?
+```
+
+If it doesn't, recover by merging through GitHub directly instead of
+trusting `/merge`'s own push:
+
+```bash
+# 1. Rebase the PR branch onto current origin/main in a scratch clone
+#    (don't do this in the lane's own worktree or the main worktree)
+git clone --quiet <repo-path> /path/to/scratch
+cd /path/to/scratch
+git fetch origin main <pr-branch>
+git checkout -B <pr-branch> origin/<pr-branch>
+git rebase origin/main
+git push origin <pr-branch> --force-with-lease
+
+# 2. Wait for CI to re-run on the rebased commits, then merge via gh directly
+gh pr merge <n> --rebase --delete-branch
+
+# 3. Sync local main and clean up the now-stale worktree manually
+git -C <main-worktree-path> fetch origin main --quiet
+git -C <main-worktree-path> reset --hard origin/main
+workmux remove <handle> -f
+```
+
 ## Configuration
 
 Two levels: global (`~/.config/workmux/config.yaml`) and project
