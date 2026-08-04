@@ -225,6 +225,33 @@ describe("POST/DELETE /api/notifications/subscribe", () => {
       const rows = await getDb()("push_subscriptions").where({ endpoint });
       expect(rows).toHaveLength(1);
     });
+
+    it("updates updated_at on a re-subscribe of the same endpoint, not just on first insert", async () => {
+      const endpoint = "https://push.example/dup-updated-at";
+      await request(app)
+        .post(ROUTE)
+        .send({ endpoint, keys: { p256dh: "key-1", auth: "secret-1" } });
+
+      const firstRow = await getDb()("push_subscriptions").where({ endpoint }).first();
+
+      // SQLite's CURRENT_TIMESTAMP (ADR-0033's migration) has one-second
+      // resolution — cross a real second boundary so the two values are
+      // guaranteed to differ, not just usually differ.
+      await new Promise((resolve) => setTimeout(resolve, 1100));
+
+      await request(app)
+        .post(ROUTE)
+        .send({ endpoint, keys: { p256dh: "key-2", auth: "secret-2" } });
+
+      const secondRow = await getDb()("push_subscriptions").where({ endpoint }).first();
+
+      expect(secondRow.updated_at).not.toEqual(firstRow.updated_at);
+      expect(new Date(`${secondRow.updated_at}Z`).getTime()).toBeGreaterThan(
+        new Date(`${firstRow.updated_at}Z`).getTime(),
+      );
+      // created_at must be untouched by the merge — only updated_at moves.
+      expect(secondRow.created_at).toEqual(firstRow.created_at);
+    });
   });
 
   describe("DELETE", () => {
