@@ -29,9 +29,17 @@ Compute NZ "today" via `Intl.DateTimeFormat("en-CA", { timeZone:
 }).formatToParts(now)`, extract the Y/M/D integers, add one to the day, and
 re-express via `Date.UTC(...)` for `computeCollectionRuleSet`. Never local
 `Date` getters on `now`, and never a fixed UTC+12/+13 offset. A dedicated
-test (`dispatcher.test.ts`) temporarily overrides `process.env.TZ` around a
-call to prove the result is independent of the host process's timezone —
+test (`dispatcher.test.ts`) spies on the `Intl.DateTimeFormat` constructor
+and asserts it is called with an explicit `timeZone: "Pacific/Auckland"` —
 closing the blind spot the suite-wide TZ pin would otherwise leave open.
+(An earlier draft of this test tried to prove the same thing by temporarily
+reassigning `process.env.TZ` around the call; that doesn't work in this
+Vitest process — once `TZ` is read once, per-process TZ caching means local
+`Date` getters keep resolving against the original value for the rest of
+the process's life, so a later reassignment is silently a no-op and the
+local-getter shortcut this ADR rejects would have passed that test
+unchanged. The constructor spy asserts the actual mechanism instead of an
+environment side effect that doesn't take hold.)
 
 ## Alternatives considered
 

@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { afterAll, beforeAll, describe, expect, test } from "vitest";
+import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
 import { getDb } from "@/lib/db";
 import { computeCollectionRuleSet, type ZoneClassification } from "@/lib/schedule/rules";
 import {
@@ -39,14 +39,40 @@ describe("tomorrowInNzAsUtcDate", () => {
     });
   });
 
-  test("is independent of the host process's TZ (rules out the local-Date-getter shortcut)", () => {
-    const original = process.env.TZ;
-    process.env.TZ = "UTC";
+  test("resolves NZ 'today' via an explicit Pacific/Auckland Intl timeZone, not local Date getters", () => {
+    // Reassigning process.env.TZ mid-test does NOT work as a probe here: once
+    // Node/V8 has read TZ once in this process (vitest.setup.ts's suite-wide
+    // TZ=Pacific/Auckland pin, ADR 0017, does this before any test file
+    // loads), local Date getters keep resolving against that original value
+    // for the rest of the process's life — reassigning process.env.TZ later
+    // has no effect on them. A local-Date-getter implementation of this
+    // function therefore passes every fixture above AND a "set
+    // process.env.TZ then assert" test unchanged, because the getters still
+    // happen to agree with Pacific/Auckland. Spying on the constructor
+    // instead proves the actual mechanism used: this function must reach
+    // Intl.DateTimeFormat with an explicit `timeZone: "Pacific/Auckland"`
+    // option, which is the one thing a local-getter or fixed-offset
+    // implementation never does.
+    const RealDateTimeFormat = Intl.DateTimeFormat;
+    const spy = vi
+      .spyOn(Intl, "DateTimeFormat")
+      .mockImplementation(function (
+        this: unknown,
+        ...args: ConstructorParameters<typeof Intl.DateTimeFormat>
+      ) {
+        return new RealDateTimeFormat(...args);
+      } as unknown as typeof Intl.DateTimeFormat);
+
     try {
       const result = tomorrowInNzAsUtcDate(new Date("2026-09-26T06:00:00Z"));
+
+      expect(spy).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ timeZone: "Pacific/Auckland" }),
+      );
       expect(result.getTime()).toBe(utcDate(2026, 9, 27).getTime());
     } finally {
-      process.env.TZ = original;
+      spy.mockRestore();
     }
   });
 });

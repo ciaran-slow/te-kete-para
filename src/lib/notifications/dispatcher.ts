@@ -47,7 +47,8 @@ export interface DispatchPayload {
  * local getters here would pass this issue's entire test suite (since tests
  * run under the pinned TZ, local getters already equal NZ wall-clock time)
  * while being silently wrong on a UTC-default production server — see
- * ADR 0045, and the dedicated `process.env.TZ` override test below that
+ * ADR 0045, and the dedicated test below (spying on `Intl.DateTimeFormat`
+ * to assert it is called with an explicit `Pacific/Auckland` timeZone) that
  * exists specifically to close that blind spot.
  */
 export function tomorrowInNzAsUtcDate(now: Date): Date {
