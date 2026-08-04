@@ -127,9 +127,10 @@
   provisioned yet (ADR 0047). Status text renders through the shared
   `<StatusRegion>` (ADR 0021). Like `<SortingSearch>` and
   `<ShiftAlertBanner>`, it is fully built and tested but **not composed
-  into any route yet**: #27 (nightly cron dispatcher) and #28 (bilingual
-  payload delivery) are both still open, so nothing can act on a stored
-  subscription yet (ADR 0048).
+  into any route yet**: #27's dispatch decision logic and #28's payload
+  localization/send logic now both exist (§2B), but nothing invokes them on
+  a schedule until #110 wires up nightly invocation, so nothing acts on a
+  stored subscription in production yet (ADR 0048).
 * **Localization State:** `LanguageProvider` (`src/lib/i18n/language-provider.tsx`) holds the selected locale and exposes `useTranslation()` → `{ locale, setLocale, t }`. Flat dot-delimited keys live in `src/lib/i18n/dictionaries.ts`, where `en` is the source of truth (`as const`) and `mi` is typed `Record<TranslationKey, string>`, so drift fails `tsc` as well as the runtime parity test (ADR 0010). The locale is read from `localStorage` (`tkp.locale`) through `useSyncExternalStore`, never during render and never via `setState` in an effect — `react-hooks/set-state-in-effect` is an error in this repo (ADR 0009). `getServerSnapshot` returns `en` so `/` stays statically prerendered, which costs a brief flash of English before Te Reo on a hard load; the inline-script alternative that would remove it is recorded as rejected in ADR 0009. The provider mirrors the locale onto `<html lang>` in an effect so screen readers pick the right voice (vision.md §3). Macron-safe rendering comes from the Inter / Plus Jakarta Sans `latin-ext` subsets (ADR 0005).
 * **Client Testing Strategy (Vitest + Testing Library + Axe):**
   * Unit tests verify bilingual UI component rendering, dictionary interpolation, and macron preservation.
@@ -245,6 +246,27 @@
   land on consecutive calendar dates. Like the rule engine, it reads only
   the UTC calendar date of the
   `Date` passed in and of every `holidays[].date` string.
+* **Nightly Dispatch Pipeline (decision → localize → send):**
+  `src/lib/notifications/dispatcher.ts` (#27, ADR 0044) exports
+  `collectNightlyDispatchCandidates`, joining active `push_subscriptions` to
+  their address's zone and computing tomorrow's NZ-local collection rule set
+  via `tomorrowInNzAsUtcDate` + `computeCollectionRuleSet` (above).
+  `src/lib/notifications/payload-builder.ts`'s `buildLocalizedPushContent`
+  renders that rule set into a localized `{ title, body }` via the shared
+  dictionaries (§2A), keyed on each subscription's `languagePreference` — a
+  pure function with no DB access, mirroring the explicit-input pattern ADR
+  0015 established for `rules.ts`/`holiday-shift.ts`.
+  `src/lib/notifications/push-sender.ts`'s `sendDispatchPayload` signs and
+  delivers the encrypted payload via the `web-push` package (ADR 0049),
+  reading `NEXT_PUBLIC_VAPID_PUBLIC_KEY`/`VAPID_PRIVATE_KEY`/`VAPID_SUBJECT`
+  at the point of use and treating any of the three as missing as an
+  unconfigured, logged no-op for that one subscription rather than throwing
+  or blocking other sends (ADR 0050, extending ADR 0047).
+  `src/lib/notifications/dispatch-runner.ts`'s `runNightlyDispatch` composes
+  all three via `Promise.all`, so one subscriber's failure never blocks
+  another's send. No cron trigger or route invokes this pipeline yet — that
+  wiring is #110's job (ADR 0044) — and `public/sw.js` has no `push` event
+  listener to display what gets sent, tracked by #115 (ADR 0051).
 
 ### C. Data Persistence Layer
 * **Database Engine:** **SQLite3** stored as an embedded file database (`/data/teketepara.db`).
@@ -286,7 +308,12 @@
    * Client renders today's bin requirements via `<ScheduleDisplay>` using localized templates (ADR 0019 — today's rules, not a scanned next date), validated via component and key-parity tests.
 3. **Notification Scheduling & TDD Verification:**
    * User opts into "Night-Before" reminders via browser Service Worker.
-   * Server stores subscription tokens in SQLite3. Cron workers execute nightly at 6:00 PM NZST, evaluating timezones and dispatching bilingual payloads to the Web Push API.
+   * Server stores subscription tokens in SQLite3. The Nightly Dispatch
+     Pipeline (§2B) evaluates each subscription's NZ-local "tomorrow",
+     builds a localized bilingual payload, and dispatches it to the Web
+     Push API — the decision, localization, and send logic all exist today
+     (#27, #28), but nothing invokes the pipeline on a schedule yet (#110)
+     and no service worker listener displays what arrives (#115).
 
 ---
 

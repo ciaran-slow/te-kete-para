@@ -67,6 +67,8 @@ export const en = {
   "pushOptIn.status.denied": "Notifications are blocked for this site. Allow notifications in your browser settings to receive reminders.",
   "pushOptIn.status.subscribeError": "We couldn't turn on reminders. Please try again.",
   "pushOptIn.status.unsubscribeError": "We couldn't turn off reminders. Please try again.",
+  "notification.collectionReminder.title": "Collection reminder for tomorrow",
+  "notification.collectionReminder.binsPrefix": "Put out:",
 } as const;
 
 export type TranslationKey = keyof typeof en;
@@ -135,6 +137,8 @@ export const mi: Record<TranslationKey, string> = {
   "pushOptIn.status.denied": "Kua ārai ngā whakamōhio mō tēnei pae. Whakaaetia ngā whakamōhio i ō tautuhinga pūtirotiro kia whiwhi whakamahara.",
   "pushOptIn.status.subscribeError": "Kāore i taea te whakakā i ngā whakamahara. Tēnā koa, whakamātauria anō.",
   "pushOptIn.status.unsubscribeError": "Kāore i taea te weweke i ngā whakamahara. Tēnā koa, whakamātauria anō.",
+  "notification.collectionReminder.title": "He whakamahara kohinga mō āpōpō",
+  "notification.collectionReminder.binsPrefix": "Whakaputahia:",
 };
 
 export const dictionaries: Record<Locale, Record<TranslationKey, string>> = {
