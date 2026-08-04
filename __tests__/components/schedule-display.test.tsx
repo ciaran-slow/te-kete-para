@@ -36,16 +36,16 @@ const BLANK_ZONE_ADDRESS: SuburbSearchResult = {
 
 // Matches rules.test.ts's epoch fixture: a glass week, mid-UTC-day so the
 // viewer's local (Pacific/Auckland, ADR 0017) calendar date is also
-// 2024-01-01 — no day-rollover ambiguity in these four.
-const GLASS_WEEK_MONDAY = new Date(Date.UTC(2024, 0, 1, 1));
-const CARDBOARD_TUESDAY = new Date(Date.UTC(2024, 0, 2, 1));
-const NON_CARDBOARD_WEDNESDAY = new Date(Date.UTC(2024, 0, 3, 1));
+// 2026-01-12 — no day-rollover ambiguity in these four.
+const GLASS_WEEK_MONDAY = new Date(Date.UTC(2026, 0, 12, 1));
+const CARDBOARD_TUESDAY = new Date(Date.UTC(2026, 0, 13, 1));
+const NON_CARDBOARD_WEDNESDAY = new Date(Date.UTC(2026, 0, 14, 1));
 // One week past the epoch = week 1 = the *mixed* half of the alternating
 // cycle (rules.ts). Suburban addresses spend half the year in this state, so
 // it needs its own assertion: without one, a wrong BIN_TYPE_KEYS entry for
 // "mixed-recycling" is invisible to both `tsc` (the wrong key is still a
 // valid TranslationKey) and the whole suite.
-const MIXED_WEEK_MONDAY = new Date(Date.UTC(2024, 0, 8, 1));
+const MIXED_WEEK_MONDAY = new Date(Date.UTC(2026, 0, 19, 1));
 
 function renderDisplay(address: SuburbSearchResult | null, now?: Date) {
   return render(
@@ -84,7 +84,7 @@ describe("ScheduleDisplay", () => {
     expect(section).not.toBeNull();
     expect(section).toHaveAttribute("aria-labelledby", heading.id);
 
-    expect(screen.getByText("01/01/2024")).toBeInTheDocument();
+    expect(screen.getByText("12/01/2026")).toBeInTheDocument();
 
     const items = screen.getAllByRole("listitem");
     expect(items.map((li) => li.textContent)).toEqual([
@@ -105,7 +105,7 @@ describe("ScheduleDisplay", () => {
     ]);
     expect(screen.queryByText("Glass recycling crate")).not.toBeInTheDocument();
 
-    expect(screen.getByText("08/01/2024")).toBeInTheDocument();
+    expect(screen.getByText("19/01/2026")).toBeInTheDocument();
     expect(screen.getByText("Put out by 07:00")).toBeInTheDocument();
   });
 

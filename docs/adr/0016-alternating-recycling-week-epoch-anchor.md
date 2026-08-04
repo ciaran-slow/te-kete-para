@@ -1,6 +1,6 @@
 # ADR 0016: Alternating recycling week computed from a fixed epoch anchor
 
-- **Status:** accepted
+- **Status:** superseded by ADR 0042
 - **Date:** 2026-07-31
 - **Issue:** #13
 
