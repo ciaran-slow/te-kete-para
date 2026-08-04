@@ -244,8 +244,14 @@ Then confirm the post actually succeeded before treating the verify pass as
 complete:
 
 ```
-gh pr view <n> --json comments -q '.comments[-1].body'
+gh pr view <n> --json reviews -q '.reviews[-1].body'
 ```
+
+`gh pr review --comment` posts a **PR review**, not a plain issue comment —
+it shows up under `.reviews`, not `.comments`. Checking `--json comments`
+after posting with `gh pr review` returns empty/stale output even when the
+post succeeded, which reads as a failed post when it wasn't one (confirmed
+on PR #106's verify pass).
 
 A verify pass that finishes all four gates but ends its turn before
 confirming the report posted leaves the PR with no record verification ever
