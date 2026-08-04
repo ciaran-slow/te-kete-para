@@ -128,7 +128,7 @@ export async function POST(request: Request): Promise<Response> {
         address_id: value.addressId ?? null,
       })
       .onConflict("endpoint")
-      .merge(["p256dh", "auth", "language_preference", "address_id"])
+      .merge(["p256dh", "auth", "language_preference", "address_id", "updated_at"])
       .returning(["id", "endpoint", "language_preference", "address_id"]);
 
     return Response.json({ subscription: toPushSubscriptionApiRecord(row) });
