@@ -201,6 +201,16 @@ After any workmux/tmux crash, before resuming normal work:
    already landed elsewhere and the PR should be closed as redundant, not
    merged.
 
+### `npm run build` fails with "Symlink ... points out of the filesystem root"
+
+Fixed by ADR 0043 (issue #93): `next.config.ts` computes `turbopack.root`
+dynamically (`src/lib/turbopack-root.ts`) so Turbopack tolerates the
+symlinked `node_modules` every non-main worktree gets from
+`.workmux.yaml`'s `files.symlink`. `npm run build` should succeed
+unmodified from inside any worktree — if this error reappears, check
+`next.config.ts` still sets `turbopack.root` before assuming a fresh
+workaround is needed.
+
 ## Configuration
 
 Two levels: global (`~/.config/workmux/config.yaml`) and project
