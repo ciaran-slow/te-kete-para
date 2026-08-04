@@ -18,7 +18,7 @@ describe("computeCollectionRuleSet", () => {
   test("suburban zone on the epoch Monday gets a glass-week kerbside rule set", () => {
     const result = computeCollectionRuleSet(
       SUBURBAN,
-      new Date(Date.UTC(2024, 0, 1)),
+      new Date(Date.UTC(2026, 0, 12)),
     );
 
     expect(result.collectionType).toBe("suburban-kerbside");
@@ -35,7 +35,7 @@ describe("computeCollectionRuleSet", () => {
   test("suburban zone one week after the epoch alternates to a mixed week", () => {
     const result = computeCollectionRuleSet(
       SUBURBAN,
-      new Date(Date.UTC(2024, 0, 8)),
+      new Date(Date.UTC(2026, 0, 19)),
     );
 
     if (result.collectionType !== "suburban-kerbside") {
@@ -48,11 +48,11 @@ describe("computeCollectionRuleSet", () => {
   test("the alternating-week boundary flips between Sunday day 7 and Monday day 8", () => {
     const sundayEndOfEpochWeek = computeCollectionRuleSet(
       SUBURBAN,
-      new Date(Date.UTC(2024, 0, 7)),
+      new Date(Date.UTC(2026, 0, 18)),
     );
     const mondayOfNextWeek = computeCollectionRuleSet(
       SUBURBAN,
-      new Date(Date.UTC(2024, 0, 8)),
+      new Date(Date.UTC(2026, 0, 19)),
     );
 
     if (sundayEndOfEpochWeek.collectionType !== "suburban-kerbside") {
@@ -68,7 +68,7 @@ describe("computeCollectionRuleSet", () => {
   test("the alternation is periodic: two weeks after the epoch is glass again", () => {
     const result = computeCollectionRuleSet(
       SUBURBAN,
-      new Date(Date.UTC(2024, 0, 15)),
+      new Date(Date.UTC(2026, 0, 26)),
     );
 
     if (result.collectionType !== "suburban-kerbside") {
@@ -80,7 +80,7 @@ describe("computeCollectionRuleSet", () => {
   test("inner-city zone on a Tuesday gets a cardboard night collection", () => {
     const result = computeCollectionRuleSet(
       INNER_CITY,
-      new Date(Date.UTC(2024, 0, 2)),
+      new Date(Date.UTC(2026, 0, 13)),
     );
 
     expect(result.collectionType).toBe("inner-city-night");
@@ -96,7 +96,7 @@ describe("computeCollectionRuleSet", () => {
   test("inner-city zone on a non-Tuesday has no cardboard collection", () => {
     const result = computeCollectionRuleSet(
       INNER_CITY,
-      new Date(Date.UTC(2024, 0, 3)),
+      new Date(Date.UTC(2026, 0, 14)),
     );
 
     if (result.collectionType !== "inner-city-night") {
@@ -109,29 +109,29 @@ describe("computeCollectionRuleSet", () => {
   test("only the UTC calendar date is read, never wall-clock time", () => {
     const lateInUtcDay = computeCollectionRuleSet(
       INNER_CITY,
-      new Date("2024-01-01T23:00:00Z"),
+      new Date("2026-01-12T23:00:00Z"),
     );
     const utcMidnight = computeCollectionRuleSet(
       INNER_CITY,
-      new Date(Date.UTC(2024, 0, 1)),
+      new Date(Date.UTC(2026, 0, 12)),
     );
 
     expect(lateInUtcDay).toEqual(utcMidnight);
 
     const suburbanLateInUtcDay = computeCollectionRuleSet(
       SUBURBAN,
-      new Date("2024-01-01T23:00:00Z"),
+      new Date("2026-01-12T23:00:00Z"),
     );
     const suburbanUtcMidnight = computeCollectionRuleSet(
       SUBURBAN,
-      new Date(Date.UTC(2024, 0, 1)),
+      new Date(Date.UTC(2026, 0, 12)),
     );
 
     expect(suburbanLateInUtcDay).toEqual(suburbanUtcMidnight);
   });
 
   test("the recycling week is read from the UTC calendar date, not the local one, across a week boundary", () => {
-    // 2024-01-07T23:00:00Z is Sunday in UTC (end of the epoch's glass week,
+    // 2026-01-18T23:00:00Z is Sunday in UTC (end of the epoch's glass week,
     // so still "glass"), but Monday 12:00 in Pacific/Auckland (UTC+13,
     // pinned suite-wide by ADR 0017) — the start of the next ("mixed")
     // week. Every other UTC-contract fixture in this file is either exact
@@ -141,7 +141,7 @@ describe("computeCollectionRuleSet", () => {
     // can: a local-getter regression here computes "mixed" instead.
     const result = computeCollectionRuleSet(
       SUBURBAN,
-      new Date("2024-01-07T23:00:00Z"),
+      new Date("2026-01-18T23:00:00Z"),
     );
     if (result.collectionType !== "suburban-kerbside") {
       throw new Error("expected a suburban rule set");
@@ -165,7 +165,7 @@ describe("computeCollectionRuleSet", () => {
       zone: "   ",
       isInnerCityNightCollection: false,
     };
-    const validDate = new Date(Date.UTC(2024, 0, 1));
+    const validDate = new Date(Date.UTC(2026, 0, 12));
 
     expect(() => computeCollectionRuleSet(blankZone, validDate)).toThrow(
       new RangeError("computeCollectionRuleSet: zone must be a non-empty string."),
@@ -178,11 +178,11 @@ describe("computeCollectionRuleSet", () => {
   test("repeat calls return equal but independent results with no shared mutable state", () => {
     const resultA = computeCollectionRuleSet(
       SUBURBAN,
-      new Date(Date.UTC(2024, 0, 1)),
+      new Date(Date.UTC(2026, 0, 12)),
     );
     const resultB = computeCollectionRuleSet(
       SUBURBAN,
-      new Date(Date.UTC(2024, 0, 1)),
+      new Date(Date.UTC(2026, 0, 12)),
     );
 
     expect(resultA).toEqual(resultB);
@@ -192,7 +192,7 @@ describe("computeCollectionRuleSet", () => {
 
     const resultC = computeCollectionRuleSet(
       SUBURBAN,
-      new Date(Date.UTC(2024, 0, 1)),
+      new Date(Date.UTC(2026, 0, 12)),
     );
     expect(resultC.binTypes).toEqual(["general-rubbish", "glass-recycling"]);
   });

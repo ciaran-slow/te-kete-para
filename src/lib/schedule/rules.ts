@@ -3,8 +3,9 @@
  * suburban 7:00 AM kerbside + alternating glass/mixed recycling, vs.
  * inner-city/Te Aro 5:30–10:00 PM yellow-bag night collection with Tuesday
  * cardboard. No DB access — see ADR 0015 (why classification is an input,
- * not derived from the zone string) and ADR 0016 (the alternating-week
- * epoch anchor is a placeholder pending real WCC calendar data).
+ * not derived from the zone string) and ADR 0016/ADR 0042 (the alternating-
+ * week epoch anchor is corrected to a sourced WCC calendar date, though the
+ * per-zone Calendar 1 vs 2 assignment is still open — issue #102).
  *
  * Dates are read as their UTC calendar date only (`getUTCFullYear` /
  * `getUTCMonth` / `getUTCDate`) — wall-clock time and the caller's local
@@ -62,9 +63,10 @@ export interface InnerCityRuleSet {
 export type CollectionRuleSet = SuburbanRuleSet | InnerCityRuleSet;
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
-// Monday 2024-01-01 UTC = the start of a "glass" week. Arbitrary,
-// documented placeholder — ADR 0016.
-const RECYCLING_EPOCH_UTC_MS = Date.UTC(2024, 0, 1);
+// Monday 2026-01-12 UTC = a confirmed "glass" week under WCC's published
+// Calendar 1 (ADR 0042). Calendar 1 vs Calendar 2 per zone is still
+// unconfirmed — issue #102.
+const RECYCLING_EPOCH_UTC_MS = Date.UTC(2026, 0, 12);
 
 export function computeCollectionRuleSet(
   zone: ZoneClassification,
