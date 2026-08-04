@@ -226,6 +226,13 @@ describe("GET /api/sorting/search", () => {
     expect(response.body.results).toEqual([]);
   });
 
+  // This integration test alone cannot catch a regression to naive
+  // `split(" ")`: the resulting empty-string tokens are universal no-ops in
+  // the route's AND-per-term chain (any `column.includes("")` is true), so
+  // they can never change which rows match, for any fixture data. The
+  // regression-catching coverage for tokenizeSearchQuery's whitespace
+  // handling is __tests__/lib/tokenize-search-query.test.ts; this test
+  // documents the end-to-end behavior it depends on (see #92).
   it("collapses repeated whitespace between terms", async () => {
     const response = await request(app).get(
       `/api/sorting/search?q=${encodeURIComponent("coffee    cup")}`,
