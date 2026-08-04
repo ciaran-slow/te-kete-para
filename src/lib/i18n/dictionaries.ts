@@ -56,6 +56,17 @@ export const en = {
   "shiftAlert.shiftsTo": "shifts to",
   "shiftAlert.error":
     "We couldn't check for upcoming collection changes right now. Please try again.",
+  "pushOptIn.label": "Night-before collection reminders",
+  "pushOptIn.status.checking": "Checking your notification settings…",
+  "pushOptIn.status.unsupported": "Push notifications aren't supported in this browser.",
+  "pushOptIn.status.misconfigured": "Push notifications aren't available yet.",
+  "pushOptIn.status.unsubscribed": "You're not receiving night-before reminders.",
+  "pushOptIn.status.subscribing": "Turning on night-before reminders…",
+  "pushOptIn.status.subscribed": "You're receiving night-before reminders.",
+  "pushOptIn.status.unsubscribing": "Turning off night-before reminders…",
+  "pushOptIn.status.denied": "Notifications are blocked for this site. Allow notifications in your browser settings to receive reminders.",
+  "pushOptIn.status.subscribeError": "We couldn't turn on reminders. Please try again.",
+  "pushOptIn.status.unsubscribeError": "We couldn't turn off reminders. Please try again.",
 } as const;
 
 export type TranslationKey = keyof typeof en;
@@ -113,6 +124,17 @@ export const mi: Record<TranslationKey, string> = {
   "shiftAlert.shiftsTo": "ka huri ki te",
   "shiftAlert.error":
     "Kāore i taea te tirotiro i ngā panoni kohinga ā tōna wā. Whakamātauria anō.",
+  "pushOptIn.label": "Ngā whakamahara kohinga i te pō i mua",
+  "pushOptIn.status.checking": "E tirotiro ana i ō tautuhinga whakamōhio…",
+  "pushOptIn.status.unsupported": "Kāore e taea ngā whakamōhio pana i tēnei pūtirotiro.",
+  "pushOptIn.status.misconfigured": "Kāore anō kia wātea ngā whakamōhio pana.",
+  "pushOptIn.status.unsubscribed": "Kāore koe e whiwhi whakamahara mō te pō i mua i te kohinga.",
+  "pushOptIn.status.subscribing": "E whakakā ana i ngā whakamahara pō-i-mua…",
+  "pushOptIn.status.subscribed": "Kei te whiwhi koe i ngā whakamahara pō-i-mua i te kohinga.",
+  "pushOptIn.status.unsubscribing": "E weweke ana i ngā whakamahara pō-i-mua…",
+  "pushOptIn.status.denied": "Kua ārai ngā whakamōhio mō tēnei pae. Whakaaetia ngā whakamōhio i ō tautuhinga pūtirotiro kia whiwhi whakamahara.",
+  "pushOptIn.status.subscribeError": "Kāore i taea te whakakā i ngā whakamahara. Tēnā koa, whakamātauria anō.",
+  "pushOptIn.status.unsubscribeError": "Kāore i taea te weweke i ngā whakamahara. Tēnā koa, whakamātauria anō.",
 };
 
 export const dictionaries: Record<Locale, Record<TranslationKey, string>> = {
