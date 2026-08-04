@@ -178,6 +178,14 @@ stays the current-state picture; the ADR carries the reasoning.
 
 ADRs ship in the same PR as the code they justify.
 
+**Re-verify the ADR number immediately before committing, not just during
+planning.** A number confirmed free while planning can be taken by a
+concurrent lane's PR merging in the meantime — this has actually happened
+(two parallel issues both landing on the same next-free number). Immediately
+before you commit, re-run `ls docs/adr/ | sort` against latest `origin/main`
+(`git fetch origin main` first) and renumber if something else claimed it
+since you checked.
+
 ## 8. Commit, push, PR
 
 Commit message: what changed and why, not a restatement of the diff. End it
