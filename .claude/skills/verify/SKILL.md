@@ -240,6 +240,17 @@ A review that lives only in this chat leaves the merged PR with no record of
 what was checked, what was deferred, or why. Deferred "worth doing later"
 findings especially: name the future issue each one belongs to, or file one.
 
+Then confirm the post actually succeeded before treating the verify pass as
+complete:
+
+```
+gh pr view <n> --json comments -q '.comments[-1].body'
+```
+
+A verify pass that finishes all four gates but ends its turn before
+confirming the report posted leaves the PR with no record verification ever
+happened — indistinguishable from a verify pass that never ran.
+
 If this skill itself gave you a wrong command or a claim that didn't match the
 repo during the review, fixing the skill file is part of the report — future
 verify passes inherit whatever you leave uncorrected.
