@@ -108,6 +108,28 @@
   `tkp-shell-*` caches deleted on `activate`) — NFR-02's core-asset half;
   user-selected address-schedule offline caching is a separate,
   `localStorage`-backed piece of NFR-02 tracked by #30 (ADR 0041).
+* **Push Opt-In Toggle:** `src/components/push-subscription-toggle.tsx`
+  renders `<PushSubscriptionToggle>`, a Radix `Switch` (ADR 0006) that
+  requests Notification permission and calls `pushManager.subscribe()`
+  only on explicit user interaction — never on mount, unlike
+  `<ServiceWorkerRegistration>`'s unconditional shell-caching registration
+  (ADR 0041) it builds on via `navigator.serviceWorker.ready`. On success
+  it POSTs to `/api/notifications/subscribe` (#25, ADR 0033); toggling off
+  calls `DELETE` on the same route (ADR 0034), rolling back the
+  browser-level subscription only after the server confirms removal, and
+  rolling back the browser-level subscription it just created if the
+  POST fails — the two sides must never diverge, since "subscribed" is
+  derived purely from `pushManager.getSubscription()` on next mount, with
+  no server-side GET to cross-check against. Its `applicationServerKey`
+  comes from `process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY`, validated by
+  `parseVapidPublicKey`; an absent or malformed key renders a
+  "misconfigured" state rather than throwing — no real VAPID keypair is
+  provisioned yet (ADR 0047). Status text renders through the shared
+  `<StatusRegion>` (ADR 0021). Like `<SortingSearch>` and
+  `<ShiftAlertBanner>`, it is fully built and tested but **not composed
+  into any route yet**: #27 (nightly cron dispatcher) and #28 (bilingual
+  payload delivery) are both still open, so nothing can act on a stored
+  subscription yet (ADR 0048).
 * **Localization State:** `LanguageProvider` (`src/lib/i18n/language-provider.tsx`) holds the selected locale and exposes `useTranslation()` → `{ locale, setLocale, t }`. Flat dot-delimited keys live in `src/lib/i18n/dictionaries.ts`, where `en` is the source of truth (`as const`) and `mi` is typed `Record<TranslationKey, string>`, so drift fails `tsc` as well as the runtime parity test (ADR 0010). The locale is read from `localStorage` (`tkp.locale`) through `useSyncExternalStore`, never during render and never via `setState` in an effect — `react-hooks/set-state-in-effect` is an error in this repo (ADR 0009). `getServerSnapshot` returns `en` so `/` stays statically prerendered, which costs a brief flash of English before Te Reo on a hard load; the inline-script alternative that would remove it is recorded as rejected in ADR 0009. The provider mirrors the locale onto `<html lang>` in an effect so screen readers pick the right voice (vision.md §3). Macron-safe rendering comes from the Inter / Plus Jakarta Sans `latin-ext` subsets (ADR 0005).
 * **Client Testing Strategy (Vitest + Testing Library + Axe):**
   * Unit tests verify bilingual UI component rendering, dictionary interpolation, and macron preservation.
