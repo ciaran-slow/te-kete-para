@@ -15,6 +15,7 @@ const SUBURBAN_ADDRESS: SuburbSearchResult = {
   suburb: "Karori",
   zone: "SUBURBAN-WEST",
   isInnerCityNightCollection: false,
+  recyclingCalendarGroup: 1,
 };
 const INNER_CITY_ADDRESS: SuburbSearchResult = {
   id: 20,
@@ -22,6 +23,7 @@ const INNER_CITY_ADDRESS: SuburbSearchResult = {
   suburb: "Te Aro",
   zone: "CBD-INNER",
   isInnerCityNightCollection: true,
+  recyclingCalendarGroup: null,
 };
 
 // Monday 2026-01-12 UTC = a confirmed "glass" week (rules.ts, ADR 0042).

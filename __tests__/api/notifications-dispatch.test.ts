@@ -24,6 +24,7 @@ describe("GET /api/notifications/dispatch", () => {
       suburb: "Karori",
       zone: "zone-east",
       is_inner_city_night_collection: false,
+      recycling_calendar_group: 1,
     });
 
     await getDb()("push_subscriptions").insert([

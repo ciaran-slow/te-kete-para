@@ -18,6 +18,7 @@ function utcDate(year: number, month: number, day: number): Date {
 const SUBURBAN_ZONE: ZoneClassification = {
   zone: "zone-east",
   isInnerCityNightCollection: false,
+  recyclingCalendarGroup: 1,
 };
 
 function buildPayload(overrides: Partial<DispatchPayload> = {}): DispatchPayload {
@@ -68,6 +69,7 @@ async function seedDispatchFixtures(): Promise<void> {
     suburb: "Karori",
     zone: "zone-east",
     is_inner_city_night_collection: false,
+    recycling_calendar_group: 1,
   });
 
   const [innerCityAddressId] = await db("addresses").insert({

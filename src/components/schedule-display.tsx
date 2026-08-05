@@ -90,6 +90,7 @@ function computeSchedule(
       {
         zone: address.zone,
         isInnerCityNightCollection: address.isInnerCityNightCollection,
+        recyclingCalendarGroup: address.recyclingCalendarGroup,
       },
       todayUtc,
     );

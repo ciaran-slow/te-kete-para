@@ -38,6 +38,7 @@ const CUBA_MALL: SuburbSearchResult = {
   suburb: "Te Aro",
   zone: "CBD-INNER",
   isInnerCityNightCollection: true,
+  recyclingCalendarGroup: null,
 };
 
 let styleTag: HTMLStyleElement;

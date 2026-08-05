@@ -112,6 +112,7 @@ interface DispatchRow {
   language_preference: string;
   zone: string | null;
   is_inner_city_night_collection: number | null;
+  recycling_calendar_group: number | null;
 }
 
 /**
@@ -141,6 +142,7 @@ export async function collectNightlyDispatchCandidates(
       "ps.language_preference as language_preference",
       "a.zone as zone",
       "a.is_inner_city_night_collection as is_inner_city_night_collection",
+      "a.recycling_calendar_group as recycling_calendar_group",
     );
 
   const candidates: DispatchPayload[] = [];
@@ -154,7 +156,14 @@ export async function collectNightlyDispatchCandidates(
       zone:
         row.zone === null
           ? null
-          : { zone: row.zone, isInnerCityNightCollection: Boolean(row.is_inner_city_night_collection) },
+          : {
+              zone: row.zone,
+              isInnerCityNightCollection: Boolean(row.is_inner_city_night_collection),
+              recyclingCalendarGroup:
+                row.recycling_calendar_group === 1 || row.recycling_calendar_group === 2
+                  ? row.recycling_calendar_group
+                  : null,
+            },
     };
     const candidate = planDispatchForSubscription(subscription, now);
     if (candidate !== null) candidates.push(candidate);

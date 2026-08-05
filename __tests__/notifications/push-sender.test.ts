@@ -20,6 +20,7 @@ function utcDate(year: number, month: number, day: number): Date {
 const SUBURBAN_ZONE: ZoneClassification = {
   zone: "zone-east",
   isInnerCityNightCollection: false,
+  recyclingCalendarGroup: 1,
 };
 
 function buildPayload(overrides: Partial<DispatchPayload> = {}): DispatchPayload {

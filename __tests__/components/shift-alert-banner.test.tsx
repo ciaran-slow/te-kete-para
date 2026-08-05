@@ -18,6 +18,7 @@ const KARORI: SuburbSearchResult = {
   suburb: "Karori",
   zone: "SUBURBAN-WEST",
   isInnerCityNightCollection: false,
+  recyclingCalendarGroup: 1,
 };
 const CUBA_STREET: SuburbSearchResult = {
   id: 20,
@@ -25,6 +26,7 @@ const CUBA_STREET: SuburbSearchResult = {
   suburb: "Te Aro",
   zone: "CBD-INNER",
   isInnerCityNightCollection: true,
+  recyclingCalendarGroup: null,
 };
 
 const CHRISTMAS: HolidayApiRecord = {

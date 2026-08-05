@@ -12,11 +12,13 @@ function utcDate(year: number, month: number, day: number): Date {
 const SUBURBAN_ZONE: ZoneClassification = {
   zone: "zone-east",
   isInnerCityNightCollection: false,
+  recyclingCalendarGroup: 1,
 };
 
 const INNER_CITY_ZONE: ZoneClassification = {
   zone: "zone-cbd",
   isInnerCityNightCollection: true,
+  recyclingCalendarGroup: null,
 };
 
 const SUBURBAN_GLASS_WEEK_DATE = utcDate(2026, 1, 12);

@@ -16,6 +16,7 @@ const SUBURBAN_ADDRESS: SuburbSearchResult = {
   suburb: "Karori",
   zone: "SUBURBAN-WEST",
   isInnerCityNightCollection: false,
+  recyclingCalendarGroup: 1,
 };
 const INNER_CITY_ADDRESS: SuburbSearchResult = {
   id: 20,
@@ -23,6 +24,7 @@ const INNER_CITY_ADDRESS: SuburbSearchResult = {
   suburb: "Te Aro",
   zone: "CBD-INNER",
   isInnerCityNightCollection: true,
+  recyclingCalendarGroup: null,
 };
 // Defensive/failure-path fixture only — real /api/suburbs/search results
 // never have a blank zone.
@@ -32,6 +34,7 @@ const BLANK_ZONE_ADDRESS: SuburbSearchResult = {
   suburb: "Nowhere",
   zone: "   ",
   isInnerCityNightCollection: false,
+  recyclingCalendarGroup: 1,
 };
 
 // Matches rules.test.ts's epoch fixture: a glass week, mid-UTC-day so the
