@@ -316,6 +316,27 @@ agent writes a prompt file and runs `workmux add -b -P <file>`.
 For full lifecycle orchestration (spawn, monitor, merge), use
 `/coordinator`.
 
+### Pre-assigning ADR/decision-record numbers for a same-batch dispatch
+
+If multiple lanes are being dispatched together and more than one is likely
+to write a new ADR (or any other sequentially-numbered decision record this
+repo uses), do not rely solely on each lane re-checking "is this number free
+on `origin/main`?" before it commits — that check only catches a collision
+against work that has *already landed*. It cannot catch a race between two
+lanes dispatched in the same batch, since both will see the same "next free"
+number if they check before either has committed. This happened on every
+multi-lane batch in practice, not occasionally.
+
+Instead, when writing the prompt files for a batch, compute the current max
+ADR number once (`git ls-tree origin/main --name-only -- docs/adr | sort -t/
+-k2 -n | tail -1`) and assign each lane in the batch a distinct number
+directly in its prompt (e.g. "use ADR 0059 for your decision — this number is
+reserved for you specifically because lanes X and Y in this same batch are
+also adding ADRs"). Each lane's own build-time re-check against `origin/main`
+remains valuable as a second safety net against *other*, differently-timed
+work landing in between — keep instructing lanes to do that — but it is not a
+substitute for upfront assignment within one batch.
+
 ### Cross-project worktree creation
 
 `workmux add` creates worktrees in the current git repo and adds the
