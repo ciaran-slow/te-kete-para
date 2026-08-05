@@ -153,7 +153,12 @@
   has no "no address" display state of its own, so the composition site
   hides it entirely rather than let a resident create an undeliverable,
   addressId-less subscription (dispatcher.ts's zone lookup requires a real
-  `address_id`).
+  `address_id`). An effect keyed on `addressId`
+  re-POSTs the existing browser-level subscription with the new address whenever it
+  changes while already subscribed (or after a prior address-change POST failure),
+  reusing the same upsert-on-`endpoint` route rather than calling `subscribe()`
+  again (#126, ADR 0062) — this is what keeps the nightly dispatcher's `address_id`
+  join current after a resident switches addresses instead of only at first opt-in.
 * **Localization State:** `LanguageProvider` (`src/lib/i18n/language-provider.tsx`) holds the selected locale and exposes `useTranslation()` → `{ locale, setLocale, t }`. Flat dot-delimited keys live in `src/lib/i18n/dictionaries.ts`, where `en` is the source of truth (`as const`) and `mi` is typed `Record<TranslationKey, string>`, so drift fails `tsc` as well as the runtime parity test (ADR 0010). The locale is read from `localStorage` (`tkp.locale`) through `useSyncExternalStore`, never during render and never via `setState` in an effect — `react-hooks/set-state-in-effect` is an error in this repo (ADR 0009). `getServerSnapshot` returns `en` so `/` stays statically prerendered, which costs a brief flash of English before Te Reo on a hard load; the inline-script alternative that would remove it is recorded as rejected in ADR 0009. The provider mirrors the locale onto `<html lang>` in an effect so screen readers pick the right voice (vision.md §3). Macron-safe rendering comes from the Inter / Plus Jakarta Sans `latin-ext` subsets (ADR 0005).
 * **Client Testing Strategy (Vitest + Testing Library + Axe):**
   * Unit tests verify bilingual UI component rendering, dictionary interpolation, and macron preservation.
