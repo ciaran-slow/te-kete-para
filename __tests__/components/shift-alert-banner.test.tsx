@@ -63,9 +63,9 @@ const SIX_DAYS_BEFORE_CHRISTMAS = new Date(Date.UTC(2026, 11, 19, 1));
 const MID_JUNE = new Date(Date.UTC(2026, 5, 15, 1));
 
 const EN_CHRISTMAS_MESSAGE =
-  "Your collection due 25/12/2026 (Christmas Day) shifts to 26/12/2026.";
+  "Collections normally due 25/12/2026 (Christmas Day) move to 26/12/2026.";
 const MI_CHRISTMAS_MESSAGE =
-  "Ko tō kohinga e tika ana mō te 25/12/2026 (Te Rā Kirihimete) ka huri ki te 26/12/2026.";
+  "Ko ngā kohinga e tika ana mō te 25/12/2026 (Te Rā Kirihimete) ka huri ki te 26/12/2026.";
 const EN_ERROR_MESSAGE =
   "We couldn't check for upcoming collection changes right now. Please try again.";
 

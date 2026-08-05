@@ -97,10 +97,16 @@
   promise callbacks, never synchronously in the effect body, keeping
   `react-hooks/set-state-in-effect` satisfied) and future "fetch when a
   prop becomes available" components should follow it rather than
-  re-litigating. Like `<SortingSearch>`, the component is fully built and
-  tested but **not composed into any route yet**: the seeded 2026 holiday
-  calendar is unverified pending #78 (§2C), so wiring it into
-  `address-schedule.tsx` is deferred until #78 closes (ADR 0031).
+  re-litigating. Composed into `address-schedule.tsx` alongside
+  `<ScheduleDisplay>` (issue #83), now that #78 has closed (ADR 0031, ADR
+  0038). Its wording is deliberately council-wide ("Collections normally
+  due... move to..."), not a per-address claim: nothing in
+  `addresses`/`schedules`/`CollectionRuleSet` marks a real collection day
+  for a given street (ADR 0019), so asserting "your collection" would be
+  false precision for a resident whose street isn't actually collected on
+  the affected day (ADR 0053). A genuine per-address version of this
+  banner is tracked as a distinct, larger data-sourcing effort (issue
+  #117), not part of this change.
 * **Web App Manifest & Core Shell Caching:** `src/app/manifest.ts` (Next's
   App Router manifest convention, resolved at `/manifest.webmanifest`)
   supplies the installable-app name, Papa/Moana theme colours, and two
@@ -201,10 +207,9 @@
   year, and the client needs rows from outside any naive window anyway to
   resolve adjacent-holiday chains (ADR 0030), so the 7-day lookahead is
   computed client-side in `<ShiftAlertBanner>` (§2A, ADR 0032). Failure
-  path returns `{ error }` with status 503. The route is live and publicly
-  reachable, but nothing user-facing calls it yet — its only consumer,
-  `<ShiftAlertBanner>`, is not composed into any route until #78 closes
-  (ADR 0031).
+  path returns `{ error }` with status 503. The route is live and consumed
+  by `<ShiftAlertBanner>`, composed into `address-schedule.tsx` (issue #83,
+  ADR 0031, ADR 0032, ADR 0053).
 * **Push Subscription Endpoints:** `POST` and `DELETE`
   `/api/notifications/subscribe`
   (`src/app/api/notifications/subscribe/route.ts`) create/update and remove
