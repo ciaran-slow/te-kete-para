@@ -145,12 +145,15 @@
   `parseVapidPublicKey`; an absent or malformed key renders a
   "misconfigured" state rather than throwing — no real VAPID keypair is
   provisioned yet (ADR 0047). Status text renders through the shared
-  `<StatusRegion>` (ADR 0021). Like `<SortingSearch>` and
-  `<ShiftAlertBanner>`, it is fully built and tested but **not composed
-  into any route yet**: #27's dispatch decision logic and #28's payload
-  localization/send logic now both exist (§2B), but nothing invokes them on
-  a schedule until #110 wires up nightly invocation, so nothing acts on a
-  stored subscription in production yet (ADR 0048).
+  `<StatusRegion>` (ADR 0021). Like `<SortingSearch>`, it was fully built
+  and tested but deferred from composition (ADR 0048) until #28's payload
+  delivery and #110's nightly cron invocation both existed. Both have now
+  closed; #113 (ADR 0058) composes it into `address-schedule.tsx`, gated on
+  `selected !== null` — unlike `<ShiftAlertBanner>`/`<ScheduleDisplay>`, it
+  has no "no address" display state of its own, so the composition site
+  hides it entirely rather than let a resident create an undeliverable,
+  addressId-less subscription (dispatcher.ts's zone lookup requires a real
+  `address_id`).
 * **Localization State:** `LanguageProvider` (`src/lib/i18n/language-provider.tsx`) holds the selected locale and exposes `useTranslation()` → `{ locale, setLocale, t }`. Flat dot-delimited keys live in `src/lib/i18n/dictionaries.ts`, where `en` is the source of truth (`as const`) and `mi` is typed `Record<TranslationKey, string>`, so drift fails `tsc` as well as the runtime parity test (ADR 0010). The locale is read from `localStorage` (`tkp.locale`) through `useSyncExternalStore`, never during render and never via `setState` in an effect — `react-hooks/set-state-in-effect` is an error in this repo (ADR 0009). `getServerSnapshot` returns `en` so `/` stays statically prerendered, which costs a brief flash of English before Te Reo on a hard load; the inline-script alternative that would remove it is recorded as rejected in ADR 0009. The provider mirrors the locale onto `<html lang>` in an effect so screen readers pick the right voice (vision.md §3). Macron-safe rendering comes from the Inter / Plus Jakarta Sans `latin-ext` subsets (ADR 0005).
 * **Client Testing Strategy (Vitest + Testing Library + Axe):**
   * Unit tests verify bilingual UI component rendering, dictionary interpolation, and macron preservation.

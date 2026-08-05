@@ -2,6 +2,7 @@
 
 import { useMemo, useSyncExternalStore } from "react";
 import { AddressSearch } from "@/components/address-search";
+import { PushSubscriptionToggle } from "@/components/push-subscription-toggle";
 import { ScheduleDisplay } from "@/components/schedule-display";
 import { ShiftAlertBanner } from "@/components/shift-alert-banner";
 import {
@@ -20,7 +21,9 @@ import {
  * still starting `null` identically on the server and the client's first
  * render (ADR 0018) — see ADR 0052 for why that stays safe. `AddressSearch`,
  * `ShiftAlertBanner`, and `ScheduleDisplay` all read this same `selected`
- * value.
+ * value. `PushSubscriptionToggle` only renders once `selected` is non-null —
+ * unlike its siblings it has no honest "no address" state, and an
+ * `addressId`-less subscription can never be delivered to (ADR 0058).
  */
 export function AddressSchedule() {
   const rawCachedAddress = useSyncExternalStore(
@@ -38,6 +41,9 @@ export function AddressSchedule() {
       <AddressSearch onSelect={writeCachedAddress} />
       <ShiftAlertBanner address={selected} />
       <ScheduleDisplay address={selected} />
+      {selected !== null && (
+        <PushSubscriptionToggle addressId={selected.id} />
+      )}
     </div>
   );
 }
