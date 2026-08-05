@@ -61,7 +61,11 @@
   local component state, so the schedule survives reload/offline relaunch —
   NFR-02, ADR 0052, issue #30 — while still starting `null` identically on
   the server and the client's first render, preserving ADR 0018's
-  client-only-"today" safety property.
+  client-only-"today" safety property. An address whose
+  `recyclingCalendarGroup` is not yet resolvable (ADR 0059) now renders a
+  distinct, specific message rather than the generic schedule-error
+  placeholder, since `computeCollectionRuleSet` signals that one case with a
+  named `UnresolvedRecyclingCalendarGroupError` (issue #131, ADR 0068).
 * **Sorting Search:** `src/components/sorting-search.tsx` renders
   `<SortingSearch>` (FR-05, "He Aha Tēnei?"), a debounced (300ms) search
   over `GET /api/sorting/search` that renders matched items and their
@@ -278,7 +282,10 @@
   boundary does not align with this repo's zone taxonomy (3 of the 4
   seeded suburban zones mix both calendars) — via WCC's live per-street
   lookup tool (ADR 0059, issue #102, superseding ADR 0042's uniform-
-  Calendar-1 default). It reads only the UTC calendar date of the
+  Calendar-1 default); that rejection is thrown as a named
+  `UnresolvedRecyclingCalendarGroupError` (still a `RangeError`) so callers
+  can distinguish it from the function's other rejections (issue #131, ADR
+  0068). It reads only the UTC calendar date of the
   `Date` passed in, so callers must construct dates via `Date.UTC(...)`
   or a `Z`-suffixed ISO string, never a local-time constructor.
 * **Holiday Shift Calculation:** `src/lib/schedule/holiday-shift.ts`
@@ -304,6 +311,12 @@
   `collectNightlyDispatchCandidates`, joining active `push_subscriptions` to
   their address's zone and computing tomorrow's NZ-local collection rule set
   via `tomorrowInNzAsUtcDate` + `computeCollectionRuleSet` (above).
+  `planDispatchForSubscription` logs a `console.error("[dispatcher] ...")`
+  line identifying the subscription and zone whenever it drops a candidate
+  specifically because `recyclingCalendarGroup` is unresolved, so that
+  otherwise-permanent, silent exclusion from every future nightly run is now
+  visible (issue #131, ADR 0068) — every other rejection reason stays a
+  silent no-op, unchanged.
   `src/lib/notifications/payload-builder.ts`'s `buildLocalizedPushContent`
   renders that rule set into a localized `{ title, body }` via the shared
   dictionaries (§2A), keyed on each subscription's `languagePreference` — a

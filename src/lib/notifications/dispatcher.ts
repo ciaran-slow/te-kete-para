@@ -1,5 +1,10 @@
 import { getDb } from "@/lib/db";
-import { computeCollectionRuleSet, type CollectionRuleSet, type ZoneClassification } from "@/lib/schedule/rules";
+import {
+  computeCollectionRuleSet,
+  UnresolvedRecyclingCalendarGroupError,
+  type CollectionRuleSet,
+  type ZoneClassification,
+} from "@/lib/schedule/rules";
 import { isLocale, type Locale } from "@/lib/i18n/dictionaries";
 
 /** A push_subscriptions row joined with its address's zone classification, if any. */
@@ -89,7 +94,12 @@ export function planDispatchForSubscription(
   let ruleSet: CollectionRuleSet;
   try {
     ruleSet = computeCollectionRuleSet(subscription.zone, tomorrow);
-  } catch {
+  } catch (err) {
+    if (err instanceof UnresolvedRecyclingCalendarGroupError) {
+      console.error(
+        `[dispatcher] Dropping subscription ${subscription.id} (zone "${subscription.zone.zone}"): recyclingCalendarGroup is unresolved.`,
+      );
+    }
     return null;
   }
 
