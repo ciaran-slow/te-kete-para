@@ -31,12 +31,40 @@ the same PR, so treat it as the expected case, not a one-off:
 
 ```
 git fetch origin <branch>
-git checkout -B <unique-local-name> FETCH_HEAD
+git checkout -B <unique-local-name> origin/<branch>
 ```
+
+Use `origin/<branch>`, not `FETCH_HEAD` — `FETCH_HEAD` is a single file shared
+by every git process in the repo, so a concurrent fetch from another lane's
+worktree (verify or build) can overwrite it between your two commands and
+silently land you on the wrong commit. `origin/<branch>` is a named
+remote-tracking ref that only this fetch updates, so it can't be clobbered by
+unrelated concurrent activity in sibling worktrees.
 
 Pick `<unique-local-name>` so it can't collide with a branch name a sibling
 worktree already holds — e.g. `verify-<issue-number>-<random-suffix>` rather
-than bare `verify-<issue-number>`. A freshly fetched worktree also has no
+than bare `verify-<issue-number>`.
+
+If you are starting from the repo's **primary** checkout (i.e. `git worktree
+list` shows you at `/Users/ciaranslow/Projects/te-kete-para` on `main`) rather
+than from a per-agent worktree, do not run `git checkout -B` there at all — it
+would move the primary checkout off `main` and leave it parked on your review
+branch for whatever runs next. Get your own worktree instead, then work inside
+it for the rest of the pass:
+
+```
+git fetch origin <branch>
+git worktree add -b <unique-local-name> \
+  /Users/ciaranslow/Projects/te-kete-para__worktrees/<unique-local-name> \
+  origin/<branch>
+```
+
+Confirm you actually landed on the PR's head before reviewing anything —
+`git rev-parse HEAD` in the new worktree should equal
+`gh pr view <n> --repo ciaran-slow/te-kete-para --json headRefOid -q .headRefOid`.
+A review of the wrong commit is worse than no review, and it is silent.
+
+A freshly fetched worktree also has no
 `node_modules`; run `npm ci` before the four gates in step 3 or they fail for
 an unrelated reason.
 
