@@ -54,9 +54,14 @@
   collection date" — ADR 0019 — and only ever computes "today" on a
   render path reachable exclusively client-side, after a user selection —
   ADR 0018. The two components are composed by the colocated
-  `src/app/address-schedule.tsx`, which owns the shared
-  `selected: SuburbSearchResult | null` state and is rendered directly
-  from `src/app/page.tsx` (a Server Component) per ADR 0011.
+  `src/app/address-schedule.tsx`, rendered directly from `src/app/page.tsx`
+  (a Server Component) per ADR 0011. `selected` is sourced from a
+  `useSyncExternalStore` over a versioned `localStorage` cache of the
+  selected `SuburbSearchResult` (`src/lib/schedule/address-cache.ts`), not
+  local component state, so the schedule survives reload/offline relaunch —
+  NFR-02, ADR 0052, issue #30 — while still starting `null` identically on
+  the server and the client's first render, preserving ADR 0018's
+  client-only-"today" safety property.
 * **Sorting Search:** `src/components/sorting-search.tsx` renders
   `<SortingSearch>` (FR-05, "He Aha Tēnei?"), a debounced (300ms) search
   over `GET /api/sorting/search` that renders matched items and their
@@ -106,8 +111,12 @@
   precaches five stable-path shell assets on `install` (network-first for
   navigations, cache-first for the other precached assets, with older
   `tkp-shell-*` caches deleted on `activate`) — NFR-02's core-asset half;
-  user-selected address-schedule offline caching is a separate,
-  `localStorage`-backed piece of NFR-02 tracked by #30 (ADR 0041).
+  user-selected address-schedule offline caching is the separate,
+  `localStorage`-backed piece of NFR-02 anticipated here and implemented by
+  #30 (ADR 0052), which caches the selected `SuburbSearchResult` (not the
+  raw search response or a computed rule set) and restores it via
+  `useSyncExternalStore`, mirroring `LanguageProvider`'s locale persistence
+  (ADR 0009).
 * **Push Opt-In Toggle:** `src/components/push-subscription-toggle.tsx`
   renders `<PushSubscriptionToggle>`, a Radix `Switch` (ADR 0006) that
   requests Notification permission and calls `pushManager.subscribe()`
