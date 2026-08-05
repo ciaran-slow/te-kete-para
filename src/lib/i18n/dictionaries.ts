@@ -52,6 +52,8 @@ export const en = {
   "schedule.binType.cardboard": "Cardboard",
   "schedule.error":
     "We couldn't work out today's collection for this address. Please try again.",
+  "schedule.calendarGroupUnconfirmed":
+    "We haven't confirmed this address's recycling calendar yet. Check back soon.",
   "shiftAlert.prefix": "Collections normally due",
   "shiftAlert.shiftsTo": "move to",
   "shiftAlert.error":
@@ -123,6 +125,8 @@ export const mi: Record<TranslationKey, string> = {
   "schedule.binType.cardboard": "Kāta",
   "schedule.error":
     "Kāore i taea te tātai i te kohinga mō tēnei wāhitau. Whakamātauria anō.",
+  "schedule.calendarGroupUnconfirmed":
+    "Kāore anō i te whakaūhia te maramataka hangarua mō tēnei wāhitau. Tirohia anō ā tōna wā.",
   "shiftAlert.prefix": "Ko ngā kohinga e tika ana mō te",
   "shiftAlert.shiftsTo": "ka huri ki te",
   "shiftAlert.error":
