@@ -1,5 +1,6 @@
 import { collectNightlyDispatchCandidates, type DispatchPayload } from "./dispatcher";
 import { sendDispatchPayload, type DispatchOutcome } from "./push-sender";
+import { pruneGoneSubscriptions } from "./subscription-pruner";
 
 export type { DispatchOutcome } from "./push-sender";
 
@@ -10,8 +11,14 @@ export async function sendDispatchBatch(payloads: DispatchPayload[]): Promise<Di
   return Promise.all(payloads.map((payload) => sendDispatchPayload(payload)));
 }
 
-/** DB-aware entry point -- what #110 calls nightly. */
+/**
+ * DB-aware entry point -- what #110 calls nightly. Prunes any subscription
+ * whose send came back with a definitive gone signal (#111, ADR 0057) once
+ * every payload in the batch has been attempted.
+ */
 export async function runNightlyDispatch(now: Date): Promise<DispatchOutcome[]> {
   const candidates = await collectNightlyDispatchCandidates(now);
-  return sendDispatchBatch(candidates);
+  const outcomes = await sendDispatchBatch(candidates);
+  await pruneGoneSubscriptions(outcomes);
+  return outcomes;
 }
