@@ -38,7 +38,13 @@
  *     general rubbish regardless of fill state, with the Southern
  *     Landfill as a fee-paying alternative, not a free hazardous-waste
  *     drop-off. Corrected this pass — closes the one gap ADR 0054 left
- *     open.
+ *     open. One sub-case is reconciled rather than tool-confirmed: this
+ *     description names "spray paint" as an example, but the search
+ *     tool's 159 items have no dedicated spray-paint entry — its
+ *     "Paint" item says paint is hazardous waste regardless of
+ *     container, so the disposal text carves spray paint out to that
+ *     guidance instead of asserting the aerosol item's general-rubbish
+ *     answer covers it.
  *   - glass-bottle: WCC "Recycling crates" ("clean glass bottles and jars
  *     only (no lids)") and "What can go in kerbside recycling".
  *   - plastic-bottle: WCC "What can go in kerbside recycling", Plastics
@@ -124,9 +130,9 @@ exports.seed = async function seed(knex) {
       description_mi:
         "He kēne rehu matūriki (hei tauira, te wai kakara tinana, te peita puhipuhi, te wai kakara whare), ahakoa kua watea, kāore rānei.",
       disposal_instructions_en:
-        "Aerosol and spray cans are not accepted in kerbside recycling — they can be dangerous if punctured during the recycling sort. WCC's official waste-sorting tool confirms they go in your general rubbish instead, whether empty or still full; you can also drop them at the Southern Landfill (fees apply). Never puncture or burn a can, even an empty one.",
+        "Aerosol and spray cans are not accepted in kerbside recycling — they can be dangerous if punctured during the recycling sort. WCC's official waste-sorting tool confirms most of them go in your general rubbish instead, whether empty or still full, or you can drop one at the Southern Landfill (fees apply). The exception is spray paint: WCC's tool has no dedicated spray-paint item, but its separate paint guidance treats paint as hazardous waste no matter the container — take a spray-paint can to the Southern Landfill's Hazardous Waste drop-off instead (free up to 20kg/20L), never your general rubbish. Never puncture or burn any aerosol can, even an empty one.",
       disposal_instructions_mi:
-        "Kāore ngā kēne rehu matūriki e whakaaetia ki te hangarua ā-huarahi — ka taea pea te mōrearea mehemea ka werohia i te wā e wehewehea ana ngā rauemi hangarua. E whakaū ana te taputapu wehewehe para whaimana a WCC ka haere kē ki tō para whānui, ahakoa kua watea, kāore rānei — ka taea hoki te kawe ki te Southern Landfill (he utu kei reira). Kaua rawa e wero, e tahu rānei i te kēne, ahakoa kua watea.",
+        "Kāore ngā kēne rehu matūriki e whakaaetia ki te hangarua ā-huarahi — ka taea pea te mōrearea mehemea ka werohia i te wā e wehewehea ana ngā rauemi hangarua. E whakaū ana te taputapu wehewehe para whaimana a WCC ka haere kē te nuinga ki tō para whānui, ahakoa kua watea, kāore rānei — ka taea hoki te kawe ki te Southern Landfill (he utu kei reira). Ko te peita puhipuhi te mea rerekē: kāore he tūemi peita puhipuhi motuhake kei te taputapu a WCC, engari e kī ana āna tohutohu peita motuhake he para mōrearea te peita ahakoa te ipu — kawea he kēne peita puhipuhi ki te wāhi tuku para mōrearea o te Southern Landfill (kore utu tae atu ki te 20kg/20L), kaua ki tō para whānui. Kaua rawa e wero, e tahu rānei i tētahi kēne rehu matūriki, ahakoa kua watea.",
       keywords: "",
     },
     {

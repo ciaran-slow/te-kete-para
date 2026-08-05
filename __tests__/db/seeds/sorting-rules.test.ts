@@ -172,21 +172,47 @@ describe("sorting_rules seed", () => {
 
     const aerosolCan = await db("sorting_rules")
       .where({ item_key: "aerosol-can" })
-      .first("disposal_instructions_en");
+      .first("disposal_instructions_en", "disposal_instructions_mi");
     if (!aerosolCan) throw new Error("seed did not insert aerosol-can");
     // WCC's own "What to do with your waste" lookup tool says aerosol/spray
     // cans go straight to kerbside general rubbish regardless of fill state
-    // -- the old text invented an empty-vs-full split sending full cans to
-    // hazardous waste at a transfer station instead. If that wrong split
+    // -- the old text invented an empty-vs-full split sending every full can
+    // to hazardous waste at a transfer station instead. If that wrong split
     // were reinstated, "general rubbish" wouldn't cover the full-can case
-    // and "hazardous waste" / "completely empty" would reappear, so this
-    // assertion is falsifiable in both directions.
+    // and "completely empty"/"still contains product" would reappear, so
+    // this assertion is falsifiable in both directions.
     expect(aerosolCan.disposal_instructions_en).toContain("general rubbish");
     expect(aerosolCan.disposal_instructions_en).not.toContain(
-      "hazardous waste",
+      "completely empty",
     );
     expect(aerosolCan.disposal_instructions_en).not.toContain(
-      "completely empty",
+      "still contains product",
+    );
+    // A plain aerosol/spray can isn't the only thing this row's own
+    // description names -- "spray paint" is too, and WCC's separate Paint
+    // guidance treats paint as hazardous waste regardless of container
+    // (verify finding, PR #137). The general-rubbish answer above must not
+    // silently swallow that case: assert the row carves spray paint out to
+    // hazardous-waste handling explicitly, which the pre-fix text did not.
+    expect(aerosolCan.disposal_instructions_en).toContain("spray paint");
+    expect(aerosolCan.disposal_instructions_en).toContain("hazardous waste");
+
+    // The Te Reo Māori column serves Te Reo readers directly and has its
+    // own history of content regressions (PR #88 -> #70 -> #119) that the
+    // English-only assertions above cannot catch -- e.g. reverting only
+    // `disposal_instructions_mi` to the old wrong split leaves every
+    // English assertion above green. Pin the same two claims in mi: "para
+    // whānui" (general rubbish) for the general case, "para mōrearea"
+    // (hazardous waste) for the spray-paint carve-out, and reject the old
+    // wrong phrasing for "completely empty" ("kua tino watea") and "still
+    // contains product" ("kei roto tonu").
+    expect(aerosolCan.disposal_instructions_mi).toContain("para whānui");
+    expect(aerosolCan.disposal_instructions_mi).toContain("para mōrearea");
+    expect(aerosolCan.disposal_instructions_mi).not.toContain(
+      "kua tino watea",
+    );
+    expect(aerosolCan.disposal_instructions_mi).not.toContain(
+      "kei roto tonu",
     );
   });
 
