@@ -50,6 +50,7 @@ test.describe("home page (/) — axe a11y suite", () => {
                 suburb: "Test Suburb",
                 zone: "SUBURBAN-WEST",
                 isInnerCityNightCollection: false,
+                recyclingCalendarGroup: 1,
               },
             ],
           },
