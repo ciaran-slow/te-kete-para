@@ -73,8 +73,13 @@ only case 1.
   `rules.ts`; both callers gain a precise, type-safe way to distinguish one
   rejection reason from another; `instanceof RangeError` still holds, so any
   existing or future broad catch/check keeps working unchanged; the message
-  text is unchanged, so the existing `rules.test.ts` assertion needs no
-  edit.
+  text is unchanged, which keeps the assertion in `rules.test.ts` about
+  *what the message says* stable even though the assertion had to switch
+  from constructing a plain `new RangeError(...)` to
+  `new UnresolvedRecyclingCalendarGroupError(...)` — Vitest's `toThrow`
+  compares the thrown error's shape, not just `.message`, so a change in
+  concrete type does require touching that call even when the text itself
+  doesn't change.
 - **Cons:** Adds one class to `rules.ts`'s public surface. If a future issue
   (e.g. #134's `collection_weekday` wiring) needs the same distinguishing
   power for a different rejection, it either reuses this pattern (another
