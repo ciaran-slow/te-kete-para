@@ -18,6 +18,7 @@ const SCHEMA = {
       zone: { nullable: false, defaultValue: null },
       is_inner_city_night_collection: { nullable: false, defaultValue: "'0'" },
       recycling_calendar_group: { nullable: true, defaultValue: null },
+      collection_weekday: { nullable: true, defaultValue: null },
     },
     indexes: [
       { name: "addresses_street_name_index", unique: false },
