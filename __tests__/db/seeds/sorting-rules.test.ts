@@ -165,6 +165,31 @@ describe("sorting_rules seed", () => {
     );
   });
 
+  it("corrects the aerosol-can empty-vs-full disposal split (issue #119 live WCC confirmation)", async () => {
+    db = Knex(knexConfigs.test);
+    await db.migrate.latest();
+    await db.seed.run();
+
+    const aerosolCan = await db("sorting_rules")
+      .where({ item_key: "aerosol-can" })
+      .first("disposal_instructions_en");
+    if (!aerosolCan) throw new Error("seed did not insert aerosol-can");
+    // WCC's own "What to do with your waste" lookup tool says aerosol/spray
+    // cans go straight to kerbside general rubbish regardless of fill state
+    // -- the old text invented an empty-vs-full split sending full cans to
+    // hazardous waste at a transfer station instead. If that wrong split
+    // were reinstated, "general rubbish" wouldn't cover the full-can case
+    // and "hazardous waste" / "completely empty" would reappear, so this
+    // assertion is falsifiable in both directions.
+    expect(aerosolCan.disposal_instructions_en).toContain("general rubbish");
+    expect(aerosolCan.disposal_instructions_en).not.toContain(
+      "hazardous waste",
+    );
+    expect(aerosolCan.disposal_instructions_en).not.toContain(
+      "completely empty",
+    );
+  });
+
   it("seeds a 'battery' keyword on household-batteries to fix issue #73's search-recall gap", async () => {
     db = Knex(knexConfigs.test);
     await db.migrate.latest();

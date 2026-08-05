@@ -6,16 +6,19 @@
  * other table has a foreign key into sorting_rules, so unlike addresses
  * there is no downstream ON DELETE SET NULL effect from a re-run.
  *
- * CONFIRMED CONTENT (issue #70) — 14 of the 15 rows below are confirmed
- * against a live wellington.govt.nz page fetched directly this pass
+ * CONFIRMED CONTENT (issues #70, #119) — all 15 rows below are confirmed
+ * against a live wellington.govt.nz page, or the JSON API backing its
+ * "What to do with your waste" search tool, fetched directly this pass
  * (curl with a browser User-Agent bypasses the site's 403-to-bare-request
- * block; WebFetch and unheadered curl both still get a 403). One row
- * (aerosol-can) has its main claim confirmed live but one supporting
- * detail stays genuinely unconfirmed — see below. This replaces the
- * "UNVERIFIED CONTENT" status from PR #88, whose verify pass hit 403s
- * because it used guessed URL paths and no browser User-Agent; the real
- * page paths were found via web search and fetched successfully this
- * pass. Row-by-row live sources:
+ * block; WebFetch and unheadered curl both still get a 403). Issue #70
+ * confirmed 14 of 15 rows this way, leaving aerosol-can's empty-vs-full
+ * handling split as the one open gap (ADR 0054); issue #119 closed it by
+ * reverse-engineering the search tool's `POST
+ * /Handlers/SearchBucketHandler.ashx` backing API (ADR 0060) and found
+ * that split was wrong. This replaces the "UNVERIFIED CONTENT" status
+ * from PR #88, whose verify pass hit 403s because it used guessed URL
+ * paths and no browser User-Agent; the real page paths were found via web
+ * search and fetched successfully this pass. Row-by-row live sources:
  *
  *   - pizza-box: WCC "Recycling myths – busted!" (10 Jun 2024) and "What
  *     can go in kerbside recycling" — grease stains alone don't disqualify
@@ -27,13 +30,15 @@
  *     explicitly listed under "General waste".
  *   - aerosol-can: WCC "What can go in kerbside recycling" confirms
  *     aerosols are excluded from kerbside recycling (listed under
- *     "Hazardous items"). NOT confirmed: the row's empty-can-vs-full-can
- *     handling split (general rubbish vs a WCC transfer station as
- *     hazardous waste) — WCC's "Domestic hazardous waste" page lists
- *     exactly what it accepts as hazardous waste and aerosols aren't on
- *     that list, so this detail is still only inferred from other NZ
- *     councils' guidance (Auckland, Palmerston North), not WCC's own.
- *     Tracked by issue #119.
+ *     "Hazardous items"). The empty-vs-full split previously in this row
+ *     was wrong — WCC's own "What to do with your waste" lookup tool
+ *     (item "Aerosol and spray cans", fetched by reverse-engineering its
+ *     `POST /Handlers/SearchBucketHandler.ashx` backing API; issue #119,
+ *     ADR 0060) states aerosol and spray cans go straight in kerbside
+ *     general rubbish regardless of fill state, with the Southern
+ *     Landfill as a fee-paying alternative, not a free hazardous-waste
+ *     drop-off. Corrected this pass — closes the one gap ADR 0054 left
+ *     open.
  *   - glass-bottle: WCC "Recycling crates" ("clean glass bottles and jars
  *     only (no lids)") and "What can go in kerbside recycling".
  *   - plastic-bottle: WCC "What can go in kerbside recycling", Plastics
@@ -119,9 +124,9 @@ exports.seed = async function seed(knex) {
       description_mi:
         "He kēne rehu matūriki (hei tauira, te wai kakara tinana, te peita puhipuhi, te wai kakara whare), ahakoa kua watea, kāore rānei.",
       disposal_instructions_en:
-        "Aerosol cans are not accepted in kerbside recycling under the 2024 national kerbside standard. Put completely empty cans in your general rubbish. If the can still contains product or you're unsure, take it to a WCC transfer station as hazardous waste — never puncture or burn it.",
+        "Aerosol and spray cans are not accepted in kerbside recycling — they can be dangerous if punctured during the recycling sort. WCC's official waste-sorting tool confirms they go in your general rubbish instead, whether empty or still full; you can also drop them at the Southern Landfill (fees apply). Never puncture or burn a can, even an empty one.",
       disposal_instructions_mi:
-        "Kāore ngā kēne rehu matūriki e whakaaetia ki te hangarua ā-huarahi i raro i te paerewa ā-motu o te tau 2024. Whakauruhia ngā kēne kua tino watea ki tō para whānui. Mēnā kei roto tonu he rawa, kāore rānei koe i te mōhio, kawea ki tētahi teihana whakawhiti a WCC hei para mōrearea — kaua rawa e wero, e tahu rānei.",
+        "Kāore ngā kēne rehu matūriki e whakaaetia ki te hangarua ā-huarahi — ka taea pea te mōrearea mehemea ka werohia i te wā e wehewehea ana ngā rauemi hangarua. E whakaū ana te taputapu wehewehe para whaimana a WCC ka haere kē ki tō para whānui, ahakoa kua watea, kāore rānei — ka taea hoki te kawe ki te Southern Landfill (he utu kei reira). Kaua rawa e wero, e tahu rānei i te kēne, ahakoa kua watea.",
       keywords: "",
     },
     {
