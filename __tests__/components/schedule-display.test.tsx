@@ -42,6 +42,20 @@ const BLANK_ZONE_ADDRESS: SuburbSearchResult = {
   recyclingCalendarGroup: 1,
   collectionWeekday: 1,
 };
+// A suburban address with an otherwise-valid zone but an unconfirmed
+// collectionWeekday (ADR 0063: null for a suburban address not yet
+// confirmed) — unreachable with today's fully-confirmed seed data, but the
+// component must still degrade to the same error state as a malformed zone,
+// via findNextCollectionDate's RangeError, not crash or show a bogus date.
+const UNCONFIRMED_WEEKDAY_ADDRESS: SuburbSearchResult = {
+  id: 40,
+  streetName: "Unconfirmed Street",
+  suburb: "Nowhere",
+  zone: "SUBURBAN-WEST",
+  isInnerCityNightCollection: false,
+  recyclingCalendarGroup: 1,
+  collectionWeekday: null,
+};
 
 // Matches rules.test.ts's epoch fixture: a glass week, mid-UTC-day so the
 // viewer's local (Pacific/Auckland, ADR 0017) calendar date is also
@@ -199,6 +213,23 @@ describe("ScheduleDisplay", () => {
       ),
     ).toBeInTheDocument();
     expect(screen.queryAllByRole("listitem")).toHaveLength(0);
+  });
+
+  test("a suburban address with an unconfirmed collectionWeekday shows the translated error, not a bogus date (distinct throw path from the blank-zone case)", () => {
+    expect(() =>
+      renderDisplay(UNCONFIRMED_WEEKDAY_ADDRESS, GLASS_WEEK_MONDAY),
+    ).not.toThrow();
+
+    expect(
+      screen.getByText(
+        "We couldn't work out your next collection for this address. Please try again.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryAllByRole("listitem")).toHaveLength(0);
+    expect(screen.queryByText(/\d{2}\/\d{2}\/\d{4}/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { level: 2 }),
+    ).not.toBeInTheDocument();
   });
 
   test("repeated address changes never leave stale content behind", () => {
