@@ -116,8 +116,13 @@
   hand-written `public/sw.js` (no Serwist/next-pwa dependency) that
   precaches five stable-path shell assets on `install` (network-first for
   navigations, cache-first for the other precached assets, with older
-  `tkp-shell-*` caches deleted on `activate`) — NFR-02's core-asset half;
-  user-selected address-schedule offline caching is the separate,
+  `tkp-shell-*` caches deleted on `activate`) — NFR-02's core-asset half. It
+  also registers `push` and `notificationclick` listeners (#115, ADR 0055):
+  `push` shows a notification for the delivered dispatch payload (§2B) via
+  `self.registration.showNotification`, with a generic English fallback if
+  the payload is missing or fails to parse as JSON; `notificationclick`
+  closes the notification and focuses an existing app window or opens one
+  at `/`. User-selected address-schedule offline caching is the separate,
   `localStorage`-backed piece of NFR-02 anticipated here and implemented by
   #30 (ADR 0052), which caches the selected `SuburbSearchResult` (not the
   raw search response or a computed rule set) and restores it via
@@ -279,8 +284,11 @@
   `src/lib/notifications/dispatch-runner.ts`'s `runNightlyDispatch` composes
   all three via `Promise.all`, so one subscriber's failure never blocks
   another's send. No cron trigger or route invokes this pipeline yet — that
-  wiring is #110's job (ADR 0044) — and `public/sw.js` has no `push` event
-  listener to display what gets sent, tracked by #115 (ADR 0051).
+  wiring is #110's job (ADR 0044). `public/sw.js`'s `push` listener now
+  calls `self.registration.showNotification(...)` to display what gets
+  sent, falling back to a generic notification on a malformed/absent
+  payload, with a `notificationclick` listener that focuses or opens the
+  app's root route (#115, ADR 0055).
 
 ### C. Data Persistence Layer
 * **Database Engine:** **SQLite3** stored as an embedded file database (`/data/teketepara.db`).
@@ -326,8 +334,9 @@
      Pipeline (§2B) evaluates each subscription's NZ-local "tomorrow",
      builds a localized bilingual payload, and dispatches it to the Web
      Push API — the decision, localization, and send logic all exist today
-     (#27, #28), but nothing invokes the pipeline on a schedule yet (#110)
-     and no service worker listener displays what arrives (#115).
+     (#27, #28), but nothing invokes the pipeline on a schedule yet (#110).
+     The browser side is handled by `public/sw.js`'s `push`/`notificationclick`
+     listeners (#115, ADR 0055).
 
 ---
 

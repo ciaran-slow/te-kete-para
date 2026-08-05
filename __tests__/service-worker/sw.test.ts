@@ -20,6 +20,9 @@ const PRECACHE_URLS = [
   "/icons/icon-maskable.svg",
 ];
 
+const DEFAULT_TITLE = "Te Kete Para";
+const DEFAULT_BODY = "You have a collection reminder — open the app for details.";
+
 function keyFor(request: { url: string } | string): string {
   // sw.js calls caches.match("/") with a bare pathname (no origin to resolve
   // against) and caches.match(request) with a full Request-like object.
@@ -66,11 +69,16 @@ type FakeCaches = ReturnType<typeof createFakeCaches>;
 function createContext(options: {
   fetchImpl?: (...args: unknown[]) => Promise<unknown>;
   cacheNames?: string[];
+  windowClients?: Array<{ focus: () => Promise<unknown> }>;
 } = {}) {
   const listeners: Record<string, (event: unknown) => void> = {};
   const caches = createFakeCaches(options.cacheNames);
   const deleteSpy = vi.fn(caches.delete.bind(caches));
   (caches as FakeCaches & { delete: typeof deleteSpy }).delete = deleteSpy;
+
+  const showNotification = vi.fn().mockResolvedValue(undefined);
+  const matchAll = vi.fn().mockResolvedValue(options.windowClients ?? []);
+  const openWindow = vi.fn().mockResolvedValue(undefined);
 
   const selfObj = {
     addEventListener(type: string, handler: (event: unknown) => void) {
@@ -78,7 +86,8 @@ function createContext(options: {
     },
     location: { origin: "https://example.test" },
     skipWaiting: vi.fn(),
-    clients: { claim: vi.fn() },
+    clients: { claim: vi.fn(), matchAll, openWindow },
+    registration: { showNotification },
   };
 
   const fetchImpl = options.fetchImpl ?? vi.fn();
@@ -86,7 +95,7 @@ function createContext(options: {
   vm.createContext(sandbox);
   vm.runInContext(swSource, sandbox);
 
-  return { listeners, caches, self: selfObj, fetchImpl, deleteSpy };
+  return { listeners, caches, self: selfObj, fetchImpl, deleteSpy, showNotification, matchAll, openWindow };
 }
 
 function makeLifecycleEvent() {
@@ -112,6 +121,29 @@ function makeFetchEvent(request: {
     },
   };
   return { event, getResponsePromise: () => promise };
+}
+
+function makePushEvent(dataJson: (() => unknown) | undefined) {
+  let promise: Promise<unknown> | undefined;
+  const event = {
+    data: dataJson === undefined ? undefined : { json: dataJson },
+    waitUntil(p: Promise<unknown>) {
+      promise = p;
+    },
+  };
+  return { event, getPromise: () => promise };
+}
+
+function makeNotificationClickEvent() {
+  let promise: Promise<unknown> | undefined;
+  const notification = { close: vi.fn() };
+  const event = {
+    notification,
+    waitUntil(p: Promise<unknown>) {
+      promise = p;
+    },
+  };
+  return { event, notification, getPromise: () => promise };
 }
 
 describe("install", () => {
@@ -265,6 +297,110 @@ describe("fetch", () => {
     listeners.fetch(event);
 
     expect(getResponsePromise()).toBeUndefined();
+  });
+});
+
+describe("push", () => {
+  test("valid payload shows a notification with the server-provided title and body", async () => {
+    const { listeners, showNotification } = createContext();
+    const { event, getPromise } = makePushEvent(() => ({
+      title: "Collection reminder for tomorrow",
+      body: "Put out: General rubbish. Put out by: 7:00am.",
+      collectionDate: "2026-08-06",
+    }));
+
+    listeners.push(event);
+    await getPromise();
+
+    expect(showNotification).toHaveBeenCalledWith("Collection reminder for tomorrow", {
+      body: "Put out: General rubbish. Put out by: 7:00am.",
+    });
+  });
+
+  test("missing event.data falls back to the generic notification", async () => {
+    const { listeners, showNotification } = createContext();
+    const { event, getPromise } = makePushEvent(undefined);
+
+    listeners.push(event);
+    await getPromise();
+
+    expect(showNotification).toHaveBeenCalledWith(DEFAULT_TITLE, { body: DEFAULT_BODY });
+  });
+
+  test("malformed JSON payload falls back to the generic notification without throwing", async () => {
+    const { listeners, showNotification } = createContext();
+    const { event, getPromise } = makePushEvent(() => {
+      throw new SyntaxError("Unexpected token");
+    });
+
+    listeners.push(event);
+    await expect(getPromise()).resolves.toBeUndefined();
+    expect(showNotification).toHaveBeenCalledWith(DEFAULT_TITLE, { body: DEFAULT_BODY });
+  });
+
+  test("a payload missing title/body falls back to the generic notification", async () => {
+    const { listeners, showNotification } = createContext();
+    const { event, getPromise } = makePushEvent(() => ({ collectionDate: "2026-08-06" }));
+
+    listeners.push(event);
+    await getPromise();
+
+    expect(showNotification).toHaveBeenCalledWith(DEFAULT_TITLE, { body: DEFAULT_BODY });
+  });
+
+  test("three consecutive pushes each show exactly one notification with the right content", async () => {
+    const { listeners, showNotification } = createContext();
+
+    for (let i = 0; i < 3; i++) {
+      const { event, getPromise } = makePushEvent(() => ({ title: `T${i}`, body: `B${i}` }));
+      listeners.push(event);
+      await getPromise();
+    }
+
+    expect(showNotification).toHaveBeenCalledTimes(3);
+    expect(showNotification).toHaveBeenNthCalledWith(1, "T0", { body: "B0" });
+    expect(showNotification).toHaveBeenNthCalledWith(3, "T2", { body: "B2" });
+  });
+});
+
+describe("notificationclick", () => {
+  test("closes the notification and focuses an existing window client", async () => {
+    const focus = vi.fn().mockResolvedValue(undefined);
+    const { listeners, matchAll, openWindow } = createContext({ windowClients: [{ focus }] });
+    const { event, notification, getPromise } = makeNotificationClickEvent();
+
+    listeners.notificationclick(event);
+    await getPromise();
+
+    expect(notification.close).toHaveBeenCalledTimes(1);
+    expect(matchAll).toHaveBeenCalledWith({ type: "window", includeUncontrolled: true });
+    expect(focus).toHaveBeenCalledTimes(1);
+    expect(openWindow).not.toHaveBeenCalled();
+  });
+
+  test("opens a new window at the root route when no window client is open", async () => {
+    const { listeners, openWindow } = createContext({ windowClients: [] });
+    const { event, getPromise } = makeNotificationClickEvent();
+
+    listeners.notificationclick(event);
+    await getPromise();
+
+    expect(openWindow).toHaveBeenCalledWith("/");
+  });
+
+  test("run twice in a row -- with an existing window client each time -- focuses each time without opening a new window", async () => {
+    const focus = vi.fn().mockResolvedValue(undefined);
+    const { listeners, openWindow } = createContext({ windowClients: [{ focus }] });
+
+    for (let i = 0; i < 2; i++) {
+      const { event, notification, getPromise } = makeNotificationClickEvent();
+      listeners.notificationclick(event);
+      await getPromise();
+      expect(notification.close).toHaveBeenCalledTimes(1);
+    }
+
+    expect(focus).toHaveBeenCalledTimes(2);
+    expect(openWindow).not.toHaveBeenCalled();
   });
 });
 

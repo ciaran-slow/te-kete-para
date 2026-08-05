@@ -46,3 +46,55 @@ self.addEventListener("fetch", (event) => {
     );
   }
 });
+
+// Chrome (and other browsers) enforce a "user-visible" push contract: a
+// push event that never results in a shown notification gets the browser's
+// own generic replacement notification, and repeat offenders can have push
+// permission revoked. So a malformed or absent payload must still resolve
+// to *some* notification, never a silent no-op.
+const DEFAULT_NOTIFICATION = {
+  title: "Te Kete Para",
+  body: "You have a collection reminder — open the app for details.",
+};
+
+self.addEventListener("push", (event) => {
+  event.waitUntil(showPushNotification(event));
+});
+
+async function showPushNotification(event) {
+  let notification = DEFAULT_NOTIFICATION;
+
+  if (event.data) {
+    try {
+      const data = event.data.json();
+      if (typeof data.title === "string" && typeof data.body === "string") {
+        notification = { title: data.title, body: data.body };
+      }
+    } catch {
+      // Malformed JSON -- fall back to DEFAULT_NOTIFICATION above.
+    }
+  }
+
+  await self.registration.showNotification(notification.title, {
+    body: notification.body,
+  });
+}
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  event.waitUntil(focusOrOpenAppWindow());
+});
+
+async function focusOrOpenAppWindow() {
+  const windowClients = await self.clients.matchAll({
+    type: "window",
+    includeUncontrolled: true,
+  });
+
+  if (windowClients.length > 0) {
+    await windowClients[0].focus();
+    return;
+  }
+
+  await self.clients.openWindow("/");
+}
