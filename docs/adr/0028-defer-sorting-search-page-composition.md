@@ -1,6 +1,6 @@
 # ADR 0028: Build the sorting search UI now, defer composing it into a live route
 
-- **Status:** accepted
+- **Status:** superseded by ADR 0064
 - **Date:** 2026-08-03
 - **Issue:** #21
 

@@ -84,6 +84,10 @@ function combobox() {
   return screen.getByRole("combobox");
 }
 
+function sortingSearchInput() {
+  return screen.getByLabelText("Search for a household item");
+}
+
 /* jsdom implements focus() but not the Tab key's focus traversal, so the
    traversal is reproduced from the DOM: every element a Tab press can land
    on (tabIndex >= 0, not disabled or hidden), in document order — nothing
@@ -107,7 +111,7 @@ test("nothing is focused before any interaction", () => {
   expect(document.activeElement).toBe(document.body);
 });
 
-test("tab-entry reaches the language toggle then the search input, and every stop shows the 3px/2px-offset keyboard ring and the 3rem touch-target floor", () => {
+test("tab-entry reaches the language toggle, then the address search input, then the sorting search input, and every stop shows the 3px/2px-offset keyboard ring and the 3rem touch-target floor", () => {
   renderHomeSurface();
 
   const stops = documentTabStops();
@@ -137,9 +141,12 @@ test("tab-entry reaches the language toggle then the search input, and every sto
   }
 
   // AC3: the traversal lands on the checked radio (via the radiogroup's
-  // roving-focus delegation), then the combobox input — nothing skipped,
-  // nothing unreachable, no focus trap in between.
-  expect(visited).toEqual([englishRadio(), combobox()]);
+  // roving-focus delegation), then the combobox input, then the sorting
+  // search input (#75, ADR 0064) — nothing skipped, nothing unreachable,
+  // no focus trap in between. The sorting search's mic button is absent
+  // here: jsdom has no SpeechRecognition global, so voice input is
+  // feature-detected off and contributes no extra tab stop.
+  expect(visited).toEqual([englishRadio(), combobox(), sortingSearchInput()]);
 });
 
 test("the ring's moana token is authored as #003b46", () => {

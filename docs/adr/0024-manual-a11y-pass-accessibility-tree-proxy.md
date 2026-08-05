@@ -1,6 +1,6 @@
 # ADR 0024: Accessibility-tree snapshot proxy for the manual screen-reader QA pass
 
-- **Status:** accepted
+- **Status:** accepted; follow-up closure amended by ADR 0065
 - **Date:** 2026-07-31
 - **Issue:** #18
 

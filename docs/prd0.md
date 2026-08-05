@@ -8,7 +8,7 @@
 * **Success Metrics:** 
   * Zero-friction onboarding (<30 seconds to find schedule).
   * 90%+ push notification delivery success rate.
-  * 100% compliance with WCAG 2.2 AAA accessibility standards.
+  * 100% pass rate on automated WCAG 2.2 AAA checks (axe-core); no independent human-operated assistive-technology audit for this prototype (ADR 0065).
   * **>90% test code coverage** enforced via Vitest.
 
 ---
@@ -34,7 +34,7 @@
   * Integration tests using Vitest and Supertest verify that `/api/suburbs/search` returns exact zone matches and handles edge cases (typos, partial street names) against an in-memory SQLite3 database via Knex.js.
 
 ### FR-03: WCAG 2.2 AAA Accessibility Compliance
-* **Requirement:** All components must adhere strictly to WCAG 2.2 AAA guidelines.
+* **Requirement:** All components must adhere strictly to WCAG 2.2 AAA guidelines, as verified by automated tooling. A human-operated screen-reader audit (VoiceOver/TalkBack/NVDA/JAWS) is out of scope for this prototype release (ADR 0065) — see docs/vision.md §3.
 * **TDD Strategy:** 
   * Automated accessibility testing via `@axe-core/react` embedded in Vitest component suites.
   * Validates minimum 4.5:1 text color contrast ratios (`#0F172A` text on `#F8FAFC` base), 3px solid `#003B46` focus rings with 2px offset, minimum 48x48px touch targets, and proper `aria-live` region announcements for dynamic schedule changes.

@@ -28,7 +28,7 @@ Woven naturally into the user experience to normalize everyday reo usage while m
 
 ## 3. Strict Accessibility Standards (WCAG 2.2 AAA Target)
 To serve *all* members of the Wellington community, the app is engineered to meet the highest international web accessibility benchmarks:
-* **Screen Reader Optimization:** Fully tested with VoiceOver (iOS), TalkBack (Android), and NVDA/JAWS via semantic HTML landmarks (`<main>`, `<nav>`, `<section>`) and robust `aria-live` regions. Every icon, dynamic countdown, and bin status change uses descriptive ARIA labels.
+* **Screen Reader Optimization (automated checks only for this prototype — ADR 0065):** Semantic HTML landmarks (`<main>`, `<nav>`, `<section>`) and robust `aria-live` regions, verified by automated tooling (axe-core in CI and Vitest, plus a computed-accessibility-tree snapshot proxy for manual QA, ADR 0024). Every icon, dynamic countdown, and bin status change uses descriptive ARIA labels. A human-operated pass with real VoiceOver (iOS), TalkBack (Android), and NVDA/JAWS has not been performed — this prototype does not claim the literal "fully tested with named assistive technology" bar this section originally set.
 * **High Contrast & Color System:** Inspired by Wellington's natural landscape and built to meet rigorous contrast requirements (minimum 4.5:1 for body text, 3:1 for large UI text):
   * *Kākāriki (Organics Green):* `#1B4D3E` (Success states, food-scrap bins)
   * *Moana (Harbour Blue):* `#003B46` (Navigation, primary structure, focus rings)

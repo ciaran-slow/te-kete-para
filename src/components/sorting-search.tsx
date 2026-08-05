@@ -35,8 +35,10 @@ const DEBOUNCE_MS = 300;
  * feature-detected Web Speech API; when unsupported the mic button is
  * simply absent and typed search is the fallback (ADR 0027).
  *
- * Deliberately not composed into any route yet: the sorting_rules seed
- * content is unverified pending #69/#70 (ADR 0028).
+ * Composed into `src/app/page.tsx` (ADR 0064, superseding ADR 0028's
+ * deferral): the Te Reo Māori text in `sorting_rules` remains a machine
+ * draft, not yet reviewed by a fluent speaker (#69) — shipped as an
+ * accepted prototype-scope trade-off rather than left permanently unwired.
  */
 export function SortingSearch() {
   const { locale, t } = useTranslation();
@@ -190,6 +192,9 @@ export function SortingSearch() {
 
   return (
     <div className="w-full max-w-md">
+      <h2 className="mb-2 font-heading text-lg font-semibold text-moana">
+        {t("sortingSearch.heading")}
+      </h2>
       <label htmlFor={inputId} className="mb-1 block text-sm font-medium text-papa-ink">
         {t("sortingSearch.label")}
       </label>
