@@ -117,6 +117,54 @@ describe("sorting_rules seed", () => {
     expect(coffeeCup.disposal_instructions_en).toContain("general rubbish");
   });
 
+  it("corrects the pizza-box grease myth, the polystyrene drop-off hedge, and the light-bulb overclaim (issue #70 live WCC confirmation)", async () => {
+    db = Knex(knexConfigs.test);
+    await db.migrate.latest();
+    await db.seed.run();
+
+    const pizzaBox = await db("sorting_rules")
+      .where({ item_key: "pizza-box" })
+      .first("disposal_instructions_en");
+    if (!pizzaBox) throw new Error("seed did not insert pizza-box");
+    // WCC's own "Recycling myths – busted!" says grease stains alone are
+    // fine; a box only needs food/cheese residue scraped off. The old text
+    // said a greasy box must go to general rubbish -- if that wrong claim
+    // were reinstated, "grease stains" wouldn't appear and "general
+    // rubbish" would, so this assertion is falsifiable in both directions.
+    expect(pizzaBox.disposal_instructions_en).toContain("grease stains");
+    expect(pizzaBox.disposal_instructions_en).not.toContain(
+      "general rubbish",
+    );
+
+    const polystyrene = await db("sorting_rules")
+      .where({ item_key: "polystyrene-packaging" })
+      .first("disposal_instructions_en");
+    if (!polystyrene) {
+      throw new Error("seed did not insert polystyrene-packaging");
+    }
+    // WCC's "Types of waste accepted" confirms Southern Landfill takes
+    // polystyrene outright; the old text only hedged ("check whether").
+    expect(polystyrene.disposal_instructions_en).toContain(
+      "Southern Landfill",
+    );
+    expect(polystyrene.disposal_instructions_en).not.toContain(
+      "check whether",
+    );
+
+    const lightBulb = await db("sorting_rules")
+      .where({ item_key: "light-bulb" })
+      .first("disposal_instructions_en");
+    if (!lightBulb) throw new Error("seed did not insert light-bulb");
+    // WCC's hazardous-waste accepted list only names CFL/fluorescent bulbs
+    // (mercury) -- the old text said "all bulb types" need hazardous
+    // handling, which no WCC page supports for LED/incandescent.
+    expect(lightBulb.disposal_instructions_en).toContain("LED");
+    expect(lightBulb.disposal_instructions_en).toContain("general rubbish");
+    expect(lightBulb.disposal_instructions_en).not.toContain(
+      "all bulb types",
+    );
+  });
+
   it("seeds a 'battery' keyword on household-batteries to fix issue #73's search-recall gap", async () => {
     db = Knex(knexConfigs.test);
     await db.migrate.latest();
