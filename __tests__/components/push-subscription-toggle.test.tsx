@@ -584,6 +584,56 @@ describe("PushSubscriptionToggle", () => {
       expect(subscription.unsubscribe).not.toHaveBeenCalled();
     });
 
+    test("address change that lands while the mount check is still 'checking' is synced once status resolves to 'subscribed'", async () => {
+      // navigator.serviceWorker.ready is deliberately never resolved until
+      // resolveReady() is called below, so the component stays in
+      // 'checking' — the exact window in which #126's bug could resurface:
+      // an address change landing before the mount check settles must not
+      // be silently dropped once it does settle.
+      let resolveReady!: (registration: { pushManager: typeof pushManager }) => void;
+      const readyPromise = new Promise<{ pushManager: typeof pushManager }>((resolve) => {
+        resolveReady = resolve;
+      });
+      const subscription = fakeSubscription();
+      const pushManager = {
+        getSubscription: vi.fn(() => Promise.resolve(subscription)),
+        subscribe: vi.fn(),
+      };
+      vi.stubGlobal("PushManager", function () {});
+      vi.stubGlobal("Notification", { permission: "default" });
+      Object.defineProperty(navigator, "serviceWorker", {
+        value: { ready: readyPromise },
+        configurable: true,
+      });
+      vi.stubEnv("NEXT_PUBLIC_VAPID_PUBLIC_KEY", VALID_KEY);
+      const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ ok: true }));
+      vi.stubGlobal("fetch", fetchMock);
+
+      const { rerender } = renderToggle(1);
+      expect(
+        screen.getByText("Checking your notification settings…"),
+      ).toBeInTheDocument();
+
+      rerender(
+        <LanguageProvider>
+          <PushSubscriptionToggle addressId={2} />
+        </LanguageProvider>,
+      );
+      expect(fetchMock).not.toHaveBeenCalled();
+
+      resolveReady({ pushManager });
+
+      await waitFor(() =>
+        expect(
+          screen.getByText("You're receiving night-before reminders."),
+        ).toBeInTheDocument(),
+      );
+      await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+      const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+      const body = JSON.parse(init.body as string) as Record<string, unknown>;
+      expect(body.addressId).toBe(2);
+    });
+
     test("repeated re-renders with the same addressId, then a real change, then the same value again: POSTs exactly twice, not on every render", async () => {
       stubPushEnvironment({ existingSubscription: fakeSubscription() });
       const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ ok: true }));
@@ -619,8 +669,8 @@ describe("PushSubscriptionToggle", () => {
       expect(secondBody.addressId).toBe(3);
     });
 
-    test("not yet subscribed: changing addressId does not POST", async () => {
-      stubPushEnvironment({ permission: "default" });
+    test("not yet subscribed: changing addressId does not POST, even once a live browser-level subscription exists behind it", async () => {
+      const { pushManager } = stubPushEnvironment({ permission: "default" });
       const fetchMock = vi.fn();
       vi.stubGlobal("fetch", fetchMock);
 
@@ -630,6 +680,16 @@ describe("PushSubscriptionToggle", () => {
           screen.getByText("You're not receiving night-before reminders."),
         ).toBeInTheDocument(),
       );
+
+      // Simulate a subscription appearing behind this component's back (e.g.
+      // the resident subscribed from another tab) after the mount check
+      // already settled on "unsubscribed". If the isCurrentlySubscribed
+      // guard were dropped, the un-guarded effect would call
+      // getSubscription(), find this, and POST — this is what makes the
+      // assertion below actually falsify removing the guard, rather than
+      // passing for the unrelated reason that getSubscription() resolves
+      // null either way.
+      pushManager.getSubscription.mockResolvedValue(fakeSubscription());
 
       rerender(
         <LanguageProvider>

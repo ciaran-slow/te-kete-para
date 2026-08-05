@@ -152,14 +152,23 @@ export function PushSubscriptionToggle({ addressId }: PushSubscriptionToggleProp
 
   useEffect(() => {
     const changed = previousAddressIdRef.current !== addressId;
-    previousAddressIdRef.current = addressId;
-    if (!changed || !isCurrentlySubscribed(status)) return;
+    if (!changed) return;
+    // Status hasn't resolved yet — there might be something to sync once it
+    // does. Leave the ref untouched (rather than "observed but not acted
+    // on") so this same change is picked up the moment status settles,
+    // instead of being silently dropped.
+    if (status.kind === "checking") return;
+    if (!isCurrentlySubscribed(status)) {
+      previousAddressIdRef.current = addressId; // nothing to sync for this address
+      return;
+    }
 
     const controller = new AbortController();
     navigator.serviceWorker.ready
       .then((registration) => registration.pushManager.getSubscription())
       .then((subscription) => {
         if (controller.signal.aborted) return undefined;
+        previousAddressIdRef.current = addressId;
         if (subscription === null) {
           setStatus({ kind: "unsubscribed" });
           return undefined;
@@ -173,6 +182,7 @@ export function PushSubscriptionToggle({ addressId }: PushSubscriptionToggleProp
       })
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === "AbortError") return;
+        previousAddressIdRef.current = addressId;
         setStatus({ kind: "action-error", from: "address-change" });
       });
     return () => controller.abort();
