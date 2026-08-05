@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Switch } from "radix-ui";
 import { useTranslation } from "@/lib/i18n/language-provider";
-import type { TranslationKey } from "@/lib/i18n/dictionaries";
+import type { Locale, TranslationKey } from "@/lib/i18n/dictionaries";
 import { StatusRegion } from "./status-region";
 
 export interface PushSubscriptionToggleProps {
@@ -25,7 +25,7 @@ type Status =
   | { kind: "subscribed" }
   | { kind: "unsubscribing" }
   | { kind: "denied" }
-  | { kind: "action-error"; from: "unsubscribed" | "subscribed" };
+  | { kind: "action-error"; from: "unsubscribed" | "subscribed" | "address-change" };
 
 /** Sync feature-detection; no globals are touched beyond `in` checks. */
 export function isPushSupported(): boolean {
@@ -93,11 +93,45 @@ const STATUS_TEXT_KEY: Record<Status["kind"], TranslationKey> = {
 
 function statusTextKey(status: Status): TranslationKey {
   if (status.kind === "action-error") {
-    return status.from === "subscribed"
-      ? "pushOptIn.status.unsubscribeError"
-      : "pushOptIn.status.subscribeError";
+    if (status.from === "subscribed") return "pushOptIn.status.unsubscribeError";
+    if (status.from === "address-change") return "pushOptIn.status.addressChangeError";
+    return "pushOptIn.status.subscribeError";
   }
   return STATUS_TEXT_KEY[status.kind];
+}
+
+async function postSubscription(
+  subscription: PushSubscription,
+  addressId: number | null | undefined,
+  locale: Locale,
+  signal?: AbortSignal,
+): Promise<Response> {
+  const keys = subscription.toJSON().keys;
+  if (!keys?.p256dh || !keys?.auth) {
+    // Defensive only: unreachable for a subscription obtained from
+    // subscribe() or getSubscription() — both always carry both keys on a
+    // resolved PushSubscription.
+    throw new Error("push-subscription-missing-keys");
+  }
+  return fetch("/api/notifications/subscribe", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      endpoint: subscription.endpoint,
+      keys: { p256dh: keys.p256dh, auth: keys.auth },
+      languagePreference: locale,
+      addressId: addressId ?? undefined,
+    }),
+    signal,
+  });
+}
+
+function isCurrentlySubscribed(status: Status): boolean {
+  return (
+    status.kind === "subscribed" ||
+    (status.kind === "action-error" &&
+      (status.from === "subscribed" || status.from === "address-change"))
+  );
 }
 
 export function PushSubscriptionToggle({ addressId }: PushSubscriptionToggleProps) {
@@ -114,6 +148,36 @@ export function PushSubscriptionToggle({ addressId }: PushSubscriptionToggleProp
     };
   }, []);
 
+  const previousAddressIdRef = useRef(addressId);
+
+  useEffect(() => {
+    const changed = previousAddressIdRef.current !== addressId;
+    previousAddressIdRef.current = addressId;
+    if (!changed || !isCurrentlySubscribed(status)) return;
+
+    const controller = new AbortController();
+    navigator.serviceWorker.ready
+      .then((registration) => registration.pushManager.getSubscription())
+      .then((subscription) => {
+        if (controller.signal.aborted) return undefined;
+        if (subscription === null) {
+          setStatus({ kind: "unsubscribed" });
+          return undefined;
+        }
+        return postSubscription(subscription, addressId, locale, controller.signal).then(
+          (response) => {
+            if (!response.ok) throw new Error("resubscribe-post-failed");
+            setStatus({ kind: "subscribed" });
+          },
+        );
+      })
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        setStatus({ kind: "action-error", from: "address-change" });
+      });
+    return () => controller.abort();
+  }, [addressId, status, locale]);
+
   async function handleSubscribe() {
     setStatus({ kind: "subscribing" });
     const key = parseVapidPublicKey(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY);
@@ -127,22 +191,7 @@ export function PushSubscriptionToggle({ addressId }: PushSubscriptionToggleProp
         userVisibleOnly: true,
         applicationServerKey: key,
       });
-      const keys = subscription.toJSON().keys;
-      if (!keys?.p256dh || !keys?.auth) {
-        // Defensive only: unreachable when subscribe() itself resolved —
-        // a resolved PushSubscription always carries both keys.
-        throw new Error("push-subscription-missing-keys");
-      }
-      const response = await fetch("/api/notifications/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          endpoint: subscription.endpoint,
-          keys: { p256dh: keys.p256dh, auth: keys.auth },
-          languagePreference: locale,
-          addressId: addressId ?? undefined,
-        }),
-      });
+      const response = await postSubscription(subscription, addressId, locale);
       if (!response.ok) throw new Error("subscribe-post-failed");
       setStatus({ kind: "subscribed" });
     } catch {
@@ -193,16 +242,15 @@ export function PushSubscriptionToggle({ addressId }: PushSubscriptionToggleProp
   function handleCheckedChange(checked: boolean) {
     if (checked && (status.kind === "unsubscribed" || (status.kind === "action-error" && status.from === "unsubscribed"))) {
       void handleSubscribe();
-    } else if (!checked && (status.kind === "subscribed" || (status.kind === "action-error" && status.from === "subscribed"))) {
+    } else if (!checked && isCurrentlySubscribed(status)) {
       void handleUnsubscribe();
     }
   }
 
   const checked =
-    status.kind === "subscribed" ||
     status.kind === "subscribing" ||
     status.kind === "unsubscribing" ||
-    (status.kind === "action-error" && status.from === "subscribed");
+    isCurrentlySubscribed(status);
   const disabled =
     status.kind === "checking" ||
     status.kind === "unsupported" ||

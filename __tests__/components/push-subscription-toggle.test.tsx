@@ -97,10 +97,10 @@ function jsonResponse(body: unknown, ok = true) {
   return { ok, status: ok ? 200 : 503, json: async () => body };
 }
 
-function renderToggle() {
+function renderToggle(addressId?: number | null) {
   return render(
     <LanguageProvider>
-      <PushSubscriptionToggle />
+      <PushSubscriptionToggle addressId={addressId} />
     </LanguageProvider>,
   );
 }
@@ -547,5 +547,171 @@ describe("PushSubscriptionToggle", () => {
         ),
       ).toBeInTheDocument(),
     );
+  });
+
+  describe("re-subscribing on address change (#126)", () => {
+    test("already subscribed: changing addressId re-POSTs with the new address, stays 'subscribed'", async () => {
+      const subscription = fakeSubscription();
+      stubPushEnvironment({ existingSubscription: subscription });
+      const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ ok: true }));
+      vi.stubGlobal("fetch", fetchMock);
+
+      const { rerender } = renderToggle(1);
+      await waitFor(() =>
+        expect(
+          screen.getByText("You're receiving night-before reminders."),
+        ).toBeInTheDocument(),
+      );
+      expect(fetchMock).not.toHaveBeenCalled();
+
+      rerender(
+        <LanguageProvider>
+          <PushSubscriptionToggle addressId={2} />
+        </LanguageProvider>,
+      );
+
+      await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+      const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+      expect(url).toBe("/api/notifications/subscribe");
+      expect(init.method).toBe("POST");
+      const body = JSON.parse(init.body as string) as Record<string, unknown>;
+      expect(body.endpoint).toBe("https://push.example/abc");
+      expect(body.addressId).toBe(2);
+      expect(
+        screen.getByText("You're receiving night-before reminders."),
+      ).toBeInTheDocument();
+      expect(toggleSwitch()).toHaveAttribute("aria-checked", "true");
+      expect(subscription.unsubscribe).not.toHaveBeenCalled();
+    });
+
+    test("repeated re-renders with the same addressId, then a real change, then the same value again: POSTs exactly twice, not on every render", async () => {
+      stubPushEnvironment({ existingSubscription: fakeSubscription() });
+      const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ ok: true }));
+      vi.stubGlobal("fetch", fetchMock);
+
+      const { rerender } = renderToggle(1);
+      await waitFor(() =>
+        expect(
+          screen.getByText("You're receiving night-before reminders."),
+        ).toBeInTheDocument(),
+      );
+
+      const withId = (id: number) => (
+        <LanguageProvider>
+          <PushSubscriptionToggle addressId={id} />
+        </LanguageProvider>
+      );
+
+      rerender(withId(1)); // unchanged — must not POST
+      await waitFor(() => expect(fetchMock).not.toHaveBeenCalled());
+
+      rerender(withId(2)); // changed — POSTs once
+      await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+
+      rerender(withId(2)); // unchanged again — must not re-POST
+      rerender(withId(2));
+      await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+
+      rerender(withId(3)); // changed again — POSTs a second time
+      await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+      const [, secondInit] = fetchMock.mock.calls[1] as [string, RequestInit];
+      const secondBody = JSON.parse(secondInit.body as string) as Record<string, unknown>;
+      expect(secondBody.addressId).toBe(3);
+    });
+
+    test("not yet subscribed: changing addressId does not POST", async () => {
+      stubPushEnvironment({ permission: "default" });
+      const fetchMock = vi.fn();
+      vi.stubGlobal("fetch", fetchMock);
+
+      const { rerender } = renderToggle(1);
+      await waitFor(() =>
+        expect(
+          screen.getByText("You're not receiving night-before reminders."),
+        ).toBeInTheDocument(),
+      );
+
+      rerender(
+        <LanguageProvider>
+          <PushSubscriptionToggle addressId={2} />
+        </LanguageProvider>,
+      );
+
+      await waitFor(() =>
+        expect(
+          screen.getByText("You're not receiving night-before reminders."),
+        ).toBeInTheDocument(),
+      );
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    test("re-POST failure on address change: browser subscription stays intact, surfaces the address-change error, stays checked", async () => {
+      const subscription = fakeSubscription();
+      stubPushEnvironment({ existingSubscription: subscription });
+      const fetchMock = vi.fn().mockResolvedValue(jsonResponse({}, false));
+      vi.stubGlobal("fetch", fetchMock);
+
+      const { rerender } = renderToggle(1);
+      await waitFor(() =>
+        expect(
+          screen.getByText("You're receiving night-before reminders."),
+        ).toBeInTheDocument(),
+      );
+
+      rerender(
+        <LanguageProvider>
+          <PushSubscriptionToggle addressId={2} />
+        </LanguageProvider>,
+      );
+
+      await waitFor(() =>
+        expect(
+          screen.getByText(
+            "We couldn't update your notification address. Please try again.",
+          ),
+        ).toBeInTheDocument(),
+      );
+      expect(subscription.unsubscribe).not.toHaveBeenCalled();
+      expect(toggleSwitch()).toHaveAttribute("aria-checked", "true");
+      expect(toggleSwitch()).not.toBeDisabled();
+    });
+
+    test("can still be manually turned off after a failed address-change re-POST", async () => {
+      const subscription = fakeSubscription();
+      stubPushEnvironment({ existingSubscription: subscription });
+      const fetchMock = vi.fn().mockResolvedValue(jsonResponse({}, false));
+      vi.stubGlobal("fetch", fetchMock);
+
+      const { rerender } = renderToggle(1);
+      await waitFor(() =>
+        expect(
+          screen.getByText("You're receiving night-before reminders."),
+        ).toBeInTheDocument(),
+      );
+      rerender(
+        <LanguageProvider>
+          <PushSubscriptionToggle addressId={2} />
+        </LanguageProvider>,
+      );
+      await waitFor(() =>
+        expect(
+          screen.getByText(
+            "We couldn't update your notification address. Please try again.",
+          ),
+        ).toBeInTheDocument(),
+      );
+
+      fetchMock.mockResolvedValue(jsonResponse({ ok: true }));
+      fireEvent.click(toggleSwitch());
+
+      await waitFor(() =>
+        expect(
+          screen.getByText("You're not receiving night-before reminders."),
+        ).toBeInTheDocument(),
+      );
+      expect(subscription.unsubscribe).toHaveBeenCalledTimes(1);
+      const lastCall = fetchMock.mock.calls.at(-1) as [string, RequestInit];
+      expect(lastCall[1].method).toBe("DELETE");
+    });
   });
 });
