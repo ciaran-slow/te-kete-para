@@ -91,7 +91,7 @@ describe("addresses seed", () => {
       rows.map((r) => [`${r.street_name}, ${r.suburb}`, r.recycling_calendar_group]),
     );
 
-    expect(byStreet.get("Marjoribanks Street, Mount Victoria")).toBe(1);
+    expect(byStreet.get("Majoribanks Street, Mount Victoria")).toBe(1);
     expect(byStreet.get("Hataitai Road, Hataitai")).toBe(1);
     expect(byStreet.get("Oriental Parade, Oriental Bay")).toBe(1);
     expect(byStreet.get("Riddiford Street, Newtown")).toBe(1);
@@ -145,7 +145,7 @@ describe("addresses seed", () => {
       rows.map((r) => [`${r.street_name}, ${r.suburb}`, r.collection_weekday]),
     );
 
-    expect(byStreet.get("Marjoribanks Street, Mount Victoria")).toBe(4);
+    expect(byStreet.get("Majoribanks Street, Mount Victoria")).toBe(4);
     expect(byStreet.get("Hataitai Road, Hataitai")).toBe(4);
     expect(byStreet.get("Oriental Parade, Oriental Bay")).toBe(4);
     expect(byStreet.get("Riddiford Street, Newtown")).toBe(4);

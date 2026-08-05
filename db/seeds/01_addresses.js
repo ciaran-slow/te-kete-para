@@ -28,9 +28,12 @@ exports.seed = async function seed(knex) {
     { street_name: "Willis Street", suburb: "Wellington Central", zone: "zone-cbd", is_inner_city_night_collection: true, recycling_calendar_group: null, collection_weekday: null },
     // Eastern suburbs — standard kerbside, all confirmed WCC Calendar 1
     // (issue #102) and all confirmed Thursday collection (issue #117).
-    // "Marjoribanks Street" [sic — WCC spells it "Majoribanks"; see issue
-    // #125] confirmed via its suburban house-number segment.
-    { street_name: "Marjoribanks Street", suburb: "Mount Victoria", zone: "zone-east", is_inner_city_night_collection: false, recycling_calendar_group: 1, collection_weekday: 4 },
+    // "Majoribanks Street" (corrected spelling, issue #125 — previously
+    // seeded here as "Marjoribanks") represents WCC's suburban house-number
+    // segment (odds 15-109, evens 20-104, streetId 8070); the street's other
+    // segment (odds 1-13, evens 4-18, streetId 8069) is inner-city night
+    // collection and is not seeded here (ADR 0059).
+    { street_name: "Majoribanks Street", suburb: "Mount Victoria", zone: "zone-east", is_inner_city_night_collection: false, recycling_calendar_group: 1, collection_weekday: 4 },
     { street_name: "Hataitai Road", suburb: "Hataitai", zone: "zone-east", is_inner_city_night_collection: false, recycling_calendar_group: 1, collection_weekday: 4 },
     { street_name: "Oriental Parade", suburb: "Oriental Bay", zone: "zone-east", is_inner_city_night_collection: false, recycling_calendar_group: 1, collection_weekday: 4 },
     // Southern suburbs — standard kerbside; Newtown is Calendar 1, Island Bay
