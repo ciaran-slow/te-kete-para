@@ -91,7 +91,8 @@ export async function GET(request: Request): Promise<Response> {
     });
 
     return Response.json({ results: matches.map(toSortingRuleSearchResult) });
-  } catch {
+  } catch (err) {
+    console.error("[api/sorting/search] Query failed:", err);
     return Response.json(
       { error: "Unable to search sorting rules." },
       { status: 503 },
