@@ -283,8 +283,11 @@
   or blocking other sends (ADR 0050, extending ADR 0047).
   `src/lib/notifications/dispatch-runner.ts`'s `runNightlyDispatch` composes
   all three via `Promise.all`, so one subscriber's failure never blocks
-  another's send. No cron trigger or route invokes this pipeline yet — that
-  wiring is #110's job (ADR 0044). `public/sw.js`'s `push` listener now
+  another's send. Once every send in the batch has been attempted,
+  `runNightlyDispatch` calls `src/lib/notifications/subscription-pruner.ts`'s
+  `pruneGoneSubscriptions`, which deletes any `push_subscriptions` row whose
+  send came back with a 404/410 "gone" `failureReason` — single-strike, no
+  retry counter or new column (#111, ADR 0057). `public/sw.js`'s `push` listener now
   calls `self.registration.showNotification(...)` to display what gets
   sent, falling back to a generic notification on a malformed/absent
   payload, with a `notificationclick` listener that focuses or opens the

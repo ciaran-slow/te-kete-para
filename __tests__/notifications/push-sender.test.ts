@@ -76,7 +76,7 @@ describe("sendDispatchPayload", () => {
     expect(result).toEqual({ subscriptionId: payload.subscriptionId, success: true });
   });
 
-  test("delivery failure: sendNotification rejecting resolves { success: false } and logs", async () => {
+  test("delivery failure without a statusCode: message-only error resolves failureReason 'transient'", async () => {
     vi.stubEnv("NEXT_PUBLIC_VAPID_PUBLIC_KEY", VALID_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY);
     vi.stubEnv("VAPID_PRIVATE_KEY", VALID_ENV.VAPID_PRIVATE_KEY);
     vi.stubEnv("VAPID_SUBJECT", VALID_ENV.VAPID_SUBJECT);
@@ -87,12 +87,87 @@ describe("sendDispatchPayload", () => {
     await expect(sendDispatchPayload(payload)).resolves.toEqual({
       subscriptionId: payload.subscriptionId,
       success: false,
+      failureReason: "transient",
     });
 
     expect(errorSpy).toHaveBeenCalledWith(
       expect.stringContaining(String(payload.subscriptionId)),
       expect.any(Error),
     );
+
+    errorSpy.mockRestore();
+  });
+
+  test("delivery failure with statusCode 410: resolves failureReason 'gone'", async () => {
+    vi.stubEnv("NEXT_PUBLIC_VAPID_PUBLIC_KEY", VALID_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY);
+    vi.stubEnv("VAPID_PRIVATE_KEY", VALID_ENV.VAPID_PRIVATE_KEY);
+    vi.stubEnv("VAPID_SUBJECT", VALID_ENV.VAPID_SUBJECT);
+    vi.mocked(webpush.sendNotification).mockRejectedValueOnce(
+      Object.assign(new Error("Gone"), { statusCode: 410 }),
+    );
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const payload = buildPayload();
+    await expect(sendDispatchPayload(payload)).resolves.toEqual({
+      subscriptionId: payload.subscriptionId,
+      success: false,
+      failureReason: "gone",
+    });
+
+    errorSpy.mockRestore();
+  });
+
+  test("delivery failure with statusCode 404: resolves failureReason 'gone'", async () => {
+    vi.stubEnv("NEXT_PUBLIC_VAPID_PUBLIC_KEY", VALID_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY);
+    vi.stubEnv("VAPID_PRIVATE_KEY", VALID_ENV.VAPID_PRIVATE_KEY);
+    vi.stubEnv("VAPID_SUBJECT", VALID_ENV.VAPID_SUBJECT);
+    vi.mocked(webpush.sendNotification).mockRejectedValueOnce(
+      Object.assign(new Error("Not Found"), { statusCode: 404 }),
+    );
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const payload = buildPayload();
+    await expect(sendDispatchPayload(payload)).resolves.toEqual({
+      subscriptionId: payload.subscriptionId,
+      success: false,
+      failureReason: "gone",
+    });
+
+    errorSpy.mockRestore();
+  });
+
+  test("delivery failure with statusCode 503: resolves failureReason 'transient', not every non-2xx is 'gone'", async () => {
+    vi.stubEnv("NEXT_PUBLIC_VAPID_PUBLIC_KEY", VALID_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY);
+    vi.stubEnv("VAPID_PRIVATE_KEY", VALID_ENV.VAPID_PRIVATE_KEY);
+    vi.stubEnv("VAPID_SUBJECT", VALID_ENV.VAPID_SUBJECT);
+    vi.mocked(webpush.sendNotification).mockRejectedValueOnce(
+      Object.assign(new Error("Service Unavailable"), { statusCode: 503 }),
+    );
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const payload = buildPayload();
+    await expect(sendDispatchPayload(payload)).resolves.toEqual({
+      subscriptionId: payload.subscriptionId,
+      success: false,
+      failureReason: "transient",
+    });
+
+    errorSpy.mockRestore();
+  });
+
+  test("delivery failure with no statusCode at all: resolves failureReason 'transient'", async () => {
+    vi.stubEnv("NEXT_PUBLIC_VAPID_PUBLIC_KEY", VALID_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY);
+    vi.stubEnv("VAPID_PRIVATE_KEY", VALID_ENV.VAPID_PRIVATE_KEY);
+    vi.stubEnv("VAPID_SUBJECT", VALID_ENV.VAPID_SUBJECT);
+    vi.mocked(webpush.sendNotification).mockRejectedValueOnce(new Error("socket hang up"));
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const payload = buildPayload();
+    await expect(sendDispatchPayload(payload)).resolves.toEqual({
+      subscriptionId: payload.subscriptionId,
+      success: false,
+      failureReason: "transient",
+    });
 
     errorSpy.mockRestore();
   });
@@ -104,7 +179,11 @@ describe("sendDispatchPayload", () => {
     const payload = buildPayload();
     const result = await sendDispatchPayload(payload);
 
-    expect(result).toEqual({ subscriptionId: payload.subscriptionId, success: false });
+    expect(result).toEqual({
+      subscriptionId: payload.subscriptionId,
+      success: false,
+      failureReason: "transient",
+    });
     expect(webpush.sendNotification).not.toHaveBeenCalled();
     expect(webpush.setVapidDetails).not.toHaveBeenCalled();
     expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining("VAPID not configured"));
@@ -120,7 +199,11 @@ describe("sendDispatchPayload", () => {
     const payload = buildPayload();
     const result = await sendDispatchPayload(payload);
 
-    expect(result).toEqual({ subscriptionId: payload.subscriptionId, success: false });
+    expect(result).toEqual({
+      subscriptionId: payload.subscriptionId,
+      success: false,
+      failureReason: "transient",
+    });
     expect(webpush.sendNotification).not.toHaveBeenCalled();
     expect(webpush.setVapidDetails).not.toHaveBeenCalled();
     expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining("VAPID not configured"));
@@ -140,7 +223,11 @@ describe("sendDispatchPayload", () => {
     const payload = buildPayload();
     const result = await sendDispatchPayload(payload);
 
-    expect(result).toEqual({ subscriptionId: payload.subscriptionId, success: false });
+    expect(result).toEqual({
+      subscriptionId: payload.subscriptionId,
+      success: false,
+      failureReason: "transient",
+    });
     expect(webpush.sendNotification).not.toHaveBeenCalled();
     expect(errorSpy).toHaveBeenCalled();
 
@@ -153,7 +240,7 @@ describe("sendDispatchPayload", () => {
 
     const firstPayload = buildPayload({ subscriptionId: 1 });
     const firstResult = await sendDispatchPayload(firstPayload);
-    expect(firstResult).toEqual({ subscriptionId: 1, success: false });
+    expect(firstResult).toEqual({ subscriptionId: 1, success: false, failureReason: "transient" });
 
     vi.stubEnv("NEXT_PUBLIC_VAPID_PUBLIC_KEY", VALID_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY);
     vi.stubEnv("VAPID_PRIVATE_KEY", VALID_ENV.VAPID_PRIVATE_KEY);

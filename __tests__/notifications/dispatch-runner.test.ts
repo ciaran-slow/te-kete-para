@@ -130,3 +130,92 @@ describe("runNightlyDispatch", () => {
     expect(result).toHaveLength(2);
   });
 });
+
+describe("runNightlyDispatch — pruning (issue #111)", () => {
+  beforeAll(async () => {
+    await setupTestDb();
+  });
+
+  afterAll(async () => {
+    await teardownTestDb();
+  });
+
+  async function seedOneSubscription(endpoint: string): Promise<number> {
+    const db = getDb();
+    const [addressId] = await db("addresses").insert({
+      street_name: "Suburban Street",
+      suburb: "Karori",
+      zone: "zone-east",
+      is_inner_city_night_collection: false,
+    });
+    const [subscriptionId] = await db("push_subscriptions").insert({
+      endpoint,
+      p256dh: "p256dh-key",
+      auth: "auth-secret",
+      language_preference: "en",
+      address_id: addressId,
+    });
+    return subscriptionId;
+  }
+
+  async function subscriptionExists(id: number): Promise<boolean> {
+    const row = await getDb()("push_subscriptions").where({ id }).first();
+    return row !== undefined;
+  }
+
+  test("gone outcome prunes the row", async () => {
+    const id = await seedOneSubscription("https://push.example/gone");
+    vi.mocked(sendDispatchPayload).mockImplementation(async (payload) => ({
+      subscriptionId: payload.subscriptionId,
+      success: false,
+      failureReason: "gone",
+    }));
+
+    await runNightlyDispatch(NOW);
+
+    expect(await subscriptionExists(id)).toBe(false);
+  });
+
+  test("transient outcome leaves the row intact", async () => {
+    const id = await seedOneSubscription("https://push.example/transient");
+    vi.mocked(sendDispatchPayload).mockImplementation(async (payload) => ({
+      subscriptionId: payload.subscriptionId,
+      success: false,
+      failureReason: "transient",
+    }));
+
+    await runNightlyDispatch(NOW);
+
+    expect(await subscriptionExists(id)).toBe(true);
+  });
+
+  test("successful outcome leaves the row intact", async () => {
+    const id = await seedOneSubscription("https://push.example/success");
+    vi.mocked(sendDispatchPayload).mockImplementation(async (payload) => ({
+      subscriptionId: payload.subscriptionId,
+      success: true,
+    }));
+
+    await runNightlyDispatch(NOW);
+
+    expect(await subscriptionExists(id)).toBe(true);
+  });
+
+  test("repetition: a pruned subscription is not dispatched to again", async () => {
+    const id = await seedOneSubscription("https://push.example/repeat");
+    vi.mocked(sendDispatchPayload).mockImplementation(async (payload) => ({
+      subscriptionId: payload.subscriptionId,
+      success: false,
+      failureReason: "gone",
+    }));
+
+    await runNightlyDispatch(NOW);
+    expect(await subscriptionExists(id)).toBe(false);
+
+    vi.mocked(sendDispatchPayload).mockClear();
+    await runNightlyDispatch(NOW);
+
+    const calledIds = vi.mocked(sendDispatchPayload).mock.calls.map(([payload]) => payload.subscriptionId);
+    expect(calledIds).not.toContain(id);
+  });
+});
