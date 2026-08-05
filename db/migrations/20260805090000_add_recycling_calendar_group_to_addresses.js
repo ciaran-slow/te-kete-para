@@ -4,7 +4,7 @@
  * actually follows — 1, 2, or null for inner-city night-collection
  * addresses, which do not alternate glass/mixed. Confirmed per-address
  * against WCC's live per-street lookup tool, not derived from `zone`
- * (ADR 0057, issue #102).
+ * (ADR 0059, issue #102).
  *
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }

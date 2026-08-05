@@ -253,7 +253,7 @@
   follows is confirmed per-address — not per-`zone`, since WCC's calendar
   boundary does not align with this repo's zone taxonomy (3 of the 4
   seeded suburban zones mix both calendars) — via WCC's live per-street
-  lookup tool (ADR 0057, issue #102, superseding ADR 0042's uniform-
+  lookup tool (ADR 0059, issue #102, superseding ADR 0042's uniform-
   Calendar-1 default). It reads only the UTC calendar date of the
   `Date` passed in, so callers must construct dates via `Date.UTC(...)`
   or a `Z`-suffixed ISO string, never a local-time constructor.
@@ -306,7 +306,7 @@
 ### C. Data Persistence Layer
 * **Database Engine:** **SQLite3** stored as an embedded file database (`/data/teketepara.db`).
 * **Core Schemas:**
-  * `addresses`: Wellington street indices, council zones, suburb classifications (Suburban vs. CBD night collection), and — for suburban rows — which of WCC's two independently-phased alternating recycling calendars the address follows (`recycling_calendar_group`, 1 or 2, `null` for CBD rows; confirmed per-address against WCC's live per-street lookup tool, ADR 0057, issue #102).
+  * `addresses`: Wellington street indices, council zones, suburb classifications (Suburban vs. CBD night collection), and — for suburban rows — which of WCC's two independently-phased alternating recycling calendars the address follows (`recycling_calendar_group`, 1 or 2, `null` for CBD rows; confirmed per-address against WCC's live per-street lookup tool, ADR 0059, issue #102).
   * `schedules`: Date-mapped bin collection calendars, alternating recycling flags, and holiday override rules.
   * `i18n_strings`: Relational translation keys with explicit English (`en`) and Te Reo Māori (`mi`) text columns.
   * `sorting_rules`: Item keys, bilingual descriptions, WCC disposal instructions, and a `keywords` column — a curated, author-added set of extra search terms included in `GET /api/sorting/search`'s match scope (ADR 0035), populated incrementally as real recall gaps are found rather than translated/verified content, so it isn't blocked by #69/#70. The rest of the seed dataset (`db/seeds/02_sorting_rules.js`) is confirmed against live wellington.govt.nz pages (ADR 0054, issue #70) — a browser User-Agent bypasses the site's 403-to-bare-request block, which blocked PR #88's verify pass and every session before it. 14 of 15 rows are fully confirmed, with three corrected (pizza-box, polystyrene-packaging, light-bulb); `aerosol-can`'s exclusion from kerbside recycling is confirmed but its empty-vs-full handling split stays unconfirmed, tracked by issue #119. The Te Reo Māori text still awaits review by a fluent speaker (tracked by issue #69) — a similar confirm-against-real-data pattern to the schedule epoch resolved in ADR 0042 (§2B, issue #59). #69 blocks #21 surfacing this text to users; #70 stays open for the narrow aerosol-can gap. Queried by `GET /api/sorting/search` (ADR 0025, ADR 0035).

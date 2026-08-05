@@ -5,7 +5,7 @@
  * WCC's two independently-phased alternating recycling calendars
  * (`recycling_calendar_group`, 1 or 2, ADR 0042) it actually follows,
  * confirmed per-address against WCC's live per-street lookup tool (ADR
- * 0057, issue #102). `null` for every CBD/night-collection row, which does
+ * 0059, issue #102). `null` for every CBD/night-collection row, which does
  * not alternate glass/mixed. Idempotent by delete-then-reinsert — see ADR
  * 0012 for why, including the FK-nulling trade-off this accepts on re-run
  * against a database that already has users/push_subscriptions pointing at

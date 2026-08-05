@@ -1,4 +1,4 @@
-# ADR 0057: Per-address `recycling_calendar_group` replaces the zone-uniform Calendar 1 default
+# ADR 0059: Per-address `recycling_calendar_group` replaces the zone-uniform Calendar 1 default
 
 - **Status:** accepted
 - **Date:** 2026-08-05
