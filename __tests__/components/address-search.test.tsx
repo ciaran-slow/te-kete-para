@@ -15,6 +15,7 @@ const KARORI: SuburbSearchResult = {
   suburb: "Karori",
   zone: "SUBURBAN-WEST",
   isInnerCityNightCollection: false,
+  recyclingCalendarGroup: 1,
 };
 const CUBA_MALL: SuburbSearchResult = {
   id: 2,
@@ -22,6 +23,7 @@ const CUBA_MALL: SuburbSearchResult = {
   suburb: "Te Aro",
   zone: "CBD-INNER",
   isInnerCityNightCollection: true,
+  recyclingCalendarGroup: null,
 };
 const CUBA_STREET: SuburbSearchResult = {
   id: 3,
@@ -29,6 +31,7 @@ const CUBA_STREET: SuburbSearchResult = {
   suburb: "Te Aro",
   zone: "CBD-INNER",
   isInnerCityNightCollection: true,
+  recyclingCalendarGroup: null,
 };
 
 function jsonResponse(body: unknown, ok = true) {

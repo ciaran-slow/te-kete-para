@@ -7,11 +7,19 @@ import {
 const SUBURBAN: ZoneClassification = {
   zone: "zone-east",
   isInnerCityNightCollection: false,
+  recyclingCalendarGroup: 1,
+};
+
+const SUBURBAN_CALENDAR_2: ZoneClassification = {
+  zone: "zone-south",
+  isInnerCityNightCollection: false,
+  recyclingCalendarGroup: 2,
 };
 
 const INNER_CITY: ZoneClassification = {
   zone: "zone-cbd",
   isInnerCityNightCollection: true,
+  recyclingCalendarGroup: null,
 };
 
 describe("computeCollectionRuleSet", () => {
@@ -164,6 +172,7 @@ describe("computeCollectionRuleSet", () => {
     const blankZone: ZoneClassification = {
       zone: "   ",
       isInnerCityNightCollection: false,
+      recyclingCalendarGroup: 1,
     };
     const validDate = new Date(Date.UTC(2026, 0, 12));
 
@@ -195,5 +204,47 @@ describe("computeCollectionRuleSet", () => {
       new Date(Date.UTC(2026, 0, 12)),
     );
     expect(resultC.binTypes).toEqual(["general-rubbish", "glass-recycling"]);
+  });
+
+  test("a Calendar 2 suburban zone is the exact inverse of Calendar 1 on the same dates", () => {
+    const epochMonday = computeCollectionRuleSet(
+      SUBURBAN_CALENDAR_2,
+      new Date(Date.UTC(2026, 0, 12)),
+    );
+    const nextMonday = computeCollectionRuleSet(
+      SUBURBAN_CALENDAR_2,
+      new Date(Date.UTC(2026, 0, 19)),
+    );
+
+    if (epochMonday.collectionType !== "suburban-kerbside") {
+      throw new Error("expected a suburban rule set");
+    }
+    if (nextMonday.collectionType !== "suburban-kerbside") {
+      throw new Error("expected a suburban rule set");
+    }
+    // Calendar 1 (SUBURBAN) is glass on 2026-01-12 and mixed on 2026-01-19 —
+    // Calendar 2 must read the opposite on both dates.
+    expect(epochMonday.recyclingType).toBe("mixed");
+    expect(nextMonday.recyclingType).toBe("glass");
+  });
+
+  test("a suburban zone with no recyclingCalendarGroup throws a RangeError, identically on repeat calls", () => {
+    const noGroup: ZoneClassification = {
+      zone: "zone-east",
+      isInnerCityNightCollection: false,
+      recyclingCalendarGroup: null,
+    };
+    const validDate = new Date(Date.UTC(2026, 0, 12));
+
+    expect(() => computeCollectionRuleSet(noGroup, validDate)).toThrow(
+      new RangeError(
+        "computeCollectionRuleSet: recyclingCalendarGroup must be 1 or 2 for a suburban zone.",
+      ),
+    );
+    expect(() => computeCollectionRuleSet(noGroup, validDate)).toThrow(
+      new RangeError(
+        "computeCollectionRuleSet: recyclingCalendarGroup must be 1 or 2 for a suburban zone.",
+      ),
+    );
   });
 });

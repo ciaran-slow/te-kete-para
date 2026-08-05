@@ -16,6 +16,7 @@ const ADDRESS_A: SuburbSearchResult = {
   suburb: "Karori",
   zone: "SUBURBAN-WEST",
   isInnerCityNightCollection: false,
+  recyclingCalendarGroup: 1,
 };
 const ADDRESS_B: SuburbSearchResult = {
   id: 20,
@@ -23,6 +24,7 @@ const ADDRESS_B: SuburbSearchResult = {
   suburb: "Te Aro",
   zone: "CBD-INNER",
   isInnerCityNightCollection: true,
+  recyclingCalendarGroup: null,
 };
 
 afterEach(() => {
@@ -76,6 +78,42 @@ test("malformed JSON does not throw and parses to null", () => {
 test("a stale version is quarantined rather than misread", () => {
   const stalePayload = JSON.stringify({ version: 999, address: ADDRESS_A });
   expect(parseCachedAddress(stalePayload)).toBeNull();
+});
+
+test("a payload cached under the pre-recyclingCalendarGroup shape (ADDRESS_CACHE_VERSION 1) is quarantined, not misread (issue #102)", () => {
+  const oldShapePayload = JSON.stringify({
+    version: 1,
+    address: {
+      id: 10,
+      streetName: "Karori Road",
+      suburb: "Karori",
+      zone: "SUBURBAN-WEST",
+      isInnerCityNightCollection: false,
+    },
+  });
+  expect(parseCachedAddress(oldShapePayload)).toBeNull();
+});
+
+test("a current-version payload missing recyclingCalendarGroup is rejected, not just old-version payloads", () => {
+  const payload = JSON.stringify({
+    version: ADDRESS_CACHE_VERSION,
+    address: {
+      id: 10,
+      streetName: "Karori Road",
+      suburb: "Karori",
+      zone: "SUBURBAN-WEST",
+      isInnerCityNightCollection: false,
+    },
+  });
+  expect(parseCachedAddress(payload)).toBeNull();
+});
+
+test("recyclingCalendarGroup of 0 (or another non-1/2/null value) is rejected", () => {
+  const payload = JSON.stringify({
+    version: ADDRESS_CACHE_VERSION,
+    address: { ...ADDRESS_A, recyclingCalendarGroup: 0 },
+  });
+  expect(parseCachedAddress(payload)).toBeNull();
 });
 
 test("a payload missing required address fields is rejected", () => {

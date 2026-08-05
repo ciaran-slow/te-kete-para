@@ -1,5 +1,6 @@
 import { getDb } from "@/lib/db";
 import { foldDiacritics } from "@/lib/api/fold-diacritics";
+import type { RecyclingCalendarGroup } from "@/lib/schedule/rules";
 
 interface AddressRow {
   id: number;
@@ -7,6 +8,7 @@ interface AddressRow {
   suburb: string;
   zone: string;
   is_inner_city_night_collection: number | boolean;
+  recycling_calendar_group: number | null;
 }
 
 export interface SuburbSearchResult {
@@ -15,6 +17,7 @@ export interface SuburbSearchResult {
   suburb: string;
   zone: string;
   isInnerCityNightCollection: boolean;
+  recyclingCalendarGroup: RecyclingCalendarGroup | null;
 }
 
 export { escapeLikePattern } from "@/lib/api/escape-like-pattern";
@@ -31,6 +34,10 @@ export function toSuburbSearchResult(row: AddressRow): SuburbSearchResult {
     suburb: row.suburb,
     zone: row.zone,
     isInnerCityNightCollection: Boolean(row.is_inner_city_night_collection),
+    recyclingCalendarGroup:
+      row.recycling_calendar_group === 1 || row.recycling_calendar_group === 2
+        ? row.recycling_calendar_group
+        : null,
   };
 }
 
@@ -50,7 +57,14 @@ export async function GET(request: Request): Promise<Response> {
     const foldedQuery = foldDiacritics(q);
     const rows: AddressRow[] = await db("addresses")
       .orderBy("street_name")
-      .select("id", "street_name", "suburb", "zone", "is_inner_city_night_collection");
+      .select(
+        "id",
+        "street_name",
+        "suburb",
+        "zone",
+        "is_inner_city_night_collection",
+        "recycling_calendar_group",
+      );
 
     const matches = rows.filter((row) =>
       foldDiacritics(row.street_name).includes(foldedQuery),

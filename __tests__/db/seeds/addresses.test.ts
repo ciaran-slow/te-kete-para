@@ -77,6 +77,60 @@ describe("addresses seed", () => {
     expect(suburbs).toHaveLength(13);
   });
 
+  it("carries each suburban row's WCC-confirmed recyclingCalendarGroup, and null for every CBD row (issue #102)", async () => {
+    db = Knex(knexConfigs.test);
+    await db.migrate.latest();
+    await db.seed.run();
+
+    const rows = await db("addresses").select(
+      "street_name",
+      "suburb",
+      "recycling_calendar_group",
+    );
+    const byStreet = new Map(
+      rows.map((r) => [`${r.street_name}, ${r.suburb}`, r.recycling_calendar_group]),
+    );
+
+    expect(byStreet.get("Marjoribanks Street, Mount Victoria")).toBe(1);
+    expect(byStreet.get("Hataitai Road, Hataitai")).toBe(1);
+    expect(byStreet.get("Oriental Parade, Oriental Bay")).toBe(1);
+    expect(byStreet.get("Riddiford Street, Newtown")).toBe(1);
+    expect(byStreet.get("Constable Street, Newtown")).toBe(1);
+    expect(byStreet.get("The Parade, Island Bay")).toBe(2);
+    expect(byStreet.get("Adelaide Road, Mount Cook")).toBe(2);
+    expect(byStreet.get("Karori Road, Karori")).toBe(1);
+    expect(byStreet.get("Kelburn Parade, Kelburn")).toBe(1);
+    expect(byStreet.get("Brooklyn Road, Brooklyn")).toBe(2);
+    expect(byStreet.get("Tinakori Road, Thorndon")).toBe(2);
+    expect(byStreet.get("Broderick Road, Johnsonville")).toBe(1);
+
+    const cbdRows = await db("addresses")
+      .where({ is_inner_city_night_collection: true })
+      .select("recycling_calendar_group");
+    expect(cbdRows).toHaveLength(5);
+    for (const row of cbdRows) {
+      expect(row.recycling_calendar_group).toBeNull();
+    }
+  });
+
+  it("shows zone-south, zone-west, and zone-north each mix both calendar groups, contradicting a zone-level default (issue #102)", async () => {
+    db = Knex(knexConfigs.test);
+    await db.migrate.latest();
+    await db.seed.run();
+
+    for (const zone of ["zone-south", "zone-west", "zone-north"]) {
+      const groups = await db("addresses")
+        .where({ zone })
+        .distinct("recycling_calendar_group");
+      expect(groups.map((g) => g.recycling_calendar_group).sort()).toEqual([1, 2]);
+    }
+
+    const zoneEastGroups = await db("addresses")
+      .where({ zone: "zone-east" })
+      .distinct("recycling_calendar_group");
+    expect(zoneEastGroups.map((g) => g.recycling_calendar_group)).toEqual([1]);
+  });
+
   it("rejects when run before the addresses table has been migrated", async () => {
     db = Knex(knexConfigs.test);
     await expect(db.seed.run()).rejects.toThrow(/no such table: addresses/);

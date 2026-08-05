@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "@/lib/i18n/language-provider";
 import { StatusRegion } from "./status-region";
+import type { RecyclingCalendarGroup } from "@/lib/schedule/rules";
 
 /**
  * Mirrors the JSON contract of `GET /api/suburbs/search`
@@ -16,6 +17,7 @@ export interface SuburbSearchResult {
   suburb: string;
   zone: string;
   isInnerCityNightCollection: boolean;
+  recyclingCalendarGroup: RecyclingCalendarGroup | null;
 }
 
 type Status = "idle" | "loading" | "done" | "empty" | "error";

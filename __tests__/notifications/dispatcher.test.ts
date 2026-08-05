@@ -80,11 +80,13 @@ describe("tomorrowInNzAsUtcDate", () => {
 const SUBURBAN_ZONE: ZoneClassification = {
   zone: "zone-east",
   isInnerCityNightCollection: false,
+  recyclingCalendarGroup: 1,
 };
 
 const INNER_CITY_ZONE: ZoneClassification = {
   zone: "zone-cbd",
   isInnerCityNightCollection: true,
+  recyclingCalendarGroup: null,
 };
 
 const NOW = new Date("2026-01-11T06:00:00Z"); // 19:00 NZDT on Jan 11 -> tomorrow = Jan 12
@@ -132,7 +134,7 @@ describe("planDispatchForSubscription", () => {
 
   test("an empty/whitespace zone string returns null instead of throwing", () => {
     const subscription = subscriptionWith({
-      zone: { zone: "   ", isInnerCityNightCollection: false },
+      zone: { zone: "   ", isInnerCityNightCollection: false, recyclingCalendarGroup: 1 },
     });
 
     expect(planDispatchForSubscription(subscription, NOW)).toBeNull();
@@ -162,6 +164,15 @@ async function seedDispatchFixtures(): Promise<void> {
     suburb: "Karori",
     zone: "zone-east",
     is_inner_city_night_collection: false,
+    recycling_calendar_group: 1,
+  });
+
+  const [suburbanCalendar2AddressId] = await db("addresses").insert({
+    street_name: "Calendar Two Street",
+    suburb: "Island Bay",
+    zone: "zone-south",
+    is_inner_city_night_collection: false,
+    recycling_calendar_group: 2,
   });
 
   const [innerCityAddressId] = await db("addresses").insert({
@@ -178,6 +189,13 @@ async function seedDispatchFixtures(): Promise<void> {
       auth: "auth-suburban",
       language_preference: "en",
       address_id: suburbanAddressId,
+    },
+    {
+      endpoint: "https://push.example/suburban-calendar-2",
+      p256dh: "p256dh-suburban-2",
+      auth: "auth-suburban-2",
+      language_preference: "en",
+      address_id: suburbanCalendar2AddressId,
     },
     {
       endpoint: "https://push.example/inner-city",
@@ -206,10 +224,10 @@ describe("collectNightlyDispatchCandidates", () => {
     await teardownTestDb();
   });
 
-  test("returns exactly the two linked subscriptions' candidates, omitting the null-address subscription", async () => {
+  test("returns exactly the three linked subscriptions' candidates, omitting the null-address subscription", async () => {
     const candidates = await collectNightlyDispatchCandidates(NOW);
 
-    expect(candidates).toHaveLength(2);
+    expect(candidates).toHaveLength(3);
 
     const bySubscription = new Map(candidates.map((c) => [c.endpoint, c]));
     expect(bySubscription.has("https://push.example/no-address")).toBe(false);
@@ -217,8 +235,27 @@ describe("collectNightlyDispatchCandidates", () => {
     const suburban = bySubscription.get("https://push.example/suburban");
     expect(suburban?.ruleSet.collectionType).toBe("suburban-kerbside");
 
+    const suburbanCalendar2 = bySubscription.get("https://push.example/suburban-calendar-2");
+    expect(suburbanCalendar2?.ruleSet.collectionType).toBe("suburban-kerbside");
+
     const innerCity = bySubscription.get("https://push.example/inner-city");
     expect(innerCity?.ruleSet.collectionType).toBe("inner-city-night");
+  });
+
+  test("resolves opposite recycling parity for two suburban subscriptions on different addresses.recycling_calendar_group (issue #102)", async () => {
+    const candidates = await collectNightlyDispatchCandidates(NOW);
+    const bySubscription = new Map(candidates.map((c) => [c.endpoint, c]));
+
+    const calendar1 = bySubscription.get("https://push.example/suburban");
+    const calendar2 = bySubscription.get("https://push.example/suburban-calendar-2");
+
+    if (calendar1?.ruleSet.collectionType !== "suburban-kerbside") {
+      throw new Error("expected a suburban rule set");
+    }
+    if (calendar2?.ruleSet.collectionType !== "suburban-kerbside") {
+      throw new Error("expected a suburban rule set");
+    }
+    expect(calendar1.ruleSet.recyclingType).not.toBe(calendar2.ruleSet.recyclingType);
   });
 
   test("rejects rather than resolving to [] when the query fails", async () => {

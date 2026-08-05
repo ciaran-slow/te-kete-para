@@ -139,6 +139,7 @@ const KARORI: SuburbSearchResult = {
   suburb: "Karori",
   zone: "SUBURBAN-WEST",
   isInnerCityNightCollection: false,
+  recyclingCalendarGroup: 1,
 };
 
 function jsonResponse(body: unknown) {

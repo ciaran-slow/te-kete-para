@@ -12,7 +12,7 @@
 import type { SuburbSearchResult } from "@/components/address-search";
 
 export const ADDRESS_CACHE_KEY = "tkp.selectedAddress";
-export const ADDRESS_CACHE_VERSION = 1;
+export const ADDRESS_CACHE_VERSION = 2;
 const ADDRESS_CACHE_CHANGE_EVENT = "tkp:selected-address-change";
 
 interface CachedAddressPayload {
@@ -65,7 +65,10 @@ function isSuburbSearchResult(value: unknown): value is SuburbSearchResult {
     typeof v.streetName === "string" &&
     typeof v.suburb === "string" &&
     typeof v.zone === "string" &&
-    typeof v.isInnerCityNightCollection === "boolean"
+    typeof v.isInnerCityNightCollection === "boolean" &&
+    (v.recyclingCalendarGroup === 1 ||
+      v.recyclingCalendarGroup === 2 ||
+      v.recyclingCalendarGroup === null)
   );
 }
 

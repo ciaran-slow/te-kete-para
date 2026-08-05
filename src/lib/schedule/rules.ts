@@ -2,10 +2,14 @@
  * Pure collection-rule computation for a Wellington zone (vision.md §4A):
  * suburban 7:00 AM kerbside + alternating glass/mixed recycling, vs.
  * inner-city/Te Aro 5:30–10:00 PM yellow-bag night collection with Tuesday
- * cardboard. No DB access — see ADR 0015 (why classification is an input,
- * not derived from the zone string) and ADR 0016/ADR 0042 (the alternating-
- * week epoch anchor is corrected to a sourced WCC calendar date, though the
- * per-zone Calendar 1 vs 2 assignment is still open — issue #102).
+ * cardboard. No DB access — classification is passed in explicitly rather
+ * than re-derived from the zone string (ADR 0015), and the alternating
+ * recycling cadence is anchored to a sourced WCC calendar date (ADR
+ * 0042). Which of WCC's two independently-phased calendars a given
+ * address follows is confirmed per-address and passed in as
+ * `recyclingCalendarGroup` (ADR 0057, issue #102) — not derived from the
+ * zone string, since WCC's calendar boundary does not align with this
+ * repo's zone taxonomy.
  *
  * Dates are read as their UTC calendar date only (`getUTCFullYear` /
  * `getUTCMonth` / `getUTCDate`) — wall-clock time and the caller's local
@@ -33,6 +37,8 @@ export interface TimeWindow {
   end: string | null;
 }
 
+export type RecyclingCalendarGroup = 1 | 2;
+
 /**
  * The zone-level classification the rule engine needs, sourced from
  * `addresses` (`zone`, `is_inner_city_night_collection`) — never
@@ -41,6 +47,14 @@ export interface TimeWindow {
 export interface ZoneClassification {
   zone: string;
   isInnerCityNightCollection: boolean;
+  /**
+   * Which of WCC's two independently-phased alternating recycling
+   * calendars (ADR 0042) this address actually follows — confirmed
+   * per-address via WCC's live per-street lookup tool, not derived from
+   * `zone` (ADR 0057, issue #102). `null` for inner-city night-collection
+   * addresses, which do not alternate glass/mixed.
+   */
+  recyclingCalendarGroup: RecyclingCalendarGroup | null;
 }
 
 export interface SuburbanRuleSet {
@@ -64,8 +78,11 @@ export type CollectionRuleSet = SuburbanRuleSet | InnerCityRuleSet;
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 // Monday 2026-01-12 UTC = a confirmed "glass" week under WCC's published
-// Calendar 1 (ADR 0042). Calendar 1 vs Calendar 2 per zone is still
-// unconfirmed — issue #102.
+// Calendar 1 (ADR 0042). Calendar 2 is Calendar 1's exact photographic
+// inverse (ADR 0042) — a zone.recyclingCalendarGroup of 2 flips this
+// epoch's parity rather than anchoring to a second, independently-sourced
+// date. Which calendar each address actually follows is confirmed
+// per-address, not per-zone (ADR 0057, issue #102).
 const RECYCLING_EPOCH_UTC_MS = Date.UTC(2026, 0, 12);
 
 export function computeCollectionRuleSet(
@@ -96,6 +113,12 @@ export function computeCollectionRuleSet(
     };
   }
 
+  if (zone.recyclingCalendarGroup !== 1 && zone.recyclingCalendarGroup !== 2) {
+    throw new RangeError(
+      "computeCollectionRuleSet: recyclingCalendarGroup must be 1 or 2 for a suburban zone.",
+    );
+  }
+
   const dateUtcMs = Date.UTC(
     date.getUTCFullYear(),
     date.getUTCMonth(),
@@ -105,7 +128,9 @@ export function computeCollectionRuleSet(
     (dateUtcMs - RECYCLING_EPOCH_UTC_MS) / MS_PER_DAY,
   );
   const weeksSinceEpoch = Math.floor(daysSinceEpoch / 7);
-  const isGlassWeek = (((weeksSinceEpoch % 2) + 2) % 2) === 0;
+  const isGlassWeekCalendar1 = (((weeksSinceEpoch % 2) + 2) % 2) === 0;
+  const isGlassWeek =
+    zone.recyclingCalendarGroup === 1 ? isGlassWeekCalendar1 : !isGlassWeekCalendar1;
   const recyclingType: "glass" | "mixed" = isGlassWeek ? "glass" : "mixed";
   const binTypes: WasteBinType[] = ["general-rubbish"];
   binTypes.push(isGlassWeek ? "glass-recycling" : "mixed-recycling");
