@@ -799,19 +799,23 @@ describe("PushSubscriptionToggle", () => {
         ).toBeInTheDocument(),
       );
 
-      // Selects address 2, then immediately address 3 — the exact
-      // in-quick-succession pattern the issue describes. Both fetches are
-      // issued (and held unresolved) before either settles.
+      // Selects address 5, then immediately address 2 — deliberately a
+      // *decreasing* addressId, unlike an increasing selection order.
+      // clientRequestedAt must still increase, because it tracks selection
+      // time, not the numeric addressId. If a regression swapped in
+      // addressId itself as the ordering token (ADR 0067's rejected
+      // Alternative C), the toBeGreaterThan assertion below would fail here
+      // where an increasing-addressId fixture couldn't tell the difference.
       rerender(
         <LanguageProvider>
-          <PushSubscriptionToggle addressId={2} />
+          <PushSubscriptionToggle addressId={5} />
         </LanguageProvider>,
       );
       await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
 
       rerender(
         <LanguageProvider>
-          <PushSubscriptionToggle addressId={3} />
+          <PushSubscriptionToggle addressId={2} />
         </LanguageProvider>,
       );
       await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
@@ -820,12 +824,13 @@ describe("PushSubscriptionToggle", () => {
       const [, secondInit] = fetchMock.mock.calls[1] as [string, RequestInit];
       const firstBody = JSON.parse(firstInit.body as string) as Record<string, unknown>;
       const secondBody = JSON.parse(secondInit.body as string) as Record<string, unknown>;
-      expect(firstBody.addressId).toBe(2);
-      expect(secondBody.addressId).toBe(3);
+      expect(firstBody.addressId).toBe(5);
+      expect(secondBody.addressId).toBe(2);
       expect(typeof firstBody.clientRequestedAt).toBe("number");
       expect(typeof secondBody.clientRequestedAt).toBe("number");
-      // Selection order, not resolution order, decides these values — this
-      // is what the server's ordering guard (ADR 0067) actually compares.
+      // Selection order, not resolution order (and not the addressId
+      // values themselves), decides these values — this is what the
+      // server's ordering guard (ADR 0067) actually compares.
       expect(secondBody.clientRequestedAt as number).toBeGreaterThan(
         firstBody.clientRequestedAt as number,
       );
