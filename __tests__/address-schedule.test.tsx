@@ -113,7 +113,7 @@ describe("AddressSchedule", () => {
     });
   });
 
-  test("a previously cached address renders its schedule on a fresh mount, with no network call at all (offline acceptance criterion)", () => {
+  test("a previously cached address renders its schedule on a fresh mount, with no network call needed for the schedule itself (offline acceptance criterion)", () => {
     seedCachedAddress(SUBURBAN_ADDRESS);
     const fetchMock = vi.fn().mockRejectedValue(new TypeError("Failed to fetch"));
     vi.stubGlobal("fetch", fetchMock);
@@ -126,7 +126,19 @@ describe("AddressSchedule", () => {
     expect(
       screen.getAllByRole("listitem").map((li) => li.textContent),
     ).toEqual(["General rubbish", "Glass recycling crate"]);
-    expect(fetchMock).not.toHaveBeenCalled();
+    // NFR-02's guarantee (ADR 0052) is that ScheduleDisplay's own render
+    // never depends on a network call — it doesn't extend to ShiftAlertBanner
+    // (issue #83), a separate proactive-enhancement component composed
+    // alongside it that fetches GET /api/holidays regardless of whether
+    // `address` arrived via a fresh selection or cache restore. Offline,
+    // that fetch rejects and the banner degrades gracefully (its own test
+    // suite covers that); the schedule above renders correctly either way,
+    // and no redundant address lookup happens for the already-cached address.
+    expect(fetchMock).toHaveBeenCalledWith("/api/holidays", expect.anything());
+    expect(fetchMock).not.toHaveBeenCalledWith(
+      expect.stringContaining("/api/suburbs/search"),
+      expect.anything(),
+    );
   });
 
   test("a corrupt (non-JSON) cached payload degrades to the no-address prompt, not a crash", () => {
