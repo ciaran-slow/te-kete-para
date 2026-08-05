@@ -131,6 +131,60 @@ describe("addresses seed", () => {
     expect(zoneEastGroups.map((g) => g.recycling_calendar_group)).toEqual([1]);
   });
 
+  it("carries each suburban row's WCC-confirmed collectionWeekday, and null for every CBD row (issue #117)", async () => {
+    db = Knex(knexConfigs.test);
+    await db.migrate.latest();
+    await db.seed.run();
+
+    const rows = await db("addresses").select(
+      "street_name",
+      "suburb",
+      "collection_weekday",
+    );
+    const byStreet = new Map(
+      rows.map((r) => [`${r.street_name}, ${r.suburb}`, r.collection_weekday]),
+    );
+
+    expect(byStreet.get("Majoribanks Street, Mount Victoria")).toBe(4);
+    expect(byStreet.get("Hataitai Road, Hataitai")).toBe(4);
+    expect(byStreet.get("Oriental Parade, Oriental Bay")).toBe(4);
+    expect(byStreet.get("Riddiford Street, Newtown")).toBe(4);
+    expect(byStreet.get("Constable Street, Newtown")).toBe(4);
+    expect(byStreet.get("The Parade, Island Bay")).toBe(4);
+    expect(byStreet.get("Adelaide Road, Mount Cook")).toBe(4);
+    expect(byStreet.get("Karori Road, Karori")).toBe(3);
+    expect(byStreet.get("Kelburn Parade, Kelburn")).toBe(2);
+    expect(byStreet.get("Brooklyn Road, Brooklyn")).toBe(3);
+    expect(byStreet.get("Tinakori Road, Thorndon")).toBe(2);
+    expect(byStreet.get("Broderick Road, Johnsonville")).toBe(1);
+
+    const cbdRows = await db("addresses")
+      .where({ is_inner_city_night_collection: true })
+      .select("collection_weekday");
+    expect(cbdRows).toHaveLength(5);
+    for (const row of cbdRows) {
+      expect(row.collection_weekday).toBeNull();
+    }
+  });
+
+  it("shows zone-west and zone-north each mix collection weekdays, contradicting a zone-level default (issue #117)", async () => {
+    db = Knex(knexConfigs.test);
+    await db.migrate.latest();
+    await db.seed.run();
+
+    for (const zone of ["zone-west", "zone-north"]) {
+      const weekdays = await db("addresses")
+        .where({ zone })
+        .distinct("collection_weekday");
+      expect(weekdays.map((w) => w.collection_weekday).sort()).toHaveLength(2);
+    }
+
+    const zoneEastWeekdays = await db("addresses")
+      .where({ zone: "zone-east" })
+      .distinct("collection_weekday");
+    expect(zoneEastWeekdays.map((w) => w.collection_weekday)).toEqual([4]);
+  });
+
   it("rejects when run before the addresses table has been migrated", async () => {
     db = Knex(knexConfigs.test);
     await expect(db.seed.run()).rejects.toThrow(/no such table: addresses/);
