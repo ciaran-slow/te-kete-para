@@ -7,7 +7,7 @@
  * recycling cadence is anchored to a sourced WCC calendar date (ADR
  * 0042). Which of WCC's two independently-phased calendars a given
  * address follows is confirmed per-address and passed in as
- * `recyclingCalendarGroup` (ADR 0057, issue #102) — not derived from the
+ * `recyclingCalendarGroup` (ADR 0059, issue #102) — not derived from the
  * zone string, since WCC's calendar boundary does not align with this
  * repo's zone taxonomy.
  *
@@ -51,7 +51,7 @@ export interface ZoneClassification {
    * Which of WCC's two independently-phased alternating recycling
    * calendars (ADR 0042) this address actually follows — confirmed
    * per-address via WCC's live per-street lookup tool, not derived from
-   * `zone` (ADR 0057, issue #102). `null` for inner-city night-collection
+   * `zone` (ADR 0059, issue #102). `null` for inner-city night-collection
    * addresses, which do not alternate glass/mixed.
    */
   recyclingCalendarGroup: RecyclingCalendarGroup | null;
@@ -82,7 +82,7 @@ const MS_PER_DAY = 24 * 60 * 60 * 1000;
 // inverse (ADR 0042) — a zone.recyclingCalendarGroup of 2 flips this
 // epoch's parity rather than anchoring to a second, independently-sourced
 // date. Which calendar each address actually follows is confirmed
-// per-address, not per-zone (ADR 0057, issue #102).
+// per-address, not per-zone (ADR 0059, issue #102).
 const RECYCLING_EPOCH_UTC_MS = Date.UTC(2026, 0, 12);
 
 export function computeCollectionRuleSet(

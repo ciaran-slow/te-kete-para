@@ -149,6 +149,7 @@ describe("runNightlyDispatch — pruning (issue #111)", () => {
       suburb: "Karori",
       zone: "zone-east",
       is_inner_city_night_collection: false,
+      recycling_calendar_group: 1,
     });
     const [subscriptionId] = await db("push_subscriptions").insert({
       endpoint,

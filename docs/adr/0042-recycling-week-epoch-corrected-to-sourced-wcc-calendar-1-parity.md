@@ -1,6 +1,6 @@
 # ADR 0042: Recycling-week epoch corrected to sourced WCC "Calendar 1" parity, applied uniformly pending per-zone confirmation
 
-- **Status:** superseded by ADR 0057
+- **Status:** superseded by ADR 0059
 - **Date:** 2026-08-04
 - **Issue:** #59
 
