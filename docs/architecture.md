@@ -297,7 +297,18 @@
   `runNightlyDispatch` calls `src/lib/notifications/subscription-pruner.ts`'s
   `pruneGoneSubscriptions`, which deletes any `push_subscriptions` row whose
   send came back with a 404/410 "gone" `failureReason` — single-strike, no
-  retry counter or new column (#111, ADR 0057). `public/sw.js`'s `push` listener now
+  retry counter or new column (#111, ADR 0057). A failed `runNightlyDispatch`
+  call (e.g. `collectNightlyDispatchCandidates`'s DB read) is retried up to 3
+  times with exponential backoff (`src/lib/notifications/retry.ts`'s
+  `withRetry`) before the route gives up; retrying the whole call is safe
+  only because a `pruneGoneSubscriptions` failure no longer rejects
+  `runNightlyDispatch` (it's logged and swallowed instead), so every
+  remaining rejection source happens strictly before any push is sent.
+  Exhausting every attempt fires a best-effort webhook alert
+  (`src/lib/notifications/alerting.ts`) to
+  `process.env.DISPATCH_ALERT_WEBHOOK_URL` — an unprovisioned config gap in
+  every environment today, same pattern as `CRON_SECRET` (#122, ADR 0061).
+  `public/sw.js`'s `push` listener now
   calls `self.registration.showNotification(...)` to display what gets
   sent, falling back to a generic notification on a malformed/absent
   payload, with a `notificationclick` listener that focuses or opens the
@@ -351,8 +362,10 @@
      /api/notifications/dispatch` route nightly to invoke the pipeline
      (#110, ADR 0056), though `CRON_SECRET` remains an unprovisioned config
      gap in every environment today (same pattern as the VAPID keys, ADR
-     0047/0050). The browser side is handled by `public/sw.js`'s
-     `push`/`notificationclick` listeners (#115, ADR 0055).
+     0047/0050). A failed nightly run is retried with backoff and, if still
+     failing, raises a best-effort webhook alert rather than only a server
+     log line (#122, ADR 0061). The browser side is handled by
+     `public/sw.js`'s `push`/`notificationclick` listeners (#115, ADR 0055).
 
 ---
 
