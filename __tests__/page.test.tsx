@@ -119,7 +119,25 @@ test("all three colour-token swatches render with their Māori names", () => {
 
 test("a semantic separator divides product copy from token diagnostics", () => {
   renderPage();
-  expect(screen.getByRole("separator")).toBeInTheDocument();
+  expect(screen.getAllByRole("separator").length).toBeGreaterThanOrEqual(1);
+});
+
+test("the sorting search section is composed onto the homepage (issue #75, ADR 0064)", () => {
+  renderPage();
+  expect(
+    screen.getByRole("heading", { level: 2, name: "What is this?" }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByLabelText("Search for a household item"),
+  ).toBeInTheDocument();
+});
+
+test("a stored Te Reo preference renders the Te Reo sorting search heading", () => {
+  window.localStorage.setItem(LOCALE_STORAGE_KEY, "mi");
+  renderPage();
+  expect(
+    screen.getByRole("heading", { level: 2, name: "He Aha Tēnei?" }),
+  ).toBeInTheDocument();
 });
 
 test("homepage has no axe violations in English", async () => {

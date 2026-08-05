@@ -83,11 +83,16 @@
  *   - textiles-clothing: WCC "Organisations that accept donated items",
  *     fetched directly.
  *
- * - Issue #69: the Te Reo Māori text is a machine draft. Key vocabulary
- *   was checked against Te Aka (pātara "bottle", pūhiko "battery",
- *   rehu matūriki "aerosol", kōrekoreko "fluorescent"), but the full
- *   dataset still needs review by a fluent Te Reo Māori speaker before
- *   it ships to users.
+ * - Issue #69 (closed as won't-fix-for-prototype, ADR 0064): the Te Reo
+ *   Māori text is a machine draft. Key vocabulary was checked against Te
+ *   Aka (pātara "bottle", pūhiko "battery", rehu matūriki "aerosol",
+ *   kōrekoreko "fluorescent"), but the full dataset has not been reviewed
+ *   by a fluent Te Reo Māori speaker. ADR 0028 originally deferred
+ *   composing `<SortingSearch>` into any route until this closed; ADR 0064
+ *   accepts the machine-draft risk instead, as a prototype-scope trade-off
+ *   — this is not resolved, only knowingly shipped. A future fluent-speaker
+ *   pass should re-open a tracking issue and treat this file as the same
+ *   kind of correction #70/#119 already made to the English text.
  *
  * `keywords` (issue #73, ADR 0035) is a separate, curated search-recall
  * aid, not translated/verified content like the rest of the row — it is

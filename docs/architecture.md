@@ -74,11 +74,13 @@
   `useSpeechRecognitionSupport()` (`src/lib/speech/`, a
   `useSyncExternalStore` hook with ambient types in
   `speech-recognition-types.d.ts`); when unsupported the mic button is
-  simply absent and typed search is the fallback (ADR 0027). The component
-  is fully built and tested but **not composed into any route yet**: the
-  `sorting_rules` seed content it renders is unverified pending #69/#70
-  (§2C), so wiring it into `page.tsx` is deferred until both close
-  (ADR 0028).
+  simply absent and typed search is the fallback (ADR 0027). Composed into
+  `src/app/page.tsx` (issue #75, ADR 0064, superseding ADR 0028's
+  deferral): the English disposal instructions are WCC-confirmed (#70,
+  #119), but the Te Reo Māori text remains a machine draft never reviewed
+  by a fluent speaker (#69) — shipped as a knowing, recorded prototype-
+  scope trade-off rather than left permanently unwired. See ADR 0064's
+  "Trade-offs and consequences" before treating this content as verified.
 * **Shift-Alert Banner:** `src/components/shift-alert-banner.tsx` renders
   `<ShiftAlertBanner>` (vision.md §4B, issue #24), which announces an
   upcoming holiday-shifted collection through the shared `<StatusRegion>`
@@ -173,9 +175,12 @@
   drive those tools directly (ADR 0024, §Trade-offs and consequences). This
   spec is deliberately not part of `test:e2e:a11y` or any CI-invoked
   script; it's a manual/on-demand tool, not an automated gate. A
-  human-operated pass with real assistive technology remains open as a
-  follow-up issue and is what actually closes vision.md §3's named-tool
-  claim.
+  human-operated pass with real assistive technology has not been
+  performed; the follow-up issue tracking it (#65) was closed as
+  out-of-scope-for-prototype (ADR 0065), which also downgraded vision.md
+  §3 and PRD FR-03 from a "fully tested with named tools" claim to an
+  automated-checks-only one. Re-open that work before making any
+  human-verified AAA claim beyond this prototype.
 
 ### B. API & Business Logic Layer
 * **Runtime Environment:** Node.js serverless functions / edge runtimes hosted via Vercel or Netlify.
