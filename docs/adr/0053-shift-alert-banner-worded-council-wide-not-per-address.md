@@ -1,6 +1,6 @@
 # ADR 0053: Shift-alert banner wording narrowed to a council-wide statement, not a per-address claim
 
-- **Status:** accepted
+- **Status:** superseded by ADR 0066
 - **Date:** 2026-08-05
 - **Issue:** #83
 

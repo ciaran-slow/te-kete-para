@@ -38,9 +38,9 @@ export const en = {
   "sortingSearch.voice.listening": "Listening…",
   "sortingSearch.voice.error":
     "We couldn't hear you clearly. Please try again or type your search.",
-  "schedule.heading": "Today's collection",
+  "schedule.heading": "Your next collection",
   "schedule.noAddressSelected":
-    "Search for your address above to see today's collection.",
+    "Search for your address above to see your next collection.",
   "schedule.dateLabel": "Date",
   "schedule.binsHeading": "Bins to put out",
   "schedule.putOutBy": "Put out by",
@@ -51,9 +51,9 @@ export const en = {
   "schedule.binType.yellowBagRubbish": "Yellow rubbish bag",
   "schedule.binType.cardboard": "Cardboard",
   "schedule.error":
-    "We couldn't work out today's collection for this address. Please try again.",
-  "shiftAlert.prefix": "Collections normally due",
-  "shiftAlert.shiftsTo": "move to",
+    "We couldn't work out your next collection for this address. Please try again.",
+  "shiftAlert.prefix": "Your collection due",
+  "shiftAlert.shiftsTo": "shifts to",
   "shiftAlert.error":
     "We couldn't check for upcoming collection changes right now. Please try again.",
   "pushOptIn.label": "Night-before collection reminders",
@@ -109,9 +109,9 @@ export const mi: Record<TranslationKey, string> = {
   "sortingSearch.voice.listening": "E whakarongo ana…",
   "sortingSearch.voice.error":
     "Kāore i mārama te rongo i a koe. Whakamātauria anō, tuhia rānei tō rapunga.",
-  "schedule.heading": "Te kohinga o tēnei rā",
+  "schedule.heading": "Tō kohinga e whai ake nei",
   "schedule.noAddressSelected":
-    "Rapua tō wāhitau i runga ake nei kia kite i te kohinga o tēnei rā.",
+    "Rapua tō wāhitau i runga ake nei kia kite i tō kohinga e whai ake nei.",
   "schedule.dateLabel": "Rā",
   "schedule.binsHeading": "Ngā kete hei whakaputa",
   "schedule.putOutBy": "Whakaputahia i mua i te",
@@ -122,8 +122,8 @@ export const mi: Record<TranslationKey, string> = {
   "schedule.binType.yellowBagRubbish": "Pēke Kōwhai Para",
   "schedule.binType.cardboard": "Kāta",
   "schedule.error":
-    "Kāore i taea te tātai i te kohinga mō tēnei wāhitau. Whakamātauria anō.",
-  "shiftAlert.prefix": "Ko ngā kohinga e tika ana mō te",
+    "Kāore i taea te tātai i tō kohinga e whai ake nei mō tēnei wāhitau. Whakamātauria anō.",
+  "shiftAlert.prefix": "Tō kohinga e tika ana mō te",
   "shiftAlert.shiftsTo": "ka huri ki te",
   "shiftAlert.error":
     "Kāore i taea te tirotiro i ngā panoni kohinga ā tōna wā. Whakamātauria anō.",

@@ -1,6 +1,10 @@
 import { getDb } from "@/lib/db";
 import { foldDiacritics } from "@/lib/api/fold-diacritics";
 import type { RecyclingCalendarGroup } from "@/lib/schedule/rules";
+import {
+  toCollectionDayClassification,
+  type Weekday,
+} from "@/lib/schedule/collection-day";
 
 interface AddressRow {
   id: number;
@@ -9,6 +13,7 @@ interface AddressRow {
   zone: string;
   is_inner_city_night_collection: number | boolean;
   recycling_calendar_group: number | null;
+  collection_weekday: number | null;
 }
 
 export interface SuburbSearchResult {
@@ -18,6 +23,7 @@ export interface SuburbSearchResult {
   zone: string;
   isInnerCityNightCollection: boolean;
   recyclingCalendarGroup: RecyclingCalendarGroup | null;
+  collectionWeekday: Weekday | null;
 }
 
 export { escapeLikePattern } from "@/lib/api/escape-like-pattern";
@@ -38,6 +44,7 @@ export function toSuburbSearchResult(row: AddressRow): SuburbSearchResult {
       row.recycling_calendar_group === 1 || row.recycling_calendar_group === 2
         ? row.recycling_calendar_group
         : null,
+    collectionWeekday: toCollectionDayClassification(row).collectionWeekday,
   };
 }
 
@@ -64,6 +71,7 @@ export async function GET(request: Request): Promise<Response> {
         "zone",
         "is_inner_city_night_collection",
         "recycling_calendar_group",
+        "collection_weekday",
       );
 
     const matches = rows.filter((row) =>

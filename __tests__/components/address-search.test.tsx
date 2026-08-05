@@ -16,6 +16,7 @@ const KARORI: SuburbSearchResult = {
   zone: "SUBURBAN-WEST",
   isInnerCityNightCollection: false,
   recyclingCalendarGroup: 1,
+  collectionWeekday: 3,
 };
 const CUBA_MALL: SuburbSearchResult = {
   id: 2,
@@ -24,6 +25,7 @@ const CUBA_MALL: SuburbSearchResult = {
   zone: "CBD-INNER",
   isInnerCityNightCollection: true,
   recyclingCalendarGroup: null,
+  collectionWeekday: null,
 };
 const CUBA_STREET: SuburbSearchResult = {
   id: 3,
@@ -32,6 +34,7 @@ const CUBA_STREET: SuburbSearchResult = {
   zone: "CBD-INNER",
   isInnerCityNightCollection: true,
   recyclingCalendarGroup: null,
+  collectionWeekday: null,
 };
 
 function jsonResponse(body: unknown, ok = true) {

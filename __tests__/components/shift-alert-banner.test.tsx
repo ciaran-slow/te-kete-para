@@ -12,6 +12,12 @@ import { LanguageProvider } from "../../src/lib/i18n/language-provider";
 import { writeStoredLocale } from "../../src/lib/i18n/locale-storage";
 import { expectNoA11yViolations } from "../helpers/a11y";
 
+// collectionWeekday: 5 (Friday) — 2026-12-25 (CHRISTMAS/CHRISTMAS_DAY below)
+// and 2026-01-01 (NEW_YEARS_CHAIN's first date) are Friday/Thursday
+// respectively; this fixture's weekday is chosen to align with the holiday
+// fixtures already used throughout this file, NOT with Karori Road's real
+// seeded collection_weekday (3, Wednesday — db/seeds/01_addresses.js, ADR
+// 0063). Don't assume this mirrors the real seed data.
 const KARORI: SuburbSearchResult = {
   id: 10,
   streetName: "Karori Road",
@@ -19,6 +25,21 @@ const KARORI: SuburbSearchResult = {
   zone: "SUBURBAN-WEST",
   isInnerCityNightCollection: false,
   recyclingCalendarGroup: 1,
+  collectionWeekday: 5,
+};
+// Karori Road's REAL seeded collection_weekday (3, Wednesday) — reused here
+// deliberately to prove that even the genuine value doesn't match Friday
+// 2026-12-25, so the banner must show nothing for it.
+const KARORI_WRONG_WEEKDAY: SuburbSearchResult = {
+  ...KARORI,
+  collectionWeekday: 3,
+};
+// An address whose collection weekday has not been confirmed yet (ADR
+// 0063) — unreachable with today's fully-confirmed seed data, but the code
+// must handle it: the banner must show nothing rather than guess.
+const KARORI_UNCONFIRMED: SuburbSearchResult = {
+  ...KARORI,
+  collectionWeekday: null,
 };
 const CUBA_STREET: SuburbSearchResult = {
   id: 20,
@@ -27,6 +48,7 @@ const CUBA_STREET: SuburbSearchResult = {
   zone: "CBD-INNER",
   isInnerCityNightCollection: true,
   recyclingCalendarGroup: null,
+  collectionWeekday: null,
 };
 
 const CHRISTMAS: HolidayApiRecord = {
@@ -65,11 +87,36 @@ const SIX_DAYS_BEFORE_CHRISTMAS = new Date(Date.UTC(2026, 11, 19, 1));
 const MID_JUNE = new Date(Date.UTC(2026, 5, 15, 1));
 
 const EN_CHRISTMAS_MESSAGE =
-  "Collections normally due 25/12/2026 (Christmas Day) move to 26/12/2026.";
+  "Your collection due 25/12/2026 (Christmas Day) shifts to 26/12/2026.";
 const MI_CHRISTMAS_MESSAGE =
-  "Ko ngā kohinga e tika ana mō te 25/12/2026 (Te Rā Kirihimete) ka huri ki te 26/12/2026.";
+  "Tō kohinga e tika ana mō te 25/12/2026 (Te Rā Kirihimete) ka huri ki te 26/12/2026.";
 const EN_ERROR_MESSAGE =
   "We couldn't check for upcoming collection changes right now. Please try again.";
+
+// Classification fixtures for the pure findUpcomingShift tests below.
+// FRIDAY/THURSDAY match CHRISTMAS's (2026-12-25) and NEW_YEARS_CHAIN[0]'s
+// (2026-01-01) actual UTC weekdays respectively — verified via
+// `new Date(Date.UTC(...)).getUTCDay()` before use, not assumed.
+const FRIDAY_CLASSIFICATION = {
+  isInnerCityNightCollection: false,
+  collectionWeekday: 5 as const,
+};
+const THURSDAY_CLASSIFICATION = {
+  isInnerCityNightCollection: false,
+  collectionWeekday: 4 as const,
+};
+const WEDNESDAY_CLASSIFICATION = {
+  isInnerCityNightCollection: false,
+  collectionWeekday: 3 as const,
+};
+const UNCONFIRMED_CLASSIFICATION = {
+  isInnerCityNightCollection: false,
+  collectionWeekday: null,
+};
+const INNER_CITY_CLASSIFICATION = {
+  isInnerCityNightCollection: true,
+  collectionWeekday: null,
+};
 
 function jsonResponse(body: unknown, ok = true) {
   return { ok, status: ok ? 200 : 503, json: async () => body };
@@ -91,9 +138,11 @@ afterEach(() => {
 
 describe("findUpcomingShift", () => {
   test("finds a holiday exactly on todayUtc (offset 0)", () => {
-    const result = findUpcomingShift(new Date(Date.UTC(2026, 11, 25)), [
-      CHRISTMAS,
-    ]);
+    const result = findUpcomingShift(
+      new Date(Date.UTC(2026, 11, 25)),
+      [CHRISTMAS],
+      FRIDAY_CLASSIFICATION,
+    );
 
     expect(result).toEqual({
       holiday: CHRISTMAS,
@@ -107,7 +156,7 @@ describe("findUpcomingShift", () => {
       Date.UTC(2026, 11, 25) - LOOKAHEAD_DAYS * MS_PER_DAY,
     );
 
-    const result = findUpcomingShift(today, [CHRISTMAS]);
+    const result = findUpcomingShift(today, [CHRISTMAS], FRIDAY_CLASSIFICATION);
 
     expect(result).toEqual({
       holiday: CHRISTMAS,
@@ -121,7 +170,9 @@ describe("findUpcomingShift", () => {
       Date.UTC(2026, 11, 25) - (LOOKAHEAD_DAYS + 1) * MS_PER_DAY,
     );
 
-    expect(findUpcomingShift(today, [CHRISTMAS])).toBeNull();
+    expect(
+      findUpcomingShift(today, [CHRISTMAS], FRIDAY_CLASSIFICATION),
+    ).toBeNull();
   });
 
   // The three tests below pin ADR 0032's chosen window with literal dates —
@@ -133,9 +184,11 @@ describe("findUpcomingShift", () => {
   });
 
   test("finds a holiday six literal days ahead: today 2026-12-19, holiday 2026-12-25", () => {
-    const result = findUpcomingShift(new Date(Date.UTC(2026, 11, 19)), [
-      CHRISTMAS,
-    ]);
+    const result = findUpcomingShift(
+      new Date(Date.UTC(2026, 11, 19)),
+      [CHRISTMAS],
+      FRIDAY_CLASSIFICATION,
+    );
 
     expect(result).toEqual({
       holiday: CHRISTMAS,
@@ -146,7 +199,11 @@ describe("findUpcomingShift", () => {
 
   test("does not find a holiday seven literal days ahead: today 2026-12-18, holiday 2026-12-25", () => {
     expect(
-      findUpcomingShift(new Date(Date.UTC(2026, 11, 18)), [CHRISTMAS]),
+      findUpcomingShift(
+        new Date(Date.UTC(2026, 11, 18)),
+        [CHRISTMAS],
+        FRIDAY_CLASSIFICATION,
+      ),
     ).toBeNull();
   });
 
@@ -154,6 +211,7 @@ describe("findUpcomingShift", () => {
     const result = findUpcomingShift(
       new Date(Date.UTC(2026, 0, 1)),
       NEW_YEARS_CHAIN,
+      THURSDAY_CLASSIFICATION,
     );
 
     expect(result).toEqual({
@@ -164,13 +222,57 @@ describe("findUpcomingShift", () => {
   });
 
   test("returns null for an empty holidays array", () => {
-    expect(findUpcomingShift(new Date(Date.UTC(2026, 11, 25)), [])).toBeNull();
+    expect(
+      findUpcomingShift(new Date(Date.UTC(2026, 11, 25)), [], FRIDAY_CLASSIFICATION),
+    ).toBeNull();
   });
 
   test("returns null when no holiday falls anywhere in the window", () => {
     expect(
-      findUpcomingShift(new Date(Date.UTC(2026, 5, 15)), [CHRISTMAS]),
+      findUpcomingShift(
+        new Date(Date.UTC(2026, 5, 15)),
+        [CHRISTMAS],
+        FRIDAY_CLASSIFICATION,
+      ),
     ).toBeNull();
+  });
+
+  test("returns null when the holiday's date does not match the confirmed collectionWeekday", () => {
+    // Same today/holidays as the offset-0 test above, but a classification
+    // confirmed for Wednesday, not Friday: without the isCollectionDay gate
+    // this would still return the Christmas shift, exactly like the old
+    // (ADR 0053) behavior — this is what proves the fix.
+    expect(
+      findUpcomingShift(
+        new Date(Date.UTC(2026, 11, 25)),
+        [CHRISTMAS],
+        WEDNESDAY_CLASSIFICATION,
+      ),
+    ).toBeNull();
+  });
+
+  test("returns null immediately for an unconfirmed suburban classification, even when a holiday genuinely falls in the window", () => {
+    expect(
+      findUpcomingShift(
+        new Date(Date.UTC(2026, 11, 25)),
+        [CHRISTMAS],
+        UNCONFIRMED_CLASSIFICATION,
+      ),
+    ).toBeNull();
+  });
+
+  test("finds a holiday for an inner-city (every-night) classification regardless of collectionWeekday", () => {
+    const result = findUpcomingShift(
+      new Date(Date.UTC(2026, 11, 25)),
+      [CHRISTMAS],
+      INNER_CITY_CLASSIFICATION,
+    );
+
+    expect(result).toEqual({
+      holiday: CHRISTMAS,
+      originalDate: "2026-12-25",
+      shiftedDate: "2026-12-26",
+    });
   });
 
   test("repeat calls are deterministic and never mutate the caller's holidays", () => {
@@ -183,7 +285,11 @@ describe("findUpcomingShift", () => {
 
     for (let attempt = 0; attempt < 3; attempt++) {
       expect(
-        findUpcomingShift(new Date(Date.UTC(2026, 0, 1)), holidays),
+        findUpcomingShift(
+          new Date(Date.UTC(2026, 0, 1)),
+          holidays,
+          THURSDAY_CLASSIFICATION,
+        ),
       ).toEqual(expected);
     }
 
@@ -253,6 +359,26 @@ describe("ShiftAlertBanner", () => {
     const view = renderBanner({
       address: KARORI,
       now: MID_JUNE,
+      holidays: [CHRISTMAS],
+    });
+
+    expect(view.container.textContent).toBe("");
+  });
+
+  test("renders no visible alert when the holiday's date is confirmed NOT to be this address's real collection day", () => {
+    const view = renderBanner({
+      address: KARORI_WRONG_WEEKDAY,
+      now: CHRISTMAS_DAY,
+      holidays: [CHRISTMAS],
+    });
+
+    expect(view.container.textContent).toBe("");
+  });
+
+  test("renders no visible alert when the address's collection day is unconfirmed, even with a genuine holiday in range", () => {
+    const view = renderBanner({
+      address: KARORI_UNCONFIRMED,
+      now: CHRISTMAS_DAY,
       holidays: [CHRISTMAS],
     });
 

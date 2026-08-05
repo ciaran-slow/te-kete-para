@@ -36,7 +36,7 @@ test.describe("home page (/) — axe a11y suite", () => {
     await expectNoA11yViolations(page);
   });
 
-  test.describe("with an upcoming shift alert visible (issue #83, ADR 0053)", () => {
+  test.describe("with an upcoming shift alert visible (issue #83/#134, ADR 0053/ADR 0066)", () => {
     test.use({ timezoneId: "Pacific/Auckland" });
 
     test.beforeEach(async ({ page }) => {
@@ -51,6 +51,10 @@ test.describe("home page (/) — axe a11y suite", () => {
                 zone: "SUBURBAN-WEST",
                 isInnerCityNightCollection: false,
                 recyclingCalendarGroup: 1,
+                // 2026-12-25 (the mocked holiday below) is a Friday — chosen
+                // to align with this fixture's collectionWeekday so the
+                // per-address claim (ADR 0066) genuinely applies.
+                collectionWeekday: 5,
               },
             ],
           },
@@ -93,7 +97,7 @@ test.describe("home page (/) — axe a11y suite", () => {
       await selectTestAddress(page);
       await expect(
         page.getByText(
-          "Collections normally due 25/12/2026 (Christmas Day) move to 26/12/2026.",
+          "Your collection due 25/12/2026 (Christmas Day) shifts to 26/12/2026.",
         ),
       ).toBeVisible();
       await expectNoA11yViolations(page);
@@ -107,7 +111,7 @@ test.describe("home page (/) — axe a11y suite", () => {
       await selectTestAddress(page);
       await expect(
         page.getByText(
-          "Ko ngā kohinga e tika ana mō te 25/12/2026 (Te Rā Kirihimete) ka huri ki te 26/12/2026.",
+          "Tō kohinga e tika ana mō te 25/12/2026 (Te Rā Kirihimete) ka huri ki te 26/12/2026.",
         ),
       ).toBeVisible();
       await expectNoA11yViolations(page);

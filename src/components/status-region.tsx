@@ -1,6 +1,6 @@
 /**
  * Shared aria-live announcement wrapper (FR-03, vision.md §3, ADR 0021,
- * issue #16). Wraps dynamic status content — today's collection rules
+ * issue #16). Wraps dynamic status content — the next collection's rules
  * (`ScheduleDisplay`), the address search status message
  * (`AddressSearch`) — in a `polite` live region so assistive technology
  * announces the change without each caller re-deriving the ARIA plumbing.

@@ -1,6 +1,6 @@
 # ADR 0019: ScheduleDisplay shows today's computed collection rules, not a scanned "next collection date"
 
-- **Status:** accepted
+- **Status:** superseded by ADR 0066
 - **Date:** 2026-07-31
 - **Issue:** #14
 

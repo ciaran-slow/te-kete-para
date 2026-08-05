@@ -1,17 +1,22 @@
 /**
  * Proactive shift-alert banner (vision.md §4B, issue #24): announces an
  * upcoming holiday-shifted collection through the shared aria-live
- * `<StatusRegion>` (ADR 0021), bilingual per `LanguageContext`. Fully built
- * and tested but deliberately not composed into any route yet — the seeded
- * holiday calendar is unverified pending issue #78 (ADR 0031).
+ * `<StatusRegion>` (ADR 0021), bilingual per `LanguageContext`. Composed
+ * into `address-schedule.tsx` since issue #83 (ADR 0053). Now asserts a
+ * genuine per-address "your collection" claim, gated on `isCollectionDay`
+ * confirming the holiday's original date is actually this address's real
+ * collection day (ADR 0066, issue #134, superseding ADR 0053's
+ * council-wide wording) — restoring what ADR 0053 had to give up before
+ * per-address `collectionWeekday` data existed (ADR 0063, issue #117).
  *
- * `address` is a prop for exactly one reason: to gate when the banner is
+ * `address` is a prop for two reasons now: to gate when the banner is
  * allowed to show or fetch anything — the same address-selection gate
  * `<ScheduleDisplay>` uses (ADR 0018): never during a render reachable by
- * SSR, only after a real `AddressSearch.onSelect` event. `address`'s
- * `zone`/`isInnerCityNightCollection` fields are read by nothing in this
- * component — a public holiday is council-wide, not per-zone (ADR 0029), so
- * there is no zone-specific holiday logic to go looking for.
+ * SSR, only after a real `AddressSearch.onSelect` event — and to supply
+ * the classification (`isInnerCityNightCollection`/`collectionWeekday`)
+ * `isCollectionDay` needs. `address.zone` alone remains unread by this
+ * component: a public holiday is still council-wide, not per-zone (ADR
+ * 0029), so there is no zone-specific holiday logic to go looking for.
  */
 "use client";
 
@@ -28,6 +33,10 @@ import {
   computeHolidayShift,
   formatUtcDateString,
 } from "@/lib/schedule/holiday-shift";
+import {
+  isCollectionDay,
+  type CollectionDayClassification,
+} from "@/lib/schedule/collection-day";
 
 /**
  * Mirrors the JSON contract of GET /api/holidays
@@ -57,9 +66,16 @@ export interface UpcomingShift {
 
 /**
  * Scans `todayUtc` through `todayUtc + LOOKAHEAD_DAYS` days (inclusive) and
- * returns the earliest date in that window that is itself a listed holiday,
- * together with the fully-resolved shifted date. Returns `null` when no
- * date in the window is a holiday. Pure — never mutates `holidays`.
+ * returns the earliest date in that window that is BOTH a listed holiday
+ * AND confirmed (via `isCollectionDay`) to be this address's real
+ * collection day, together with the fully-resolved shifted date (ADR 0066,
+ * issue #134) — restoring a genuine per-address claim, not just "some day
+ * in the window is a council-wide holiday" (ADR 0053's prior, weaker
+ * claim). Returns `null` when no date in the window qualifies, and
+ * immediately (without scanning) when `classification` can't be confirmed
+ * either way — a suburban address with no confirmed `collectionWeekday` —
+ * since there is nothing to genuinely assert for it. Pure — never mutates
+ * `holidays`.
  *
  * `computeHolidayShift(candidateDate, holidays).isShifted` is true if and
  * only if the candidate's own UTC calendar date is itself a key in
@@ -71,11 +87,21 @@ export interface UpcomingShift {
 export function findUpcomingShift(
   todayUtc: Date,
   holidays: HolidayApiRecord[],
+  classification: CollectionDayClassification,
 ): UpcomingShift | null {
+  if (
+    !classification.isInnerCityNightCollection &&
+    classification.collectionWeekday === null
+  ) {
+    return null;
+  }
+
   for (let offset = 0; offset <= LOOKAHEAD_DAYS; offset += 1) {
     const candidateMs = todayUtc.getTime() + offset * MS_PER_DAY;
+    const candidateDate = new Date(candidateMs);
+    if (!isCollectionDay(classification, candidateDate)) continue;
     const candidateDateStr = formatUtcDateString(candidateMs);
-    const result = computeHolidayShift(new Date(candidateMs), holidays);
+    const result = computeHolidayShift(candidateDate, holidays);
     if (result.isShifted) {
       const holiday = holidays.find((h) => h.date === candidateDateStr);
       // Defensive only: unreachable from any caller passing a `holidays`
@@ -190,7 +216,11 @@ function computeBannerMessage(args: {
 
   try {
     const todayUtc = todayAsUtcCalendarDate(now ?? new Date());
-    const shift = findUpcomingShift(todayUtc, holidays);
+    const classification: CollectionDayClassification = {
+      isInnerCityNightCollection: address.isInnerCityNightCollection,
+      collectionWeekday: address.collectionWeekday,
+    };
+    const shift = findUpcomingShift(todayUtc, holidays, classification);
     if (shift === null) return null;
     const holidayName =
       locale === "mi" ? shift.holiday.nameMi : shift.holiday.nameEn;

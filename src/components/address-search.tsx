@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "@/lib/i18n/language-provider";
 import { StatusRegion } from "./status-region";
 import type { RecyclingCalendarGroup } from "@/lib/schedule/rules";
+import type { Weekday } from "@/lib/schedule/collection-day";
 
 /**
  * Mirrors the JSON contract of `GET /api/suburbs/search`
@@ -18,6 +19,13 @@ export interface SuburbSearchResult {
   zone: string;
   isInnerCityNightCollection: boolean;
   recyclingCalendarGroup: RecyclingCalendarGroup | null;
+  /**
+   * Which real WCC weekday this address's weekly kerbside collection falls
+   * on (`Date#getUTCDay()` convention), or `null` for inner-city
+   * night-collection addresses (collect every night) and any suburban
+   * address not yet confirmed (ADR 0063).
+   */
+  collectionWeekday: Weekday | null;
 }
 
 type Status = "idle" | "loading" | "done" | "empty" | "error";

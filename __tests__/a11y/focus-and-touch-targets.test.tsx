@@ -39,6 +39,7 @@ const CUBA_MALL: SuburbSearchResult = {
   zone: "CBD-INNER",
   isInnerCityNightCollection: true,
   recyclingCalendarGroup: null,
+  collectionWeekday: null,
 };
 
 let styleTag: HTMLStyleElement;
