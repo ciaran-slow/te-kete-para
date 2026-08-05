@@ -104,6 +104,7 @@ async function postSubscription(
   subscription: PushSubscription,
   addressId: number | null | undefined,
   locale: Locale,
+  clientRequestedAt: number,
   signal?: AbortSignal,
 ): Promise<Response> {
   const keys = subscription.toJSON().keys;
@@ -121,6 +122,7 @@ async function postSubscription(
       keys: { p256dh: keys.p256dh, auth: keys.auth },
       languagePreference: locale,
       addressId: addressId ?? undefined,
+      clientRequestedAt,
     }),
     signal,
   });
@@ -163,6 +165,7 @@ export function PushSubscriptionToggle({ addressId }: PushSubscriptionToggleProp
       return;
     }
 
+    const requestedAt = Date.now();
     const controller = new AbortController();
     navigator.serviceWorker.ready
       .then((registration) => registration.pushManager.getSubscription())
@@ -173,12 +176,16 @@ export function PushSubscriptionToggle({ addressId }: PushSubscriptionToggleProp
           setStatus({ kind: "unsubscribed" });
           return undefined;
         }
-        return postSubscription(subscription, addressId, locale, controller.signal).then(
-          (response) => {
-            if (!response.ok) throw new Error("resubscribe-post-failed");
-            setStatus({ kind: "subscribed" });
-          },
-        );
+        return postSubscription(
+          subscription,
+          addressId,
+          locale,
+          requestedAt,
+          controller.signal,
+        ).then((response) => {
+          if (!response.ok) throw new Error("resubscribe-post-failed");
+          setStatus({ kind: "subscribed" });
+        });
       })
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === "AbortError") return;
@@ -201,7 +208,7 @@ export function PushSubscriptionToggle({ addressId }: PushSubscriptionToggleProp
         userVisibleOnly: true,
         applicationServerKey: key,
       });
-      const response = await postSubscription(subscription, addressId, locale);
+      const response = await postSubscription(subscription, addressId, locale, Date.now());
       if (!response.ok) throw new Error("subscribe-post-failed");
       setStatus({ kind: "subscribed" });
     } catch {

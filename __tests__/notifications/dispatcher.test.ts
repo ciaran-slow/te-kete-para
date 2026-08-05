@@ -132,12 +132,55 @@ describe("planDispatchForSubscription", () => {
     expect(planDispatchForSubscription(subscription, NOW)).toBeNull();
   });
 
-  test("an empty/whitespace zone string returns null instead of throwing", () => {
-    const subscription = subscriptionWith({
-      zone: { zone: "   ", isInnerCityNightCollection: false, recyclingCalendarGroup: 1 },
-    });
+  test("an empty/whitespace zone string returns null instead of throwing, without logging", () => {
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      const subscription = subscriptionWith({
+        zone: { zone: "   ", isInnerCityNightCollection: false, recyclingCalendarGroup: 1 },
+      });
 
-    expect(planDispatchForSubscription(subscription, NOW)).toBeNull();
+      expect(planDispatchForSubscription(subscription, NOW)).toBeNull();
+      expect(spy).not.toHaveBeenCalled();
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  test("a suburban zone with no resolvable recyclingCalendarGroup returns null and logs a [dispatcher] error", () => {
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      const subscription = subscriptionWith({
+        zone: { zone: "zone-east", isInnerCityNightCollection: false, recyclingCalendarGroup: null },
+      });
+
+      expect(planDispatchForSubscription(subscription, NOW)).toBeNull();
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(
+        expect.stringContaining(`[dispatcher]`),
+      );
+      expect(spy).toHaveBeenCalledWith(
+        expect.stringContaining(`${subscription.id}`),
+      );
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  test("a suburban zone with no resolvable recyclingCalendarGroup logs again on every repeat call, not just once", () => {
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      const subscription = subscriptionWith({
+        zone: { zone: "zone-east", isInnerCityNightCollection: false, recyclingCalendarGroup: null },
+      });
+
+      expect(planDispatchForSubscription(subscription, NOW)).toBeNull();
+      expect(planDispatchForSubscription(subscription, NOW)).toBeNull();
+
+      expect(spy).toHaveBeenCalledTimes(2);
+    } finally {
+      spy.mockRestore();
+    }
   });
 
   test("repeat calls with the same subscription and now return deep-equal but independently-mutable results", () => {

@@ -64,7 +64,11 @@
   local component state, so the schedule survives reload/offline relaunch —
   NFR-02, ADR 0052, issue #30 — while still starting `null` identically on
   the server and the client's first render, preserving ADR 0018's
-  client-only-"today" safety property.
+  client-only-"today" safety property. An address whose
+  `recyclingCalendarGroup` is not yet resolvable (ADR 0059) now renders a
+  distinct, specific message rather than the generic schedule-error
+  placeholder, since `computeCollectionRuleSet` signals that one case with a
+  named `UnresolvedRecyclingCalendarGroupError` (issue #131, ADR 0068).
 * **Sorting Search:** `src/components/sorting-search.tsx` renders
   `<SortingSearch>` (FR-05, "He Aha Tēnei?"), a debounced (300ms) search
   over `GET /api/sorting/search` that renders matched items and their
@@ -169,6 +173,12 @@
   reusing the same upsert-on-`endpoint` route rather than calling `subscribe()`
   again (#126, ADR 0062) — this is what keeps the nightly dispatcher's `address_id`
   join current after a resident switches addresses instead of only at first opt-in.
+  Each re-POST (and the initial subscribe POST) now carries `clientRequestedAt`
+  (`Date.now()`, captured when the effect decides to fire, not when it
+  resolves) so the server can detect and ignore a write that arrives after a
+  newer one already landed for the same `endpoint` (#140, ADR 0067) — the
+  client-side `AbortController` alone only stops the client from acting on a
+  stale response, not the server from having already processed it.
 * **Localization State:** `LanguageProvider` (`src/lib/i18n/language-provider.tsx`) holds the selected locale and exposes `useTranslation()` → `{ locale, setLocale, t }`. Flat dot-delimited keys live in `src/lib/i18n/dictionaries.ts`, where `en` is the source of truth (`as const`) and `mi` is typed `Record<TranslationKey, string>`, so drift fails `tsc` as well as the runtime parity test (ADR 0010). The locale is read from `localStorage` (`tkp.locale`) through `useSyncExternalStore`, never during render and never via `setState` in an effect — `react-hooks/set-state-in-effect` is an error in this repo (ADR 0009). `getServerSnapshot` returns `en` so `/` stays statically prerendered, which costs a brief flash of English before Te Reo on a hard load; the inline-script alternative that would remove it is recorded as rejected in ADR 0009. The provider mirrors the locale onto `<html lang>` in an effect so screen readers pick the right voice (vision.md §3). Macron-safe rendering comes from the Inter / Plus Jakarta Sans `latin-ext` subsets (ADR 0005).
 * **Client Testing Strategy (Vitest + Testing Library + Axe):**
   * Unit tests verify bilingual UI component rendering, dictionary interpolation, and macron preservation.
@@ -254,7 +264,15 @@
   always responds `200 { deleted: boolean }` — deleting an endpoint that
   was never subscribed, or was already removed, is not an error (ADR
   0034). Both verbs' catch-all failure path (e.g. a broken DB connection)
-  returns `503 { error }`, matching every other route.
+  returns `503 { error }`, matching every other route. A `POST` may include
+  `clientRequestedAt` (client `Date.now()` epoch-ms); when present, the
+  upsert only applies if it is greater than the endpoint's previously-stored
+  value, via a single atomic `INSERT ... ON CONFLICT ... DO UPDATE ... WHERE
+  ...` — closing a gap where two in-flight address-change resubscribes
+  (§2A) could otherwise complete at the server out of send order and leave
+  `address_id` pointed at a stale address (#140, ADR 0067). Omitting it
+  keeps the original unconditional last-write-wins merge for that one
+  write.
 * **Collection Rule Engine:** `src/lib/schedule/rules.ts` exports a pure
   `computeCollectionRuleSet(zone, date)` that maps a zone's classification
   (`{ zone, isInnerCityNightCollection, recyclingCalendarGroup }`, sourced
@@ -272,7 +290,10 @@
   boundary does not align with this repo's zone taxonomy (3 of the 4
   seeded suburban zones mix both calendars) — via WCC's live per-street
   lookup tool (ADR 0059, issue #102, superseding ADR 0042's uniform-
-  Calendar-1 default). It reads only the UTC calendar date of the
+  Calendar-1 default); that rejection is thrown as a named
+  `UnresolvedRecyclingCalendarGroupError` (still a `RangeError`) so callers
+  can distinguish it from the function's other rejections (issue #131, ADR
+  0068). It reads only the UTC calendar date of the
   `Date` passed in, so callers must construct dates via `Date.UTC(...)`
   or a `Z`-suffixed ISO string, never a local-time constructor.
 * **Holiday Shift Calculation:** `src/lib/schedule/holiday-shift.ts`
@@ -298,6 +319,12 @@
   `collectNightlyDispatchCandidates`, joining active `push_subscriptions` to
   their address's zone and computing tomorrow's NZ-local collection rule set
   via `tomorrowInNzAsUtcDate` + `computeCollectionRuleSet` (above).
+  `planDispatchForSubscription` logs a `console.error("[dispatcher] ...")`
+  line identifying the subscription and zone whenever it drops a candidate
+  specifically because `recyclingCalendarGroup` is unresolved, so that
+  otherwise-permanent, silent exclusion from every future nightly run is now
+  visible (issue #131, ADR 0068) — every other rejection reason stays a
+  silent no-op, unchanged.
   `src/lib/notifications/payload-builder.ts`'s `buildLocalizedPushContent`
   renders that rule set into a localized `{ title, body }` via the shared
   dictionaries (§2A), keyed on each subscription's `languagePreference` — a

@@ -76,6 +76,24 @@ export interface InnerCityRuleSet {
 
 export type CollectionRuleSet = SuburbanRuleSet | InnerCityRuleSet;
 
+/**
+ * Thrown by computeCollectionRuleSet when a suburban zone has no resolvable
+ * recyclingCalendarGroup (ADR 0059) — a distinct subclass (still a
+ * RangeError, so any existing broad `catch` or `instanceof RangeError` check
+ * keeps working unchanged) so callers can distinguish "this address
+ * genuinely hasn't been confirmed yet" from every other rejected-unknown
+ * case (invalid date, blank zone string) without re-deriving the
+ * classification-validity condition themselves (ADR 0068).
+ */
+export class UnresolvedRecyclingCalendarGroupError extends RangeError {
+  constructor() {
+    super(
+      "computeCollectionRuleSet: recyclingCalendarGroup must be 1 or 2 for a suburban zone.",
+    );
+    this.name = "UnresolvedRecyclingCalendarGroupError";
+  }
+}
+
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 // Monday 2026-01-12 UTC = a confirmed "glass" week under WCC's published
 // Calendar 1 (ADR 0042). Calendar 2 is Calendar 1's exact photographic
@@ -114,9 +132,7 @@ export function computeCollectionRuleSet(
   }
 
   if (zone.recyclingCalendarGroup !== 1 && zone.recyclingCalendarGroup !== 2) {
-    throw new RangeError(
-      "computeCollectionRuleSet: recyclingCalendarGroup must be 1 or 2 for a suburban zone.",
-    );
+    throw new UnresolvedRecyclingCalendarGroupError();
   }
 
   const dateUtcMs = Date.UTC(

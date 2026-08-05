@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
   computeCollectionRuleSet,
+  UnresolvedRecyclingCalendarGroupError,
   type ZoneClassification,
 } from "../../src/lib/schedule/rules";
 
@@ -237,14 +238,13 @@ describe("computeCollectionRuleSet", () => {
     const validDate = new Date(Date.UTC(2026, 0, 12));
 
     expect(() => computeCollectionRuleSet(noGroup, validDate)).toThrow(
-      new RangeError(
-        "computeCollectionRuleSet: recyclingCalendarGroup must be 1 or 2 for a suburban zone.",
-      ),
+      new UnresolvedRecyclingCalendarGroupError(),
     );
     expect(() => computeCollectionRuleSet(noGroup, validDate)).toThrow(
-      new RangeError(
-        "computeCollectionRuleSet: recyclingCalendarGroup must be 1 or 2 for a suburban zone.",
-      ),
+      new UnresolvedRecyclingCalendarGroupError(),
+    );
+    expect(() => computeCollectionRuleSet(noGroup, validDate)).toThrow(
+      UnresolvedRecyclingCalendarGroupError,
     );
   });
 });
