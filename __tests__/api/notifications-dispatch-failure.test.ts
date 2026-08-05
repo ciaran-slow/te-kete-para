@@ -27,6 +27,8 @@ describe("GET /api/notifications/dispatch with a broken database connection", ()
   });
 
   it("reports 503 instead of throwing", async () => {
+    // ~1.5s of latency here comes from withRetry's real backoff (ADR 0061,
+    // 3 attempts against the broken connection) -- not a regression.
     const response = await request(app)
       .get("/api/notifications/dispatch")
       .set("Authorization", "Bearer test-cron-secret");
