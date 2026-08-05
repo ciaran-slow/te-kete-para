@@ -297,7 +297,18 @@
   `runNightlyDispatch` calls `src/lib/notifications/subscription-pruner.ts`'s
   `pruneGoneSubscriptions`, which deletes any `push_subscriptions` row whose
   send came back with a 404/410 "gone" `failureReason` — single-strike, no
-  retry counter or new column (#111, ADR 0057). `public/sw.js`'s `push` listener now
+  retry counter or new column (#111, ADR 0057). A failed `runNightlyDispatch`
+  call (e.g. `collectNightlyDispatchCandidates`'s DB read) is retried up to 3
+  times with exponential backoff (`src/lib/notifications/retry.ts`'s
+  `withRetry`) before the route gives up; retrying the whole call is safe
+  only because a `pruneGoneSubscriptions` failure no longer rejects
+  `runNightlyDispatch` (it's logged and swallowed instead), so every
+  remaining rejection source happens strictly before any push is sent.
+  Exhausting every attempt fires a best-effort webhook alert
+  (`src/lib/notifications/alerting.ts`) to
+  `process.env.DISPATCH_ALERT_WEBHOOK_URL` — an unprovisioned config gap in
+  every environment today, same pattern as `CRON_SECRET` (#122, ADR 0061).
+  `public/sw.js`'s `push` listener now
   calls `self.registration.showNotification(...)` to display what gets
   sent, falling back to a generic notification on a malformed/absent
   payload, with a `notificationclick` listener that focuses or opens the
@@ -306,10 +317,10 @@
 ### C. Data Persistence Layer
 * **Database Engine:** **SQLite3** stored as an embedded file database (`/data/teketepara.db`).
 * **Core Schemas:**
-  * `addresses`: Wellington street indices, council zones, suburb classifications (Suburban vs. CBD night collection), and — for suburban rows — which of WCC's two independently-phased alternating recycling calendars the address follows (`recycling_calendar_group`, 1 or 2, `null` for CBD rows; confirmed per-address against WCC's live per-street lookup tool, ADR 0059, issue #102).
-  * `schedules`: Date-mapped bin collection calendars, alternating recycling flags, and holiday override rules.
+  * `addresses`: Wellington street indices, council zones, suburb classifications (Suburban vs. CBD night collection), which of WCC's two independently-phased alternating recycling calendars the address follows (`recycling_calendar_group`, 1 or 2, `null` for CBD rows; confirmed per-address against WCC's live per-street lookup tool, ADR 0059, issue #102), and — for suburban rows — which real WCC weekday the address's weekly kerbside collection actually falls on (`collection_weekday`, 0–6 per `Date#getUTCDay()`, `null` for CBD rows and any address not yet confirmed; confirmed per-address against the same WCC live per-street lookup tool, ADR 0063, issue #117). `src/lib/schedule/collection-day.ts` exports the pure `isCollectionDay`/`findNextCollectionDate` functions that consume this field (no DB access, ADR 0015); wiring them into `<ScheduleDisplay>`/`<ShiftAlertBanner>` to restore a genuine per-address claim is issue #134's scope, not yet done.
+  * `schedules`: migrated (issue #2) but still empty and unqueried — real per-street collection-day data lives on `addresses.collection_weekday` instead (ADR 0063), not as date-mapped rows here. This table remains a placeholder for a possible future per-date override model (e.g. one-off route changes), not the home for regular weekly collection days.
   * `i18n_strings`: Relational translation keys with explicit English (`en`) and Te Reo Māori (`mi`) text columns.
-  * `sorting_rules`: Item keys, bilingual descriptions, WCC disposal instructions, and a `keywords` column — a curated, author-added set of extra search terms included in `GET /api/sorting/search`'s match scope (ADR 0035), populated incrementally as real recall gaps are found rather than translated/verified content, so it isn't blocked by #69/#70. The rest of the seed dataset (`db/seeds/02_sorting_rules.js`) is confirmed against live wellington.govt.nz pages (ADR 0054, issue #70) — a browser User-Agent bypasses the site's 403-to-bare-request block, which blocked PR #88's verify pass and every session before it. 14 of 15 rows are fully confirmed, with three corrected (pizza-box, polystyrene-packaging, light-bulb); `aerosol-can`'s exclusion from kerbside recycling is confirmed but its empty-vs-full handling split stays unconfirmed, tracked by issue #119. The Te Reo Māori text still awaits review by a fluent speaker (tracked by issue #69) — a similar confirm-against-real-data pattern to the schedule epoch resolved in ADR 0042 (§2B, issue #59). #69 blocks #21 surfacing this text to users; #70 stays open for the narrow aerosol-can gap. Queried by `GET /api/sorting/search` (ADR 0025, ADR 0035).
+  * `sorting_rules`: Item keys, bilingual descriptions, WCC disposal instructions, and a `keywords` column — a curated, author-added set of extra search terms included in `GET /api/sorting/search`'s match scope (ADR 0035), populated incrementally as real recall gaps are found rather than translated/verified content, so it isn't blocked by #69/#70. The rest of the seed dataset (`db/seeds/02_sorting_rules.js`) is confirmed against live wellington.govt.nz pages (ADR 0054, issue #70) — a browser User-Agent bypasses the site's 403-to-bare-request block, which blocked PR #88's verify pass and every session before it. All 15 rows are now fully confirmed (ADR 0054, ADR 0060), with four corrected (pizza-box, polystyrene-packaging, light-bulb, aerosol-can) — `aerosol-can`'s empty-vs-full handling split (issue #119) turned out to be invented: WCC's own disposal-lookup tool sends aerosol and spray cans straight to kerbside general rubbish regardless of fill state, not split between general rubbish and hazardous waste. The Te Reo Māori text still awaits review by a fluent speaker (tracked by issue #69) — a similar confirm-against-real-data pattern to the schedule epoch resolved in ADR 0042 (§2B, issue #59). #69 blocks #21 surfacing this text to users. Queried by `GET /api/sorting/search` (ADR 0025, ADR 0035).
   * `holidays`: NZ/Wellington public holiday dates relevant to WCC
     collection shifts, bilingual names, and the number of days collection
     shifts by (ADR 0029). No foreign key to `addresses` or `schedules` — a
@@ -351,8 +362,10 @@
      /api/notifications/dispatch` route nightly to invoke the pipeline
      (#110, ADR 0056), though `CRON_SECRET` remains an unprovisioned config
      gap in every environment today (same pattern as the VAPID keys, ADR
-     0047/0050). The browser side is handled by `public/sw.js`'s
-     `push`/`notificationclick` listeners (#115, ADR 0055).
+     0047/0050). A failed nightly run is retried with backoff and, if still
+     failing, raises a best-effort webhook alert rather than only a server
+     log line (#122, ADR 0061). The browser side is handled by
+     `public/sw.js`'s `push`/`notificationclick` listeners (#115, ADR 0055).
 
 ---
 
