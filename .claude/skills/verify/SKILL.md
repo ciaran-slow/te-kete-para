@@ -72,6 +72,30 @@ instead of touching the tree you're actively reviewing.
 
 ## 3. Run the gates yourself
 
+First check the full CI status rollup on the PR itself — do not assume the
+four commands below are everything CI runs:
+
+```
+gh pr checks <n> --repo ciaran-slow/te-kete-para
+```
+
+`.github/workflows/ci.yml` runs more jobs than `npm run test:coverage` covers
+— at minimum a separate Playwright `a11y (axe)` e2e job and a `lighthouse`
+job, neither of which is part of `npm test`/`test:coverage` (vitest excludes
+`e2e/**` entirely). A verify pass that only runs the four local commands
+below can report all green while a real CI job is red — this happened on PR
+#129 (issue #102): local gates passed, but `a11y (axe)` failed in CI on a
+Playwright fixture the PR's own type change broke, and the verify pass that
+skipped `gh pr checks` reported "ready to merge" anyway. If `gh pr checks`
+shows a red job that isn't one of the four below, reproduce it locally
+(check `package.json`/`.github/workflows/ci.yml` for the exact command,
+e.g. `npx playwright test e2e/<file>.spec.ts`) before concluding anything —
+it may be a real regression from this branch, or genuine pre-existing
+flakiness, but only reproducing it (and, for the flakiness claim, showing
+the same command passes against a `git worktree add <tmp-dir> origin/main`
+checkout) tells you which. Do not report "ready to merge" while a non-local
+CI job is red and unexplained.
+
 ```
 npm run typecheck
 npm run lint
