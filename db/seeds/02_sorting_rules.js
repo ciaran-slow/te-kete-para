@@ -6,64 +6,72 @@
  * other table has a foreign key into sorting_rules, so unlike addresses
  * there is no downstream ON DELETE SET NULL effect from a re-run.
  *
- * UNVERIFIED CONTENT — placeholder data, the same status as the schedule
- * epoch "pending real WCC calendar data" (architecture.md §2B, ADR 0016,
- * tracked by issue #59). Each caveat below has its own tracking issue,
- * and both block #21 (sorting search UI) surfacing this text to users:
+ * CONFIRMED CONTENT (issue #70) — 14 of the 15 rows below are confirmed
+ * against a live wellington.govt.nz page fetched directly this pass
+ * (curl with a browser User-Agent bypasses the site's 403-to-bare-request
+ * block; WebFetch and unheadered curl both still get a 403). One row
+ * (aerosol-can) has its main claim confirmed live but one supporting
+ * detail stays genuinely unconfirmed — see below. This replaces the
+ * "UNVERIFIED CONTENT" status from PR #88, whose verify pass hit 403s
+ * because it used guessed URL paths and no browser User-Agent; the real
+ * page paths were found via web search and fetched successfully this
+ * pass. Row-by-row live sources:
  *
- * - Issue #70: the disposal instructions are drafted from the 2024
- *   national kerbside standardisation (Ministry for the Environment, in
- *   force 1 Feb 2024: aerosols, all lids, liquid paperboard, plastics
- *   3/4/6/7, and items under 50mm are excluded from kerbside recycling)
- *   and from Wellington City Council's published guidance ("What can go
- *   in kerbside recycling" and "Recycling crates", wellington.govt.nz —
- *   the glass crate takes clean glass bottles and jars only, no lids).
- *   wellington.govt.nz returns HTTP 403 to every direct fetch attempted
- *   (this pass and PR #68's verify pass both hit it; web.archive.org is
- *   also unreachable from this environment), so no row here has been
- *   confirmed against a live WCC page. This pass instead cross-checked
- *   every row against the national standard and search-engine-indexed
- *   WCC/council/industry sources, and corrected one row (paint-tin:
- *   Resene PaintWise is a manufacturer scheme, not a WCC service).
- *   Row-by-row sources:
- *     - pizza-box, coffee-cup: WCC "What can go in kerbside recycling"
- *       (indexed, not directly fetchable); grease/lining contamination
- *       corroborated by Hamilton City Council and Stuff/NZ Herald
- *       reporting.
- *     - aerosol-can: MfE 2024 standard (aerosols excluded nationwide);
- *       empty/depressurised-to-general-rubbish corroborated by Auckland
- *       Council and Palmerston North City Council guidance.
- *     - glass-bottle, plastic-bottle: WCC "Recycling crates" and "What
- *       can go in kerbside recycling" (indexed); Sustainability Trust's
- *       lid-recycling programme confirms lids are out of the kerbside
- *       stream regionally.
- *     - tin-can: MfE national tins-and-cans guidance plus Porirua City
- *       Council's "Recycling tips for lids" (fold/squash the lid inside
- *       the can) — the same standard WCC follows.
- *     - soft-plastic-bag: recycling.kiwi.nz store locator confirms
- *       Wellington-area supermarket drop-off points are still active.
- *     - polystyrene-packaging: MfE 2024 standard (EPS excluded
- *       nationwide); the WCC-transfer-station claim stays conditional
- *       ("check whether") because no source confirmed a dedicated
- *       line-item at Southern Landfill.
- *     - milk-carton: MfE 2024 standard (liquid paperboard excluded
- *       nationwide); saveBOARD/Wastebusters confirm the specialist
- *       drop-off alternative.
- *     - food-scraps: RNZ/Beehive reporting confirms central government
- *       scrapped the mandatory nationwide kerbside food-scraps rollout
- *       (Jan 2025); WCC's own "Let's Talk" waste-collection consultation
- *       (Key Proposal 2) shows a food/garden bin is still only proposed,
- *       not live, as of Aug 2026 — the existing wording holds.
- *     - household-batteries, light-bulb, small-e-waste: WCC's own
- *       "Household battery recycling", "Domestic hazardous waste", and
- *       "Electrical waste (ewaste)" pages (indexed, not fetchable) place
- *       these at the Southern Landfill hazardous/e-waste drop-off.
- *     - paint-tin: corrected this pass, see above.
- *     - textiles-clothing: WCC's own "Organisations that accept donated
- *       items" page (indexed, not fetchable).
- *   None of the above is a live-page fetch, so the caveat above stays
- *   until a live WCC fetch — or a human browsing the pages directly —
- *   confirms these rows first-hand.
+ *   - pizza-box: WCC "Recycling myths – busted!" (10 Jun 2024) and "What
+ *     can go in kerbside recycling" — grease stains alone don't disqualify
+ *     a pizza box from kerbside recycling; only food/cheese residue needs
+ *     scraping off first. Corrected this pass — the previous text claimed
+ *     the opposite (a greasy box must go to general rubbish), which is
+ *     exactly the myth WCC's own article debunks.
+ *   - coffee-cup: WCC "What can go in kerbside recycling" — cups and lids
+ *     explicitly listed under "General waste".
+ *   - aerosol-can: WCC "What can go in kerbside recycling" confirms
+ *     aerosols are excluded from kerbside recycling (listed under
+ *     "Hazardous items"). NOT confirmed: the row's empty-can-vs-full-can
+ *     handling split (general rubbish vs a WCC transfer station as
+ *     hazardous waste) — WCC's "Domestic hazardous waste" page lists
+ *     exactly what it accepts as hazardous waste and aerosols aren't on
+ *     that list, so this detail is still only inferred from other NZ
+ *     councils' guidance (Auckland, Palmerston North), not WCC's own.
+ *     Tracked by issue #119.
+ *   - glass-bottle: WCC "Recycling crates" ("clean glass bottles and jars
+ *     only (no lids)") and "What can go in kerbside recycling".
+ *   - plastic-bottle: WCC "What can go in kerbside recycling", Plastics
+ *     section — clean, not squashed, lids/pumps/triggers removed.
+ *   - tin-can: WCC "Recycling myths – busted!" — lids can stay on if
+ *     pushed inside and still attached; loose lids go in the rubbish.
+ *   - soft-plastic-bag: recycling.kiwi.nz (The Packaging Forum's Soft
+ *     Plastics Recycling Scheme) — the scheme is active, with supermarket
+ *     drop-off bins operating, confirmed live this pass.
+ *   - polystyrene-packaging: WCC "Types of waste accepted" at the
+ *     Southern Landfill explicitly lists polystyrene as accepted (no
+ *     prior approval needed below a car-boot-load). Corrected this pass —
+ *     the previous text hedged ("check whether... has a dedicated
+ *     drop-off") when WCC's own page confirms acceptance outright.
+ *   - milk-carton: WCC "Recycling myths – busted!" — wax-lined/Tetra Pak
+ *     cartons aren't kerbside-recyclable; SaveBoard take specialist
+ *     drop-offs.
+ *   - food-scraps: WCC "Para Kai Miramar Peninsula Trial" and "Reducing
+ *     food waste" — the only food-scraps kerbside collection was a
+ *     completed 2020–2022 pilot; a future organics collection is funded
+ *     in the 2024–34 Long-term Plan but not live.
+ *   - household-batteries: WCC "Household battery recycling" — the Solid
+ *     Waste Management and Minimisation Bylaw 2020 prohibits batteries in
+ *     kerbside waste; free community drop-off points plus the Southern
+ *     Landfill for leaking/damaged/car batteries.
+ *   - light-bulb: WCC "Domestic hazardous waste" names only CFL/
+ *     fluorescent lamps (mercury) as accepted hazardous items — corrected
+ *     this pass to stop implying every bulb type needs hazardous-waste
+ *     handling, which no WCC page supports for LED/incandescent bulbs.
+ *   - small-e-waste: WCC "Electrical waste (ewaste)" — free Tip Shop
+ *     drop-off, fees only for LCD/CRT TVs and monitors.
+ *   - paint-tin: WCC "Domestic hazardous waste" and "Types of waste
+ *     accepted" — paint accepted free up to 20kg/20L; corrected in PR #88
+ *     to stop crediting Resene PaintWise (a manufacturer scheme) as a WCC
+ *     service, now also live-confirmed.
+ *   - textiles-clothing: WCC "Organisations that accept donated items",
+ *     fetched directly.
+ *
  * - Issue #69: the Te Reo Māori text is a machine draft. Key vocabulary
  *   was checked against Te Aka (pātara "bottle", pūhiko "battery",
  *   rehu matūriki "aerosol", kōrekoreko "fluorescent"), but the full
@@ -87,9 +95,9 @@ exports.seed = async function seed(knex) {
       description_mi:
         "He pouaka pizza hinu, he maha ngā wā ka paru i te hinu, i te tīhi hoki.",
       disposal_instructions_en:
-        "If the box is greasy or has food stuck to it, put it in your general rubbish — food oil stops cardboard from being recycled. Clean, dry sections of the lid can go in your mixed recycling with other paper and cardboard.",
+        "Scrape off any leftover food or cheese residue, then put the box in your mixed recycling with your other paper and cardboard — grease stains on their own are fine and won't stop it being recycled. If it's a big box, fold it down so it fits in your recycling bag or bin.",
       disposal_instructions_mi:
-        "Mehemea he hinu, he kai rānei kei runga, whakauruhia ki tō para whānui — mā te hinu kai e aukati ai te hangarua o te kāta. Ki te mā, ki te maroke hoki tētahi wāhanga o te uwhi, ka taea te whakauru ki tō rauemi hangarua me ērā atu pepa, kāta hoki.",
+        "Waruhia ngā toenga kai, tīhi hoki kei runga, kātahi ka whakauru ai i te pouaka ki tō rauemi hangarua me ō atu pepa, kāta hoki — he pai noa te toto hinu, kāore e aukati i te hangarua. Mehemea he pouaka nui, whakapikoa kia uru pai ai ki tō pēke, kete hangarua rānei.",
       keywords: "",
     },
     {
@@ -170,9 +178,9 @@ exports.seed = async function seed(knex) {
       description_mi:
         "He uwhi kirihou pahuka (polystyrene), pēnei i ngā pereti mīti, ngā wāhanga uwhi tiaki rānei.",
       disposal_instructions_en:
-        "Polystyrene is not accepted in kerbside recycling. Put it in your general rubbish, or check whether your nearest WCC transfer station has a dedicated foam recycling drop-off.",
+        "Polystyrene is not accepted in kerbside recycling. Put small amounts in your general rubbish, or take it to the Southern Landfill, which accepts polystyrene directly — a car boot load or less needs no prior approval; larger, commercial quantities need approval first.",
       disposal_instructions_mi:
-        "Kāore te kirihou pahuka (polystyrene) e whakaaetia ki te hangarua ā-huarahi. Whakauruhia ki tō para whānui, tirohia rānei mēnā he wāhi hangarua motuhake mō te kirihou pahuka kei te teihana whakawhiti a WCC e tata ana ki a koe.",
+        "Kāore te kirihou pahuka (polystyrene) e whakaaetia ki te hangarua ā-huarahi. Whakauruhia he iti ki tō para whānui, kawea rānei ki te Southern Landfill, e whakaae pū ana ki te kirihou pahuka — kāore e hiahiatia he whakaaetanga mō tētahi utanga pūtu waka, iti iho rānei; me whai whakaaetanga i mua mō ngā utanga nui ake, arā, ngā utanga arumoni.",
       keywords: "",
     },
     {
@@ -218,9 +226,9 @@ exports.seed = async function seed(knex) {
       description_mi:
         "He rama iti — LED, whakakā mūmura, kōrekoreko/CFL rānei.",
       disposal_instructions_en:
-        "Fluorescent and CFL bulbs contain mercury and must never go in kerbside bins. Take all bulb types to a WCC transfer station or a participating retailer for recycling.",
+        "Fluorescent and CFL bulbs contain mercury — take them to a WCC transfer station's hazardous waste facility, never your kerbside bins (WCC accepts up to 20 per household, wrapped in newspaper or their original packaging). LED and incandescent bulbs don't contain mercury and aren't on WCC's hazardous waste list, so they can go in your general rubbish.",
       disposal_instructions_mi:
-        "Kei roto i ngā rama kōrekoreko, CFL hoki he konutai, nō reira kaua rawa e whakaurua ki ngā kete ā-huarahi. Kawea ngā momo rama katoa ki tētahi teihana whakawhiti a WCC, ki tētahi toa e whai wāhi ana rānei, hei hangarua.",
+        "Kei roto i ngā rama kōrekoreko, CFL hoki he konutai — kawea ki te wāhi para mōrearea o tētahi teihana whakawhiti a WCC, kaua rawa ki ō kete ā-huarahi (ka whakaaetia e WCC te 20 mō tēnā, mō tēnā kāinga, me te takai ki te pepa niupepa, ki tōna kōpaki taketake rānei). Kāore he konutai kei roto i ngā rama LED, i ngā rama whakakā mūmura hoki, kāore anō rātou i te rārangi para mōrearea a WCC, nō reira ka taea te whakauru ki tō para whānui.",
       keywords: "",
     },
     {
