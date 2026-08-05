@@ -334,9 +334,12 @@
      Pipeline (§2B) evaluates each subscription's NZ-local "tomorrow",
      builds a localized bilingual payload, and dispatches it to the Web
      Push API — the decision, localization, and send logic all exist today
-     (#27, #28), but nothing invokes the pipeline on a schedule yet (#110).
-     The browser side is handled by `public/sw.js`'s `push`/`notificationclick`
-     listeners (#115, ADR 0055).
+     (#27, #28); a Vercel Cron Job hits the authenticated `GET
+     /api/notifications/dispatch` route nightly to invoke the pipeline
+     (#110, ADR 0056), though `CRON_SECRET` remains an unprovisioned config
+     gap in every environment today (same pattern as the VAPID keys, ADR
+     0047/0050). The browser side is handled by `public/sw.js`'s
+     `push`/`notificationclick` listeners (#115, ADR 0055).
 
 ---
 
