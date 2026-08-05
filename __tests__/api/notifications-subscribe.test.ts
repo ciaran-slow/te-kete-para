@@ -152,6 +152,22 @@ describe("POST/DELETE /api/notifications/subscribe", () => {
       });
     });
 
+    it.each([-1, 1.5])(
+      "rejects clientRequestedAt: %s as not a non-negative integer",
+      async (clientRequestedAtCandidate) => {
+        const response = await request(app).post(ROUTE).send({
+          endpoint: "https://push.example/validate",
+          keys: { p256dh: "key", auth: "secret" },
+          clientRequestedAt: clientRequestedAtCandidate,
+        });
+
+        expect(response.status).toBe(400);
+        expect(response.body).toEqual({
+          error: "clientRequestedAt must be a non-negative integer.",
+        });
+      },
+    );
+
     it("maps an unknown addressId's FK failure to 400, not 503", async () => {
       const response = await request(app).post(ROUTE).send({
         endpoint: "https://push.example/unknown-address",
@@ -251,6 +267,165 @@ describe("POST/DELETE /api/notifications/subscribe", () => {
       );
       // created_at must be untouched by the merge — only updated_at moves.
       expect(secondRow.created_at).toEqual(firstRow.created_at);
+    });
+  });
+
+  describe("POST — ordering guard (#140, ADR 0067)", () => {
+    it("an older clientRequestedAt arriving after a newer one does not overwrite address_id, keys, or updated_at", async () => {
+      const endpoint = "https://push.example/ordering-one";
+      const first = await request(app).post(ROUTE).send({
+        endpoint,
+        keys: { p256dh: "key-newer", auth: "secret-newer" },
+        addressId,
+        clientRequestedAt: 2000,
+      });
+      expect(first.body.subscription.addressId).toBe(addressId);
+      const rowAfterFirst = await getDb()("push_subscriptions").where({ endpoint }).first();
+
+      const staleAddress = await getDb()("addresses").insert({
+        street_name: "Ordering Street",
+        suburb: "Te Aro",
+        zone: "CBD-INNER",
+        is_inner_city_night_collection: true,
+      });
+
+      // SQLite's updated_at default has one-second resolution — cross a
+      // real second boundary so a regression that wrongly applied this
+      // write would produce a detectably different updated_at, not one
+      // that happens to match by ties alone.
+      await new Promise((resolve) => setTimeout(resolve, 1100));
+
+      // Models "B's write completing after C's": this POST represents an
+      // older selection (lower clientRequestedAt) that is sent — and
+      // arrives — second.
+      const second = await request(app).post(ROUTE).send({
+        endpoint,
+        keys: { p256dh: "key-older", auth: "secret-older" },
+        addressId: staleAddress[0],
+        clientRequestedAt: 1000,
+      });
+
+      expect(second.status).toBe(200);
+      expect(second.body.subscription.addressId).toBe(addressId);
+
+      const row = await getDb()("push_subscriptions").where({ endpoint }).first();
+      expect(row.address_id).toBe(addressId);
+      expect(row.p256dh).toBe("key-newer");
+      expect(row.auth).toBe("secret-newer");
+      expect(row.updated_at).toEqual(rowAfterFirst.updated_at);
+    });
+
+    it("repeating the same stale write three times never overwrites the newer stored value", async () => {
+      const endpoint = "https://push.example/ordering-repeat";
+      await request(app).post(ROUTE).send({
+        endpoint,
+        keys: { p256dh: "key-newer", auth: "secret-newer" },
+        addressId,
+        clientRequestedAt: 5000,
+      });
+      const rowAfterAccepted = await getDb()("push_subscriptions").where({ endpoint }).first();
+
+      for (let attempt = 0; attempt < 3; attempt++) {
+        const response = await request(app).post(ROUTE).send({
+          endpoint,
+          keys: { p256dh: "key-stale", auth: "secret-stale" },
+          addressId: null,
+          clientRequestedAt: 4000,
+        });
+        expect(response.status).toBe(200);
+        expect(response.body.subscription.addressId).toBe(addressId);
+      }
+
+      const rowAfterRepeats = await getDb()("push_subscriptions").where({ endpoint }).first();
+      expect(rowAfterRepeats.address_id).toBe(addressId);
+      expect(rowAfterRepeats.p256dh).toBe("key-newer");
+      expect(rowAfterRepeats.updated_at).toEqual(rowAfterAccepted.updated_at);
+    });
+
+    it("a genuinely newer clientRequestedAt after an older one still applies normally", async () => {
+      const endpoint = "https://push.example/ordering-forward";
+      await request(app).post(ROUTE).send({
+        endpoint,
+        keys: { p256dh: "key-1", auth: "secret-1" },
+        addressId,
+        clientRequestedAt: 1000,
+      });
+
+      const newerAddress = await getDb()("addresses").insert({
+        street_name: "Ordering Forward Street",
+        suburb: "Te Aro",
+        zone: "CBD-INNER",
+        is_inner_city_night_collection: true,
+      });
+
+      const response = await request(app).post(ROUTE).send({
+        endpoint,
+        keys: { p256dh: "key-2", auth: "secret-2" },
+        addressId: newerAddress[0],
+        clientRequestedAt: 2000,
+      });
+
+      expect(response.body.subscription.addressId).toBe(newerAddress[0]);
+    });
+
+    it("omitting clientRequestedAt entirely still upserts unconditionally, exactly like before", async () => {
+      const endpoint = "https://push.example/ordering-opt-out";
+      await request(app)
+        .post(ROUTE)
+        .send({ endpoint, keys: { p256dh: "key-1", auth: "secret-1" }, addressId });
+
+      const second = await request(app)
+        .post(ROUTE)
+        .send({ endpoint, keys: { p256dh: "key-2", auth: "secret-2" }, addressId: null });
+
+      expect(second.body.subscription.addressId).toBeNull();
+      const row = await getDb()("push_subscriptions").where({ endpoint }).first();
+      expect(row.p256dh).toBe("key-2");
+    });
+
+    it("a write that omits clientRequestedAt applies normally but preserves the stored ordering baseline for later writes", async () => {
+      const endpoint = "https://push.example/ordering-baseline-preserved";
+      await request(app).post(ROUTE).send({
+        endpoint,
+        keys: { p256dh: "key-1", auth: "secret-1" },
+        addressId,
+        clientRequestedAt: 5000,
+      });
+
+      const optOutAddress = await getDb()("addresses").insert({
+        street_name: "Baseline Street",
+        suburb: "Te Aro",
+        zone: "CBD-INNER",
+        is_inner_city_night_collection: true,
+      });
+
+      // Opt-out write: applies unconditionally (no clientRequestedAt),
+      // exactly like today's behaviour for a caller that doesn't send it.
+      const optOut = await request(app).post(ROUTE).send({
+        endpoint,
+        keys: { p256dh: "key-2", auth: "secret-2" },
+        addressId: optOutAddress[0],
+      });
+      expect(optOut.body.subscription.addressId).toBe(optOutAddress[0]);
+
+      const staleAfterOptOut = await getDb()("addresses").insert({
+        street_name: "Stale After Opt Out Street",
+        suburb: "Te Aro",
+        zone: "CBD-INNER",
+        is_inner_city_night_collection: true,
+      });
+
+      // If the opt-out write above had reset the stored timestamp to NULL
+      // instead of preserving 5000 via COALESCE, this write's 4000 would
+      // wrongly be treated as "the first timestamp ever seen" and accepted.
+      const staleAfterOptOutResponse = await request(app).post(ROUTE).send({
+        endpoint,
+        keys: { p256dh: "key-3", auth: "secret-3" },
+        addressId: staleAfterOptOut[0],
+        clientRequestedAt: 4000,
+      });
+
+      expect(staleAfterOptOutResponse.body.subscription.addressId).toBe(optOutAddress[0]);
     });
   });
 
@@ -497,6 +672,38 @@ describe("POST/DELETE /api/notifications/subscribe", () => {
       expect(result.ok).toBe(true);
       if (result.ok) {
         expect(result.value.addressId).toBeUndefined();
+      }
+    });
+
+    it("accepts clientRequestedAt: 0 (a valid boundary, not a missing value)", () => {
+      const result = validateSubscribeBody({ ...validBody, clientRequestedAt: 0 });
+
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.value.clientRequestedAt).toBe(0);
+      }
+    });
+
+    it("rejects clientRequestedAt: -1", () => {
+      expect(validateSubscribeBody({ ...validBody, clientRequestedAt: -1 })).toEqual({
+        ok: false,
+        error: "clientRequestedAt must be a non-negative integer.",
+      });
+    });
+
+    it("rejects clientRequestedAt: 1.5", () => {
+      expect(validateSubscribeBody({ ...validBody, clientRequestedAt: 1.5 })).toEqual({
+        ok: false,
+        error: "clientRequestedAt must be a non-negative integer.",
+      });
+    });
+
+    it("leaves clientRequestedAt undefined when omitted", () => {
+      const result = validateSubscribeBody(validBody);
+
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.value.clientRequestedAt).toBeUndefined();
       }
     });
   });

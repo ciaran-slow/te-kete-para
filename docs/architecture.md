@@ -161,6 +161,12 @@
   reusing the same upsert-on-`endpoint` route rather than calling `subscribe()`
   again (#126, ADR 0062) — this is what keeps the nightly dispatcher's `address_id`
   join current after a resident switches addresses instead of only at first opt-in.
+  Each re-POST (and the initial subscribe POST) now carries `clientRequestedAt`
+  (`Date.now()`, captured when the effect decides to fire, not when it
+  resolves) so the server can detect and ignore a write that arrives after a
+  newer one already landed for the same `endpoint` (#140, ADR 0067) — the
+  client-side `AbortController` alone only stops the client from acting on a
+  stale response, not the server from having already processed it.
 * **Localization State:** `LanguageProvider` (`src/lib/i18n/language-provider.tsx`) holds the selected locale and exposes `useTranslation()` → `{ locale, setLocale, t }`. Flat dot-delimited keys live in `src/lib/i18n/dictionaries.ts`, where `en` is the source of truth (`as const`) and `mi` is typed `Record<TranslationKey, string>`, so drift fails `tsc` as well as the runtime parity test (ADR 0010). The locale is read from `localStorage` (`tkp.locale`) through `useSyncExternalStore`, never during render and never via `setState` in an effect — `react-hooks/set-state-in-effect` is an error in this repo (ADR 0009). `getServerSnapshot` returns `en` so `/` stays statically prerendered, which costs a brief flash of English before Te Reo on a hard load; the inline-script alternative that would remove it is recorded as rejected in ADR 0009. The provider mirrors the locale onto `<html lang>` in an effect so screen readers pick the right voice (vision.md §3). Macron-safe rendering comes from the Inter / Plus Jakarta Sans `latin-ext` subsets (ADR 0005).
 * **Client Testing Strategy (Vitest + Testing Library + Axe):**
   * Unit tests verify bilingual UI component rendering, dictionary interpolation, and macron preservation.
@@ -246,7 +252,15 @@
   always responds `200 { deleted: boolean }` — deleting an endpoint that
   was never subscribed, or was already removed, is not an error (ADR
   0034). Both verbs' catch-all failure path (e.g. a broken DB connection)
-  returns `503 { error }`, matching every other route.
+  returns `503 { error }`, matching every other route. A `POST` may include
+  `clientRequestedAt` (client `Date.now()` epoch-ms); when present, the
+  upsert only applies if it is greater than the endpoint's previously-stored
+  value, via a single atomic `INSERT ... ON CONFLICT ... DO UPDATE ... WHERE
+  ...` — closing a gap where two in-flight address-change resubscribes
+  (§2A) could otherwise complete at the server out of send order and leave
+  `address_id` pointed at a stale address (#140, ADR 0067). Omitting it
+  keeps the original unconditional last-write-wins merge for that one
+  write.
 * **Collection Rule Engine:** `src/lib/schedule/rules.ts` exports a pure
   `computeCollectionRuleSet(zone, date)` that maps a zone's classification
   (`{ zone, isInnerCityNightCollection, recyclingCalendarGroup }`, sourced

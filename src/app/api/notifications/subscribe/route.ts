@@ -6,6 +6,7 @@ export interface SubscribeRequestBody {
   keys: { p256dh: string; auth: string };
   languagePreference?: Locale;
   addressId?: number | null;
+  clientRequestedAt?: number;
 }
 
 interface UnsubscribeRequestBody {
@@ -91,6 +92,15 @@ export function validateSubscribeBody(body: unknown): ValidateSubscribeBodyResul
     addressId = candidate;
   }
 
+  let clientRequestedAt: number | undefined;
+  if (body.clientRequestedAt !== undefined) {
+    const candidate = body.clientRequestedAt;
+    if (typeof candidate !== "number" || !Number.isInteger(candidate) || candidate < 0) {
+      return { ok: false, error: "clientRequestedAt must be a non-negative integer." };
+    }
+    clientRequestedAt = candidate;
+  }
+
   return {
     ok: true,
     value: {
@@ -98,6 +108,7 @@ export function validateSubscribeBody(body: unknown): ValidateSubscribeBodyResul
       keys: { p256dh: body.keys.p256dh, auth: body.keys.auth },
       languagePreference,
       addressId,
+      clientRequestedAt,
     },
   };
 }
@@ -119,17 +130,49 @@ export async function POST(request: Request): Promise<Response> {
     const { value } = validation;
 
     const db = getDb();
-    const [row]: PushSubscriptionRow[] = await db("push_subscriptions")
-      .insert({
-        endpoint: value.endpoint,
-        p256dh: value.keys.p256dh,
-        auth: value.keys.auth,
-        language_preference: value.languagePreference ?? "en",
-        address_id: value.addressId ?? null,
-      })
-      .onConflict("endpoint")
-      .merge(["p256dh", "auth", "language_preference", "address_id", "updated_at"])
-      .returning(["id", "endpoint", "language_preference", "address_id"]);
+    // Single atomic upsert: the conflict WHERE clause (ADR 0067) compares
+    // the incoming clientRequestedAt against the value already stored for
+    // this endpoint and no-ops the entire row update — not just
+    // address_id — if this write is not newer. RETURNING yields zero rows
+    // for that no-op case, so a rejected write falls back to a plain
+    // SELECT below; either way the response still reflects the endpoint's
+    // current (correct) state, matching ADR 0033's always-200 contract.
+    const upserted: PushSubscriptionRow[] = await db.raw(
+      `INSERT INTO push_subscriptions
+         (endpoint, p256dh, auth, language_preference, address_id, client_requested_at)
+       VALUES (?, ?, ?, ?, ?, ?)
+       ON CONFLICT(endpoint) DO UPDATE SET
+         p256dh = excluded.p256dh,
+         auth = excluded.auth,
+         language_preference = excluded.language_preference,
+         address_id = excluded.address_id,
+         client_requested_at = COALESCE(excluded.client_requested_at, push_subscriptions.client_requested_at),
+         updated_at = excluded.updated_at
+       WHERE excluded.client_requested_at IS NULL
+          OR push_subscriptions.client_requested_at IS NULL
+          OR excluded.client_requested_at > push_subscriptions.client_requested_at
+       RETURNING id, endpoint, language_preference, address_id`,
+      [
+        value.endpoint,
+        value.keys.p256dh,
+        value.keys.auth,
+        value.languagePreference ?? "en",
+        value.addressId ?? null,
+        value.clientRequestedAt ?? null,
+      ],
+    );
+
+    const row: PushSubscriptionRow | undefined =
+      upserted[0] ??
+      (await db<PushSubscriptionRow>("push_subscriptions")
+        .where({ endpoint: value.endpoint })
+        .first());
+
+    // Unreachable: the INSERT always creates a row for a brand-new
+    // endpoint, and a no-op update (empty RETURNING) only happens when a
+    // row for this endpoint already exists — exactly what the fallback
+    // SELECT above finds.
+    if (!row) throw new Error("push subscription upsert produced no row");
 
     return Response.json({ subscription: toPushSubscriptionApiRecord(row) });
   } catch (err) {

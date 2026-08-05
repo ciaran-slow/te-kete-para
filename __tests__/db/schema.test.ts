@@ -83,6 +83,7 @@ const SCHEMA = {
       address_id: { nullable: true, defaultValue: null },
       created_at: { nullable: false, defaultValue: "CURRENT_TIMESTAMP" },
       updated_at: { nullable: false, defaultValue: "CURRENT_TIMESTAMP" },
+      client_requested_at: { nullable: true, defaultValue: null },
     },
     indexes: [{ name: "push_subscriptions_endpoint_unique", unique: true }],
     foreignKeys: [

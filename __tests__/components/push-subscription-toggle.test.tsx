@@ -773,5 +773,84 @@ describe("PushSubscriptionToggle", () => {
       const lastCall = fetchMock.mock.calls.at(-1) as [string, RequestInit];
       expect(lastCall[1].method).toBe("DELETE");
     });
+
+    test("out-of-order network completion: the older address's clientRequestedAt is always lower, and its late abort can't regress the newer state (#140)", async () => {
+      const subscription = fakeSubscription();
+      stubPushEnvironment({ existingSubscription: subscription });
+
+      let rejectFirst!: (reason: unknown) => void;
+      let resolveSecond!: (value: unknown) => void;
+      const firstPromise = new Promise((_resolve, reject) => {
+        rejectFirst = reject;
+      });
+      const secondPromise = new Promise((resolve) => {
+        resolveSecond = resolve;
+      });
+      const fetchMock = vi
+        .fn()
+        .mockReturnValueOnce(firstPromise)
+        .mockReturnValueOnce(secondPromise);
+      vi.stubGlobal("fetch", fetchMock);
+
+      const { rerender } = renderToggle(1);
+      await waitFor(() =>
+        expect(
+          screen.getByText("You're receiving night-before reminders."),
+        ).toBeInTheDocument(),
+      );
+
+      // Selects address 2, then immediately address 3 — the exact
+      // in-quick-succession pattern the issue describes. Both fetches are
+      // issued (and held unresolved) before either settles.
+      rerender(
+        <LanguageProvider>
+          <PushSubscriptionToggle addressId={2} />
+        </LanguageProvider>,
+      );
+      await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+
+      rerender(
+        <LanguageProvider>
+          <PushSubscriptionToggle addressId={3} />
+        </LanguageProvider>,
+      );
+      await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+
+      const [, firstInit] = fetchMock.mock.calls[0] as [string, RequestInit];
+      const [, secondInit] = fetchMock.mock.calls[1] as [string, RequestInit];
+      const firstBody = JSON.parse(firstInit.body as string) as Record<string, unknown>;
+      const secondBody = JSON.parse(secondInit.body as string) as Record<string, unknown>;
+      expect(firstBody.addressId).toBe(2);
+      expect(secondBody.addressId).toBe(3);
+      expect(typeof firstBody.clientRequestedAt).toBe("number");
+      expect(typeof secondBody.clientRequestedAt).toBe("number");
+      // Selection order, not resolution order, decides these values — this
+      // is what the server's ordering guard (ADR 0067) actually compares.
+      expect(secondBody.clientRequestedAt as number).toBeGreaterThan(
+        firstBody.clientRequestedAt as number,
+      );
+
+      // Resolve out of order: the newer (address 3) request completes first...
+      resolveSecond(jsonResponse({ ok: true }));
+      await waitFor(() =>
+        expect(
+          screen.getByText("You're receiving night-before reminders."),
+        ).toBeInTheDocument(),
+      );
+
+      // ...then the older (address 2) request's fetch — already aborted
+      // client-side the moment address 3 was selected — settles anyway,
+      // exactly like a real aborted fetch() rejecting after the fact. This
+      // must not regress the now-correct "subscribed" state or surface the
+      // address-change error, and must not trigger a corrective third POST.
+      rejectFirst(new DOMException("The user aborted a request.", "AbortError"));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(
+        screen.getByText("You're receiving night-before reminders."),
+      ).toBeInTheDocument();
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(subscription.unsubscribe).not.toHaveBeenCalled();
+    });
   });
 });
