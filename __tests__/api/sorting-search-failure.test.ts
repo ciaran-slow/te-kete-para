@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import request from "supertest";
 import { getDb } from "@/lib/db";
 import * as searchRoute from "@/app/api/sorting/search/route";
@@ -30,12 +30,21 @@ describe("GET /api/sorting/search with a broken database connection", () => {
     await teardownTestDb();
   });
 
-  it("reports 503 with the error envelope instead of throwing", async () => {
+  it("reports 503 with the error envelope instead of throwing, and logs the real error server-side (#142)", async () => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
     const response = await request(app).get(
       `/api/sorting/search?q=${encodeURIComponent("coffee")}`,
     );
+
     expect(response.status).toBe(503);
     expect(response.body).toEqual({ error: "Unable to search sorting rules." });
+    expect(errorSpy).toHaveBeenCalledWith(
+      "[api/sorting/search] Query failed:",
+      expect.any(Error),
+    );
+
+    errorSpy.mockRestore();
   });
 
   it("keeps reporting the same failure on a subsequent request", async () => {
