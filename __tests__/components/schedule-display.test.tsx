@@ -36,6 +36,18 @@ const BLANK_ZONE_ADDRESS: SuburbSearchResult = {
   isInnerCityNightCollection: false,
   recyclingCalendarGroup: 1,
 };
+// A real, valid suburban address whose recyclingCalendarGroup has not yet
+// been confirmed against WCC's per-street tool (ADR 0059's known gap) —
+// unlike BLANK_ZONE_ADDRESS above, this shape is reachable from real
+// /api/suburbs/search data.
+const UNCONFIRMED_CALENDAR_ADDRESS: SuburbSearchResult = {
+  id: 40,
+  streetName: "New Street",
+  suburb: "Newtown",
+  zone: "SUBURBAN-SOUTH",
+  isInnerCityNightCollection: false,
+  recyclingCalendarGroup: null,
+};
 
 // Matches rules.test.ts's epoch fixture: a glass week, mid-UTC-day so the
 // viewer's local (Pacific/Auckland, ADR 0017) calendar date is also
@@ -160,6 +172,27 @@ describe("ScheduleDisplay", () => {
       ),
     ).toBeInTheDocument();
     expect(screen.queryAllByRole("listitem")).toHaveLength(0);
+    expect(
+      screen.queryByText(
+        "We haven't confirmed this address's recycling calendar yet. Check back soon.",
+      ),
+    ).not.toBeInTheDocument();
+  });
+
+  test("a suburban address with an unconfirmed recyclingCalendarGroup shows a specific message, not the generic error", () => {
+    renderDisplay(UNCONFIRMED_CALENDAR_ADDRESS, GLASS_WEEK_MONDAY);
+
+    expect(
+      screen.getByText(
+        "We haven't confirmed this address's recycling calendar yet. Check back soon.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "We couldn't work out today's collection for this address. Please try again.",
+      ),
+    ).not.toBeInTheDocument();
+    expect(screen.queryAllByRole("listitem")).toHaveLength(0);
   });
 
   test("repeated address changes never leave stale content behind", () => {
@@ -209,6 +242,27 @@ describe("ScheduleDisplay", () => {
     expect(
       screen.getAllByRole("heading", { level: 2, name: "Today's collection" }),
     ).toHaveLength(1);
+
+    // suburban → unconfirmed calendar group
+    display(UNCONFIRMED_CALENDAR_ADDRESS);
+    expect(
+      screen.getByText(
+        "We haven't confirmed this address's recycling calendar yet. Check back soon.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryAllByRole("listitem")).toHaveLength(0);
+    expect(screen.queryByText("General rubbish")).not.toBeInTheDocument();
+
+    // unconfirmed calendar group → suburban again
+    display(SUBURBAN_ADDRESS);
+    expect(
+      screen.getAllByRole("listitem").map((li) => li.textContent),
+    ).toEqual(["General rubbish", "Glass recycling crate"]);
+    expect(
+      screen.queryByText(
+        "We haven't confirmed this address's recycling calendar yet. Check back soon.",
+      ),
+    ).not.toBeInTheDocument();
   });
 
   describe("todayAsUtcCalendarDate", () => {
@@ -234,7 +288,7 @@ describe("ScheduleDisplay", () => {
     );
   });
 
-  test("passes the accessibility audit in the empty, suburban, and inner-city states", async () => {
+  test("passes the accessibility audit in the empty, suburban, inner-city, and unconfirmed-calendar-group states", async () => {
     const empty = renderDisplay(null);
     await expectNoA11yViolations(empty.container);
     cleanup();
@@ -245,5 +299,9 @@ describe("ScheduleDisplay", () => {
 
     const innerCity = renderDisplay(INNER_CITY_ADDRESS, CARDBOARD_TUESDAY);
     await expectNoA11yViolations(innerCity.container);
+    cleanup();
+
+    const unconfirmed = renderDisplay(UNCONFIRMED_CALENDAR_ADDRESS, GLASS_WEEK_MONDAY);
+    await expectNoA11yViolations(unconfirmed.container);
   });
 });

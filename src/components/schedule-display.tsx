@@ -15,6 +15,7 @@ import type { SuburbSearchResult } from "./address-search";
 import { StatusRegion } from "./status-region";
 import {
   computeCollectionRuleSet,
+  UnresolvedRecyclingCalendarGroupError,
   type CollectionRuleSet,
   type TimeWindow,
   type WasteBinType,
@@ -78,6 +79,8 @@ function formatTimeWindowLabel(
 interface ComputedSchedule {
   ruleSet: CollectionRuleSet | null;
   todayUtc: Date;
+  /** Only meaningful when ruleSet is null. */
+  unresolvedCalendarGroup: boolean;
 }
 
 function computeSchedule(
@@ -94,9 +97,13 @@ function computeSchedule(
       },
       todayUtc,
     );
-    return { ruleSet, todayUtc };
-  } catch {
-    return { ruleSet: null, todayUtc };
+    return { ruleSet, todayUtc, unresolvedCalendarGroup: false };
+  } catch (err) {
+    return {
+      ruleSet: null,
+      todayUtc,
+      unresolvedCalendarGroup: err instanceof UnresolvedRecyclingCalendarGroupError,
+    };
   }
 }
 
@@ -114,7 +121,12 @@ export function ScheduleDisplay({ address, now }: ScheduleDisplayProps) {
       className="w-full max-w-md text-left text-papa-ink"
     >
       {schedule === null && <p>{t("schedule.noAddressSelected")}</p>}
-      {schedule !== null && ruleSet === null && <p>{t("schedule.error")}</p>}
+      {schedule !== null && ruleSet === null && schedule.unresolvedCalendarGroup && (
+        <p>{t("schedule.calendarGroupUnconfirmed")}</p>
+      )}
+      {schedule !== null && ruleSet === null && !schedule.unresolvedCalendarGroup && (
+        <p>{t("schedule.error")}</p>
+      )}
       {schedule !== null && ruleSet !== null && (
         <>
           <h2
