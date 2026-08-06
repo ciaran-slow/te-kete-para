@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import Knex from "knex";
 import knexConfigs from "../../knexfile.js";
 import createPushSubscriptions from "../../db/migrations/20260729100006_create_push_subscriptions.js";
-import widenPushSubscriptionsEndpoint from "../../db/migrations/20260803120000_widen_push_subscriptions_endpoint_to_text.js";
+import widenPushSubscriptionsEndpoint from "../../db/migrations/20260803120001_widen_push_subscriptions_endpoint_to_text.js";
 
 /**
  * The full shape each core table is expected to have — not just column names.
