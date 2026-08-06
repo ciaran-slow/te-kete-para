@@ -226,6 +226,32 @@ describe("AddressSearch", () => {
     expect(scrollSpy).toHaveBeenCalledTimes(2); // still no extra call on the reset itself
   });
 
+  test("does not re-fire scrollIntoView on a re-render that leaves the active option unchanged", async () => {
+    // Regression guard for the scroll effect's dependency array: a clamped
+    // ArrowDown/ArrowUp press (covered above) sets the *same* activeIndex,
+    // so React bails out of re-rendering entirely and never gives an
+    // effect-with-no-deps a chance to re-fire. Forcing a re-render here via
+    // `rerender` (same active option, same results, only a new `onSelect`
+    // reference) is what actually distinguishes a correct `[activeOption]`
+    // dependency array from a missing one.
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(jsonResponse({ results: [CUBA_MALL, CUBA_STREET] })),
+    );
+    const { rerender } = renderSearch({ onSelect: vi.fn() });
+    await typeAndSettle("cuba");
+    fireEvent.keyDown(input(), { key: "ArrowDown" });
+    const scrollSpy = vi.mocked(Element.prototype.scrollIntoView);
+    expect(scrollSpy).toHaveBeenCalledTimes(1);
+
+    rerender(
+      <LanguageProvider>
+        <AddressSearch onSelect={vi.fn()} />
+      </LanguageProvider>,
+    );
+    expect(scrollSpy).toHaveBeenCalledTimes(1);
+  });
+
   test("Enter selects the active option", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse({ results: [CUBA_MALL] })));
     const onSelect = vi.fn();

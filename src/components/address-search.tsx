@@ -179,9 +179,10 @@ export function AddressSearch({ onSelect }: AddressSearchProps) {
     isOpen && (status === "loading" || status === "empty" || status === "error");
   const activeOption = activeIndex >= 0 ? results[activeIndex] : undefined;
 
-  // Keeps the highlighted option visible once the listbox gains a height
-  // constraint: a no-op today only because every result currently fits
-  // without scrolling.
+  // Keeps the highlighted option visible: mainly future-proofing for once
+  // the listbox gains a height constraint, but "nearest" already walks up
+  // to the document today (the `<ul>` itself has no scroll container), so
+  // arrowing past the fold can scroll the page even now.
   useEffect(() => {
     if (!activeOption) return;
     activeOptionRef.current?.scrollIntoView({ block: "nearest" });
