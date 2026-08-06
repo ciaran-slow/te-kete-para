@@ -238,11 +238,11 @@ export function ScheduleDisplay({ address, now }: ScheduleDisplayProps) {
               {ruleSet.binTypes.map((binType) => (
                 <li
                   key={binType}
-                  className={`flex w-24 flex-col items-center gap-1 rounded-lg px-2 py-2 text-center text-sm font-medium ${BIN_TYPE_PILL_CLASS[binType]}`}
+                  className={`flex w-32 flex-col items-center gap-1 rounded-lg px-2 py-2 text-center text-sm font-medium ${BIN_TYPE_PILL_CLASS[binType]}`}
                 >
                   <BinTypeIcon
                     type={binType}
-                    className={`h-6 w-6 ${BIN_TYPE_ICON_COLOR_CLASS[binType]}`}
+                    className={`h-16 w-16 ${BIN_TYPE_ICON_COLOR_CLASS[binType]}`}
                   />
                   {t(BIN_TYPE_KEYS[binType])}
                 </li>
