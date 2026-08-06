@@ -128,9 +128,11 @@
   `src/components/service-worker-registration.tsx`, rendered once from
   `layout.tsx`, feature-detects `navigator.serviceWorker` and registers a
   hand-written `public/sw.js` (no Serwist/next-pwa dependency) that
-  precaches five stable-path shell assets on `install` (network-first for
-  navigations, cache-first for the other precached assets, with older
-  `tkp-shell-*` caches deleted on `activate`) — NFR-02's core-asset half. It
+  precaches five stable-path shell assets on `install`, each fetched and
+  cached individually so one failed asset doesn't block the rest
+  (network-first for navigations, cache-first for the other precached
+  assets, with older `tkp-shell-*` caches deleted on `activate`) — NFR-02's
+  core-asset half. It
   also registers `push` and `notificationclick` listeners (#115, ADR 0055):
   `push` shows a notification for the delivered dispatch payload (§2B) via
   `self.registration.showNotification`, with a generic English fallback if
