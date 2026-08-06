@@ -2,6 +2,7 @@
   - radiogroup "Choose language":
     - radio "English" [checked]
     - radio "Te Reo Māori"
+  - paragraph
 - main:
   - heading "Te Kete Para" [level=1]
   - heading "Protect the environment, take care of your waste." [level=2]
@@ -13,9 +14,13 @@
     - option "Karori Road, Karori"
   - paragraph: Search for your address above to see your next collection.
   - separator
-  - paragraph: āēīōū ĀĒĪŌŪ — Para Whānui, Rauemi Hangarua, Kete Karāhe, Āpopo
-  - list "Wellington colour tokens":
-    - listitem: Kākāriki
-    - listitem: Moana
-    - listitem: Kōwhai
+  - heading "What is this?" [level=2]
+  - text: Search for a household item
+  - textbox "Search for a household item":
+    - /placeholder: e.g. pizza box
+  - button "Search by voice"
+  - paragraph
+  - paragraph
+  - paragraph
+  - list "Matching items"
 - alert

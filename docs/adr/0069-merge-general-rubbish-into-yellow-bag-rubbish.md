@@ -86,12 +86,20 @@ places.
 
 Every UI surface, push-notification body, and test fixture now says "Yellow
 rubbish bag" / "Pēke Kōwhai Para" for suburban rubbish, matching the real
-WCC system. `docs/prd1.md`'s FR-01 status note, which cited `Para Whānui` as
-an example of a real (non-placeholder) Te Reo translation present in the
-dictionary, was updated to cite `Pēke Kōwhai Para` instead, since
-`Para Whānui` — the Māori value that key held — no longer exists anywhere in
-the app. `vision.md`'s own glossary still lists `Para Whānui (General
-Refuse)` as a general vocabulary term; that entry is left as-is, since it
-documents Te Reo vocabulary broadly rather than this specific (now-removed)
-schedule label, and nothing in this ADR establishes it as wrong the way the
-bin-type split was.
+WCC system. The manual screen-reader accessibility-tree snapshots
+(`e2e/manual-screen-reader-tree.spec.ts-snapshots/*.aria.yml`, ADR 0024 —
+excluded from CI, so this wasn't caught by any required check) were
+regenerated; they turned out to have been stale since the homepage
+diagnostic cleanup that preceded this change too, not only for this rename.
+
+`docs/prd1.md` — an uncommitted, not-yet-reviewed working draft, not part of
+this PR's diff or any commit — cited `Para Whānui` as an example of a real
+(non-placeholder) Te Reo translation present in the dictionary; that local
+file was updated to cite `Pēke Kōwhai Para` instead, since `Para Whānui` — the
+Māori value that key held — no longer exists anywhere in the app. Whoever
+next commits that document should carry this correction forward.
+`vision.md`'s own glossary still lists `Para Whānui (General Refuse)` as a
+general vocabulary term; that entry is left as-is, since it documents Te Reo
+vocabulary broadly rather than this specific (now-removed) schedule label,
+and nothing in this ADR establishes it as wrong the way the bin-type split
+was.

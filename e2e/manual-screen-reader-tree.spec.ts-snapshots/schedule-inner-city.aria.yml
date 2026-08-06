@@ -2,6 +2,7 @@
   - radiogroup "Choose language":
     - radio "English" [checked]
     - radio "Te Reo Māori"
+  - paragraph
 - main:
   - heading "Te Kete Para" [level=1]
   - heading "Protect the environment, take care of your waste." [level=2]
@@ -11,15 +12,23 @@
   - paragraph
   - region "Your next collection":
     - heading "Your next collection" [level=2]
-    - paragraph: "Date: 31/07/2026"
+    - paragraph: Date
+    - paragraph: /\d+\/\d+\/\d+/
     - paragraph: Bins to put out
     - list:
       - listitem: Yellow rubbish bag
-    - paragraph: "Collection window: 17:30–22:00"
+    - paragraph: "/Collection window: \\d+:\\d+–\\d+:\\d+/"
+  - text: Night-before collection reminders
+  - switch "Night-before collection reminders" [disabled]
+  - paragraph: Push notifications aren't available yet.
   - separator
-  - paragraph: āēīōū ĀĒĪŌŪ — Para Whānui, Rauemi Hangarua, Kete Karāhe, Āpopo
-  - list "Wellington colour tokens":
-    - listitem: Kākāriki
-    - listitem: Moana
-    - listitem: Kōwhai
+  - heading "What is this?" [level=2]
+  - text: Search for a household item
+  - textbox "Search for a household item":
+    - /placeholder: e.g. pizza box
+  - button "Search by voice"
+  - paragraph
+  - paragraph
+  - paragraph
+  - list "Matching items"
 - alert

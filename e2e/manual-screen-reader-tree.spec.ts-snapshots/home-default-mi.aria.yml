@@ -2,6 +2,7 @@
   - radiogroup "Kōwhiria te reo":
     - radio "English"
     - radio "Te Reo Māori" [checked]
+  - paragraph: Kua huri te reo ki te reo Māori.
 - main:
   - heading "Te Kete Para" [level=1]
   - heading "Tiakina te taiao, kia mauria te para." [level=2]
@@ -11,9 +12,13 @@
   - paragraph
   - paragraph: Rapua tō wāhitau i runga ake nei kia kite i tō kohinga e whai ake nei.
   - separator
-  - paragraph: āēīōū ĀĒĪŌŪ — Para Whānui, Rauemi Hangarua, Kete Karāhe, Āpopo
-  - list "Wellington colour tokens":
-    - listitem: Kākāriki
-    - listitem: Moana
-    - listitem: Kōwhai
+  - heading "He Aha Tēnei?" [level=2]
+  - text: Rapua tētahi mea kāinga
+  - textbox "Rapua tētahi mea kāinga":
+    - /placeholder: Hei tauira, pouaka pizza
+  - button "Rapua mā te reo"
+  - paragraph
+  - paragraph
+  - paragraph
+  - list "Ngā mea e rite ana"
 - alert
