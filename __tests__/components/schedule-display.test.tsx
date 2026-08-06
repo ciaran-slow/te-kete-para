@@ -48,7 +48,7 @@ const BLANK_ZONE_ADDRESS: SuburbSearchResult = {
 // component must still degrade to the same error state as a malformed zone,
 // via findNextCollectionDate's RangeError, not crash or show a bogus date.
 const UNCONFIRMED_WEEKDAY_ADDRESS: SuburbSearchResult = {
-  id: 40,
+  id: 41,
   streetName: "Unconfirmed Street",
   suburb: "Nowhere",
   zone: "SUBURBAN-WEST",
@@ -67,6 +67,10 @@ const UNCONFIRMED_CALENDAR_ADDRESS: SuburbSearchResult = {
   zone: "SUBURBAN-SOUTH",
   isInnerCityNightCollection: false,
   recyclingCalendarGroup: null,
+  // Monday, matching GLASS_WEEK_MONDAY below, so findNextCollectionDate
+  // resolves cleanly and the recyclingCalendarGroup rejection inside
+  // computeCollectionRuleSet is the only throw this fixture exercises.
+  collectionWeekday: 1,
 };
 
 // Matches rules.test.ts's epoch fixture: a glass week, mid-UTC-day so the
