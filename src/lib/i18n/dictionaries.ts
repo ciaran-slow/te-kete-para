@@ -23,7 +23,7 @@ export const en = {
   "address.search.resultsAvailable":
     "Results are available below. Use the up and down arrow keys to choose one.",
   "address.search.error": "We couldn't search addresses right now. Please try again.",
-  "sortingSearch.heading": "What is this?",
+  "sortingSearch.heading": "What Goes Where?",
   "sortingSearch.label": "Search for a household item",
   "sortingSearch.placeholder": "e.g. pizza box",
   "sortingSearch.resultsLabel": "Matching items",

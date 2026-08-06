@@ -23,7 +23,7 @@
   - switch "Night-before collection reminders" [disabled]
   - paragraph: Push notifications aren't available yet.
   - separator
-  - heading "What is this?" [level=2]
+  - heading "What Goes Where?" [level=2]
   - text: Search for a household item
   - textbox "Search for a household item":
     - /placeholder: e.g. pizza box

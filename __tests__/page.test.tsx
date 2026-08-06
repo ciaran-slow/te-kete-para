@@ -94,7 +94,7 @@ test("a semantic separator divides the address schedule from the sorting search"
 test("the sorting search section is composed onto the homepage (issue #75, ADR 0064)", () => {
   renderPage();
   expect(
-    screen.getByRole("heading", { level: 2, name: "What is this?" }),
+    screen.getByRole("heading", { level: 2, name: "What Goes Where?" }),
   ).toBeInTheDocument();
   expect(
     screen.getByLabelText("Search for a household item"),
