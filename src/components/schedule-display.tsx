@@ -63,6 +63,61 @@ const BIN_TYPE_PILL_CLASS: Record<WasteBinType, string> = {
 };
 
 /**
+ * The icon's own colour is independent of BIN_TYPE_PILL_CLASS's text
+ * colour above — the pill deliberately keeps yellow-bag-rubbish's *text*
+ * dark for contrast (kōwhai fails body-text contrast at this size), but a
+ * decorative, aria-hidden icon isn't body text, so it can carry the actual
+ * kōwhai theming a resident expects for "the yellow bag" at a glance.
+ */
+const BIN_TYPE_ICON_COLOR_CLASS: Record<WasteBinType, string> = {
+  "glass-recycling": "text-moana",
+  "mixed-recycling": "text-moana",
+  "yellow-bag-rubbish": "text-kowhai",
+  cardboard: "text-moana",
+};
+
+/**
+ * One hand-authored glyph per bin type (this repo's established icon
+ * convention, sorting-search.tsx's mic button — inline SVG,
+ * fill="currentColor" so BIN_TYPE_ICON_COLOR_CLASS controls colour,
+ * aria-hidden since the text label beside it already names the bin).
+ */
+function BinTypeIcon({ type, className }: { type: WasteBinType; className?: string }) {
+  if (type === "yellow-bag-rubbish") {
+    return (
+      <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="currentColor" className={className}>
+        <path d="M8 8V6a4 4 0 0 1 8 0v2Z" />
+        <path d="M5 8h14l-1.2 11.8a2 2 0 0 1-2 1.2H8.2a2 2 0 0 1-2-1.2L5 8Z" />
+      </svg>
+    );
+  }
+  if (type === "glass-recycling") {
+    return (
+      <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="currentColor" className={className}>
+        <path d="M10 2h4v3.5c0 .6.3 1.1.8 1.4A3 3 0 0 1 16 9.5V20a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V9.5a3 3 0 0 1 1.2-2.6c.5-.3.8-.8.8-1.4V2Z" />
+      </svg>
+    );
+  }
+  if (type === "cardboard") {
+    return (
+      <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="currentColor" className={className}>
+        <path d="M4 7h16v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7Z" />
+        <path d="M4 7 12 3l8 4-8 4-8-4Z" />
+      </svg>
+    );
+  }
+  // mixed-recycling: a simple three-blade recycling pinwheel — one arrow
+  // shape repeated at 120°/240° around the 24x24 centre.
+  return (
+    <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d="M12 3 15 8 13 8 13 12 11 12 11 8 9 8Z" />
+      <path d="M12 3 15 8 13 8 13 12 11 12 11 8 9 8Z" transform="rotate(120 12 12)" />
+      <path d="M12 3 15 8 13 8 13 12 11 12 11 8 9 8Z" transform="rotate(240 12 12)" />
+    </svg>
+  );
+}
+
+/**
  * Converts `reference`'s *local* calendar date — the viewer's device time
  * zone, assumed Wellington — into the UTC-midnight `Date` that
  * `computeCollectionRuleSet` expects (rules.ts, ADR 0017). Deliberately
@@ -183,8 +238,12 @@ export function ScheduleDisplay({ address, now }: ScheduleDisplayProps) {
               {ruleSet.binTypes.map((binType) => (
                 <li
                   key={binType}
-                  className={`rounded-full px-3 py-1 text-sm font-medium ${BIN_TYPE_PILL_CLASS[binType]}`}
+                  className={`flex w-24 flex-col items-center gap-1 rounded-lg px-2 py-2 text-center text-sm font-medium ${BIN_TYPE_PILL_CLASS[binType]}`}
                 >
+                  <BinTypeIcon
+                    type={binType}
+                    className={`h-6 w-6 ${BIN_TYPE_ICON_COLOR_CLASS[binType]}`}
+                  />
                   {t(BIN_TYPE_KEYS[binType])}
                 </li>
               ))}

@@ -46,7 +46,8 @@ export const en = {
   "schedule.putOutBy": "Put out by",
   "schedule.collectionWindow": "Collection window",
   "schedule.binType.glassRecycling": "Glass recycling crate",
-  "schedule.binType.mixedRecycling": "Mixed recycling (paper, plastic, metal)",
+  "schedule.binType.mixedRecycling":
+    "Clear bag recycling (paper, cardboard, plastic, cans)",
   "schedule.binType.yellowBagRubbish": "Yellow rubbish bag",
   "schedule.binType.cardboard": "Cardboard",
   "schedule.error":
@@ -118,7 +119,8 @@ export const mi: Record<TranslationKey, string> = {
   "schedule.putOutBy": "Whakaputahia i mua i te",
   "schedule.collectionWindow": "Wā kohinga",
   "schedule.binType.glassRecycling": "Kete Karāhe",
-  "schedule.binType.mixedRecycling": "Rauemi Hangarua (pepa, kirihou, konganuku)",
+  "schedule.binType.mixedRecycling":
+    "Pēke Rauemi Hangarua Mārama (pepa, kāta, kirihou, konganuku)",
   "schedule.binType.yellowBagRubbish": "Pēke Kōwhai Para",
   "schedule.binType.cardboard": "Kāta",
   "schedule.error":
