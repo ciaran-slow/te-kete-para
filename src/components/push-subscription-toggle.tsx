@@ -8,11 +8,11 @@ import { StatusRegion } from "./status-region";
 
 export interface PushSubscriptionToggleProps {
   /** Attached to the subscription server-side; matches the API's nullable
-   * addressId (ADR 0033). Omitted behaves the same as null. No caller
-   * passes this today (the component isn't composed into any route,
-   * ADR 0048) — it exists so a future composition can wire the
-   * already-selected address straight through, same shape as
-   * ShiftAlertBanner's `address` prop (ADR 0018). */
+   * addressId (ADR 0033). Omitted behaves the same as null. Composed into
+   * `address-schedule.tsx`, gated on a selected address (ADR 0058,
+   * superseding ADR 0048's deferral) — same shape as ShiftAlertBanner's
+   * `address` prop (ADR 0018), so the already-selected address wires
+   * straight through rather than being re-derived here. */
   addressId?: number | null;
 }
 
