@@ -20,7 +20,7 @@ shipped with.
 ## Decision
 
 Add `lucide-react` as a dependency and use it for the four bin-type icons
-only: `ShoppingBag` (yellow-bag-rubbish), `BottleWine` (glass-recycling),
+only: `Trash` (yellow-bag-rubbish), `BottleWine` (glass-recycling),
 `Recycle` (mixed-recycling), `Package` (cardboard). `sorting-search.tsx`'s
 existing mic icon is untouched — this is not a repo-wide icon-library
 migration, just the one component this request was about.
@@ -57,7 +57,7 @@ unchanged.
   tree-shakeable (each icon is its own module — only the four imported here
   end up in the bundle, confirmed via `lucide-react`'s zero runtime
   dependencies, `package.json` peer-deps only on `react`); has literal,
-  recognizable icons for all four concepts needed here (`ShoppingBag`,
+  recognizable icons for all four concepts needed here (`Trash`,
   `BottleWine`, `Recycle`, `Package`) without needing a custom-drawn glyph.
 - **Cons:** a new dependency to track for updates; the four icons' visual
   style (line-art, rounded joins) is a small step away from this app's

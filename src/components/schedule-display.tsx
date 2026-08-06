@@ -13,7 +13,7 @@
 "use client";
 
 import { useId } from "react";
-import { BottleWine, Package, Recycle, ShoppingBag, type LucideIcon } from "lucide-react";
+import { BottleWine, Package, Recycle, Trash, type LucideIcon } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/language-provider";
 import type { TranslationKey } from "@/lib/i18n/dictionaries";
 import type { SuburbSearchResult } from "./address-search";
@@ -84,7 +84,7 @@ const BIN_TYPE_ICON_COLOR_CLASS: Record<WasteBinType, string> = {
  * since the text label beside it already names the bin.
  */
 const BIN_TYPE_ICON: Record<WasteBinType, LucideIcon> = {
-  "yellow-bag-rubbish": ShoppingBag,
+  "yellow-bag-rubbish": Trash,
   "glass-recycling": BottleWine,
   "mixed-recycling": Recycle,
   cardboard: Package,
