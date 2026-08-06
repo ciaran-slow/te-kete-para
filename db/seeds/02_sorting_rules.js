@@ -83,6 +83,16 @@
  *   - textiles-clothing: WCC "Organisations that accept donated items",
  *     fetched directly.
  *
+ * - ADR 0069 (raised against the schedule feature, not this file) confirmed
+ *   WCC's official rubbish bag is the same yellow-bag container city-wide —
+ *   there is no separate "general rubbish" container. Every row here that
+ *   told a resident to put an item "in your general rubbish" was corrected
+ *   to name that container explicitly ("yellow rubbish bag" /
+ *   "pēke kōwhai para"), matching the term the rest of this app now uses
+ *   consistently (schedule-display.tsx, push notifications). This is a
+ *   terminology-consistency fix, not a new disposal-pathway claim — every
+ *   row's underlying WCC-sourced guidance above is unchanged.
+ *
  * - Issue #69 (closed as won't-fix-for-prototype, ADR 0064): the Te Reo
  *   Māori text is a machine draft. Key vocabulary was checked against Te
  *   Aka (pātara "bottle", pūhiko "battery", rehu matūriki "aerosol",
@@ -123,9 +133,9 @@ exports.seed = async function seed(knex) {
       description_mi:
         "He kapu kawhe kotahi noa te whakamahi, he kirihou tonu te whakapaipai o roto.",
       disposal_instructions_en:
-        "Put the whole cup, including the lid, in your general rubbish — the plastic lining cannot be separated by WCC's recycling plant. Bring a reusable cup next time to avoid this waste.",
+        "Put the whole cup, including the lid, in your yellow rubbish bag — the plastic lining cannot be separated by WCC's recycling plant. Bring a reusable cup next time to avoid this waste.",
       disposal_instructions_mi:
-        "Whakauruhia te kapu me tōna uwhi katoa ki tō para whānui — kāore e taea e te wheketere hangarua a WCC te wehewehe i te kirihou o roto. Kawea mai he kapu whakamahi anō ā muri ake nei kia kore ai tēnei para e puta.",
+        "Whakauruhia te kapu me tōna uwhi katoa ki tō pēke kōwhai para — kāore e taea e te wheketere hangarua a WCC te wehewehe i te kirihou o roto. Kawea mai he kapu whakamahi anō ā muri ake nei kia kore ai tēnei para e puta.",
       keywords: "",
     },
     {
@@ -135,9 +145,9 @@ exports.seed = async function seed(knex) {
       description_mi:
         "He kēne rehu matūriki (hei tauira, te wai kakara tinana, te peita puhipuhi, te wai kakara whare), ahakoa kua watea, kāore rānei.",
       disposal_instructions_en:
-        "Aerosol and spray cans are not accepted in kerbside recycling — they can be dangerous if punctured during the recycling sort. WCC's official waste-sorting tool confirms most of them go in your general rubbish instead, whether empty or still full, or you can drop one at the Southern Landfill (fees apply). The exception is spray paint: WCC's tool has no dedicated spray-paint item, but its separate paint guidance treats paint as hazardous waste no matter the container — take a spray-paint can to the Southern Landfill's Hazardous Waste drop-off instead (free up to 20kg/20L), never your general rubbish. Never puncture or burn any aerosol can, even an empty one.",
+        "Aerosol and spray cans are not accepted in kerbside recycling — they can be dangerous if punctured during the recycling sort. WCC's official waste-sorting tool confirms most of them go in your yellow rubbish bag instead, whether empty or still full, or you can drop one at the Southern Landfill (fees apply). The exception is spray paint: WCC's tool has no dedicated spray-paint item, but its separate paint guidance treats paint as hazardous waste no matter the container — take a spray-paint can to the Southern Landfill's Hazardous Waste drop-off instead (free up to 20kg/20L), never your yellow rubbish bag. Never puncture or burn any aerosol can, even an empty one.",
       disposal_instructions_mi:
-        "Kāore ngā kēne rehu matūriki e whakaaetia ki te hangarua ā-huarahi — ka taea pea te mōrearea mehemea ka werohia i te wā e wehewehea ana ngā rauemi hangarua. E whakaū ana te taputapu wehewehe para whaimana a WCC ka haere kē te nuinga ki tō para whānui, ahakoa kua watea, kāore rānei — ka taea hoki te kawe ki te Southern Landfill (he utu kei reira). Ko te peita puhipuhi te mea rerekē: kāore he tūemi peita puhipuhi motuhake kei te taputapu a WCC, engari e kī ana āna tohutohu peita motuhake he para mōrearea te peita ahakoa te ipu — kawea he kēne peita puhipuhi ki te wāhi tuku para mōrearea o te Southern Landfill (kore utu tae atu ki te 20kg/20L), kaua ki tō para whānui. Kaua rawa e wero, e tahu rānei i tētahi kēne rehu matūriki, ahakoa kua watea.",
+        "Kāore ngā kēne rehu matūriki e whakaaetia ki te hangarua ā-huarahi — ka taea pea te mōrearea mehemea ka werohia i te wā e wehewehea ana ngā rauemi hangarua. E whakaū ana te taputapu wehewehe para whaimana a WCC ka haere kē te nuinga ki tō pēke kōwhai para, ahakoa kua watea, kāore rānei — ka taea hoki te kawe ki te Southern Landfill (he utu kei reira). Ko te peita puhipuhi te mea rerekē: kāore he tūemi peita puhipuhi motuhake kei te taputapu a WCC, engari e kī ana āna tohutohu peita motuhake he para mōrearea te peita ahakoa te ipu — kawea he kēne peita puhipuhi ki te wāhi tuku para mōrearea o te Southern Landfill (kore utu tae atu ki te 20kg/20L), kaua ki tō pēke kōwhai para. Kaua rawa e wero, e tahu rānei i tētahi kēne rehu matūriki, ahakoa kua watea.",
       keywords: "",
     },
     {
@@ -147,9 +157,9 @@ exports.seed = async function seed(knex) {
       description_mi:
         "He pātara karāhe, he ipu karāhe rānei (pātara inu, ipu ranu, ipu tiami).",
       disposal_instructions_en:
-        "Give it a rinse, remove the lid, and place the bottle or jar in your fortnightly glass recycling crate — the crate takes glass bottles and jars only. Lids are not accepted in kerbside recycling, so put them in your general rubbish.",
+        "Give it a rinse, remove the lid, and place the bottle or jar in your fortnightly glass recycling crate — the crate takes glass bottles and jars only. Lids are not accepted in kerbside recycling, so put them in your yellow rubbish bag.",
       disposal_instructions_mi:
-        "Horoia, tangohia te uwhi, ka whakauru ai i te pātara, i te ipu rānei ki tō kete karāhe hangarua e rua wiki ai — mō ngā pātara me ngā ipu karāhe anake te kete. Kāore ngā uwhi e whakaaetia ki te hangarua ā-huarahi, nō reira whakauruhia ki tō para whānui.",
+        "Horoia, tangohia te uwhi, ka whakauru ai i te pātara, i te ipu rānei ki tō kete karāhe hangarua e rua wiki ai — mō ngā pātara me ngā ipu karāhe anake te kete. Kāore ngā uwhi e whakaaetia ki te hangarua ā-huarahi, nō reira whakauruhia ki tō pēke kōwhai para.",
       keywords: "",
     },
     {
@@ -159,9 +169,9 @@ exports.seed = async function seed(knex) {
       description_mi:
         "He pātara inu kirihou (PET, HDPE rānei), pēnei i te pātara wai, i te pātara inu reka rānei.",
       disposal_instructions_en:
-        "Rinse it out and place it in your mixed recycling. Remove the lid first — lids are not accepted in kerbside recycling, so the lid goes in your general rubbish.",
+        "Rinse it out and place it in your mixed recycling. Remove the lid first — lids are not accepted in kerbside recycling, so the lid goes in your yellow rubbish bag.",
       disposal_instructions_mi:
-        "Horoia, ka whakauru ai ki tō rauemi hangarua. Tangohia te uwhi i te tuatahi — kāore ngā uwhi e whakaaetia ki te hangarua ā-huarahi, nō reira ka haere te uwhi ki tō para whānui.",
+        "Horoia, ka whakauru ai ki tō rauemi hangarua. Tangohia te uwhi i te tuatahi — kāore ngā uwhi e whakaaetia ki te hangarua ā-huarahi, nō reira ka haere te uwhi ki tō pēke kōwhai para.",
       keywords: "",
     },
     {
@@ -194,9 +204,9 @@ exports.seed = async function seed(knex) {
       description_mi:
         "He uwhi kirihou pahuka (polystyrene), pēnei i ngā pereti mīti, ngā wāhanga uwhi tiaki rānei.",
       disposal_instructions_en:
-        "Polystyrene is not accepted in kerbside recycling. Put small amounts in your general rubbish, or take it to the Southern Landfill, which accepts polystyrene directly — a car boot load or less needs no prior approval; larger, commercial quantities need approval first.",
+        "Polystyrene is not accepted in kerbside recycling. Put small amounts in your yellow rubbish bag, or take it to the Southern Landfill, which accepts polystyrene directly — a car boot load or less needs no prior approval; larger, commercial quantities need approval first.",
       disposal_instructions_mi:
-        "Kāore te kirihou pahuka (polystyrene) e whakaaetia ki te hangarua ā-huarahi. Whakauruhia he iti ki tō para whānui, kawea rānei ki te Southern Landfill, e whakaae pū ana ki te kirihou pahuka — kāore e hiahiatia he whakaaetanga mō tētahi utanga pūtu waka, iti iho rānei; me whai whakaaetanga i mua mō ngā utanga nui ake, arā, ngā utanga arumoni.",
+        "Kāore te kirihou pahuka (polystyrene) e whakaaetia ki te hangarua ā-huarahi. Whakauruhia he iti ki tō pēke kōwhai para, kawea rānei ki te Southern Landfill, e whakaae pū ana ki te kirihou pahuka — kāore e hiahiatia he whakaaetanga mō tētahi utanga pūtu waka, iti iho rānei; me whai whakaaetanga i mua mō ngā utanga nui ake, arā, ngā utanga arumoni.",
       keywords: "",
     },
     {
@@ -206,9 +216,9 @@ exports.seed = async function seed(knex) {
       description_mi:
         "He pouaka pepa mō te waiū, mō te wai hua rānei (hei tauira, Tetra Pak).",
       disposal_instructions_en:
-        "Liquid paperboard cartons are not accepted in kerbside recycling under the 2024 national kerbside standard. Put them in your general rubbish, or rinse and flatten them and take them to a specialist drop-off point (such as saveBOARD) if one is available.",
+        "Liquid paperboard cartons are not accepted in kerbside recycling under the 2024 national kerbside standard. Put them in your yellow rubbish bag, or rinse and flatten them and take them to a specialist drop-off point (such as saveBOARD) if one is available.",
       disposal_instructions_mi:
-        "Kāore ngā pouaka pepa mō te wai e whakaaetia ki te hangarua ā-huarahi i raro i te paerewa ā-motu o te tau 2024. Whakauruhia ki tō para whānui, horoia rānei, whakaparetia, ka kawe ai ki tētahi wāhi tuku motuhake (pēnei i a saveBOARD) mēnā kei reira tētahi.",
+        "Kāore ngā pouaka pepa mō te wai e whakaaetia ki te hangarua ā-huarahi i raro i te paerewa ā-motu o te tau 2024. Whakauruhia ki tō pēke kōwhai para, horoia rānei, whakaparetia, ka kawe ai ki tētahi wāhi tuku motuhake (pēnei i a saveBOARD) mēnā kei reira tētahi.",
       keywords: "",
     },
     {
@@ -218,9 +228,9 @@ exports.seed = async function seed(knex) {
       description_mi:
         "Ngā toenga kai me te para kīhini i mahue mai i te tunu kai, i ngā kai rānei.",
       disposal_instructions_en:
-        "Compost at home if you can. Wellington City Council's kerbside collection does not currently include a food scraps bin, so anything you can't compost goes in general rubbish.",
+        "Compost at home if you can. Wellington City Council's kerbside collection does not currently include a food scraps bin, so anything you can't compost goes in your yellow rubbish bag.",
       disposal_instructions_mi:
-        "Whakaputahia hei wairākau mēnā ka taea. Kāore anō te kohinga ā-huarahi a Te Kaunihera o Pōneke i whai pēke toenga kai, nō reira ko ngā mea kāore e taea te whakaputa hei wairākau ka haere ki te para whānui.",
+        "Whakaputahia hei wairākau mēnā ka taea. Kāore anō te kohinga ā-huarahi a Te Kaunihera o Pōneke i whai pēke toenga kai, nō reira ko ngā mea kāore e taea te whakaputa hei wairākau ka haere ki tō pēke kōwhai para.",
       keywords: "",
     },
     {
@@ -242,9 +252,9 @@ exports.seed = async function seed(knex) {
       description_mi:
         "He rama iti — LED, whakakā mūmura, kōrekoreko/CFL rānei.",
       disposal_instructions_en:
-        "Fluorescent and CFL bulbs contain mercury — take them to a WCC transfer station's hazardous waste facility, never your kerbside bins (WCC accepts up to 20 per household, wrapped in newspaper or their original packaging). LED and incandescent bulbs don't contain mercury and aren't on WCC's hazardous waste list, so they can go in your general rubbish.",
+        "Fluorescent and CFL bulbs contain mercury — take them to a WCC transfer station's hazardous waste facility, never your kerbside bins (WCC accepts up to 20 per household, wrapped in newspaper or their original packaging). LED and incandescent bulbs don't contain mercury and aren't on WCC's hazardous waste list, so they can go in your yellow rubbish bag.",
       disposal_instructions_mi:
-        "Kei roto i ngā rama kōrekoreko, CFL hoki he konutai — kawea ki te wāhi para mōrearea o tētahi teihana whakawhiti a WCC, kaua rawa ki ō kete ā-huarahi (ka whakaaetia e WCC te 20 mō tēnā, mō tēnā kāinga, me te takai ki te pepa niupepa, ki tōna kōpaki taketake rānei). Kāore he konutai kei roto i ngā rama LED, i ngā rama whakakā mūmura hoki, kāore anō rātou i te rārangi para mōrearea a WCC, nō reira ka taea te whakauru ki tō para whānui.",
+        "Kei roto i ngā rama kōrekoreko, CFL hoki he konutai — kawea ki te wāhi para mōrearea o tētahi teihana whakawhiti a WCC, kaua rawa ki ō kete ā-huarahi (ka whakaaetia e WCC te 20 mō tēnā, mō tēnā kāinga, me te takai ki te pepa niupepa, ki tōna kōpaki taketake rānei). Kāore he konutai kei roto i ngā rama LED, i ngā rama whakakā mūmura hoki, kāore anō rātou i te rārangi para mōrearea a WCC, nō reira ka taea te whakauru ki tō pēke kōwhai para.",
       keywords: "",
     },
     {
@@ -275,9 +285,9 @@ exports.seed = async function seed(knex) {
       description_mi:
         "He kākahu tawhito, he uwhi moenga, he kaupapa kākahu kē atu rānei.",
       disposal_instructions_en:
-        "Donate anything still wearable to an op shop. Worn-out textiles can go in your general rubbish, or a dedicated textile recycling bin where one is available.",
+        "Donate anything still wearable to an op shop. Worn-out textiles can go in your yellow rubbish bag, or a dedicated textile recycling bin where one is available.",
       disposal_instructions_mi:
-        "Tukuna ngā mea e taea tonu ana te mau ki tētahi toa hokohoko (op shop). Ka taea ngā kākahu kua ngenge te whakauru ki tō para whānui, ki tētahi pēke hangarua kākahu motuhake rānei mēnā kei reira tētahi.",
+        "Tukuna ngā mea e taea tonu ana te mau ki tētahi toa hokohoko (op shop). Ka taea ngā kākahu kua ngenge te whakauru ki tō pēke kōwhai para, ki tētahi pēke hangarua kākahu motuhake rānei mēnā kei reira tētahi.",
       keywords: "",
     },
   ]);
