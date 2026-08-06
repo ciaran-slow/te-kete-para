@@ -124,3 +124,62 @@ test("each item's own name is marked with its own language", () => {
     screen.getByRole("radio", { name: "Te Reo Māori" }),
   ).toHaveAttribute("lang", "mi");
 });
+
+test("announces the destination language's own changed-message on toggle", () => {
+  renderToggle();
+  act(() => screen.getByRole("radio", { name: "Te Reo Māori" }).click());
+  expect(
+    screen.getByText("Kua huri te reo ki te reo Māori."),
+  ).toBeInTheDocument();
+});
+
+test("announces English's own changed-message when toggling back", () => {
+  renderToggle();
+  act(() => screen.getByRole("radio", { name: "Te Reo Māori" }).click());
+  act(() => screen.getByRole("radio", { name: "English" }).click());
+  expect(
+    screen.getByText("Language changed to English."),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByText("Kua huri te reo ki te reo Māori."),
+  ).not.toBeInTheDocument();
+});
+
+test("announces nothing on mount", () => {
+  renderToggle();
+  expect(
+    screen.queryByText("Language changed to English."),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByText("Kua huri te reo ki te reo Māori."),
+  ).not.toBeInTheDocument();
+});
+
+test("clicking the already-selected language repeatedly does not (re-)announce", () => {
+  renderToggle();
+  const en = screen.getByRole("radio", { name: "English" });
+  act(() => en.click());
+  act(() => en.click());
+  act(() => en.click());
+  expect(
+    screen.queryByText("Language changed to English."),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByText("Kua huri te reo ki te reo Māori."),
+  ).not.toBeInTheDocument();
+});
+
+test("toggling there and back three times leaves exactly the latest announcement visible", () => {
+  renderToggle();
+  const en = screen.getByRole("radio", { name: "English" });
+  const mi = screen.getByRole("radio", { name: "Te Reo Māori" });
+  act(() => mi.click());
+  act(() => en.click());
+  act(() => mi.click());
+  expect(
+    screen.getByText("Kua huri te reo ki te reo Māori."),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByText("Language changed to English."),
+  ).not.toBeInTheDocument();
+});
