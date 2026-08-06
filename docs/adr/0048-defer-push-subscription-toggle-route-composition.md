@@ -1,6 +1,6 @@
 # ADR 0048: Build the push opt-in toggle now, defer composing it into a route
 
-- **Status:** accepted
+- **Status:** superseded by ADR 0058
 - **Date:** 2026-08-05
 - **Issue:** #26
 
