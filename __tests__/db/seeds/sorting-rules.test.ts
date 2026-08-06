@@ -114,7 +114,7 @@ describe("sorting_rules seed", () => {
       .where({ item_key: "coffee-cup" })
       .first("disposal_instructions_en");
     if (!coffeeCup) throw new Error("seed did not insert coffee-cup");
-    expect(coffeeCup.disposal_instructions_en).toContain("general rubbish");
+    expect(coffeeCup.disposal_instructions_en).toContain("yellow rubbish bag");
   });
 
   it("corrects the pizza-box grease myth, the polystyrene drop-off hedge, and the light-bulb overclaim (issue #70 live WCC confirmation)", async () => {
@@ -159,7 +159,7 @@ describe("sorting_rules seed", () => {
     // (mercury) -- the old text said "all bulb types" need hazardous
     // handling, which no WCC page supports for LED/incandescent.
     expect(lightBulb.disposal_instructions_en).toContain("LED");
-    expect(lightBulb.disposal_instructions_en).toContain("general rubbish");
+    expect(lightBulb.disposal_instructions_en).toContain("yellow rubbish bag");
     expect(lightBulb.disposal_instructions_en).not.toContain(
       "all bulb types",
     );
@@ -178,10 +178,12 @@ describe("sorting_rules seed", () => {
     // cans go straight to kerbside general rubbish regardless of fill state
     // -- the old text invented an empty-vs-full split sending every full can
     // to hazardous waste at a transfer station instead. If that wrong split
-    // were reinstated, "general rubbish" wouldn't cover the full-can case
+    // were reinstated, "yellow rubbish bag" wouldn't cover the full-can case
     // and "completely empty"/"still contains product" would reappear, so
-    // this assertion is falsifiable in both directions.
-    expect(aerosolCan.disposal_instructions_en).toContain("general rubbish");
+    // this assertion is falsifiable in both directions. ("Yellow rubbish
+    // bag" replaced the old wording's bare "general rubbish" per ADR 0069 --
+    // same disposal pathway, now named consistently with the rest of the app.)
+    expect(aerosolCan.disposal_instructions_en).toContain("yellow rubbish bag");
     expect(aerosolCan.disposal_instructions_en).not.toContain(
       "completely empty",
     );
@@ -201,12 +203,13 @@ describe("sorting_rules seed", () => {
     // own history of content regressions (PR #88 -> #70 -> #119) that the
     // English-only assertions above cannot catch -- e.g. reverting only
     // `disposal_instructions_mi` to the old wrong split leaves every
-    // English assertion above green. Pin the same two claims in mi: "para
-    // whānui" (general rubbish) for the general case, "para mōrearea"
-    // (hazardous waste) for the spray-paint carve-out, and reject the old
-    // wrong phrasing for "completely empty" ("kua tino watea") and "still
-    // contains product" ("kei roto tonu").
-    expect(aerosolCan.disposal_instructions_mi).toContain("para whānui");
+    // English assertion above green. Pin the same two claims in mi: "pēke
+    // kōwhai para" (yellow rubbish bag, ADR 0069 -- was "para whānui") for
+    // the general case, "para mōrearea" (hazardous waste) for the
+    // spray-paint carve-out, and reject the old wrong phrasing for
+    // "completely empty" ("kua tino watea") and "still contains product"
+    // ("kei roto tonu").
+    expect(aerosolCan.disposal_instructions_mi).toContain("pēke kōwhai para");
     expect(aerosolCan.disposal_instructions_mi).toContain("para mōrearea");
     expect(aerosolCan.disposal_instructions_mi).not.toContain(
       "kua tino watea",
