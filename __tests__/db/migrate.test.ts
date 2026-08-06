@@ -27,6 +27,13 @@ function migrationFilenames(): string[] {
     .sort();
 }
 
+function hasUniquePrefixes(filenames: string[]): boolean {
+  const prefixes = filenames.map((f) => f.slice(0, 14));
+  return new Set(prefixes).size === prefixes.length;
+}
+
+const FILENAME_CONVENTION = /^\d{14}_[a-z0-9_]+\.js$/;
+
 describe("knex migration pipeline", () => {
   let db: ReturnType<typeof Knex> | undefined;
 
@@ -78,5 +85,54 @@ describe("knex migration pipeline", () => {
     db = Knex(knexConfigs.test);
     await db.migrate.latest();
     await expect(db.seed.run()).resolves.toBeDefined();
+  });
+});
+
+describe("migration filename conventions", () => {
+  it("has no two migration files sharing a 14-digit timestamp prefix", () => {
+    expect(hasUniquePrefixes(migrationFilenames())).toBe(true);
+  });
+
+  it("every migration filename matches <14-digit timestamp>_<snake_case>.js", () => {
+    for (const filename of migrationFilenames()) {
+      expect(filename).toMatch(FILENAME_CONVENTION);
+    }
+  });
+
+  // Proves the check above is not vacuous: it must actually go red on the
+  // exact collision #149 fixed (two files both prefixed 20260803120000),
+  // and green once one of them is retimestamped.
+  it("detects a duplicate timestamp prefix", () => {
+    expect(
+      hasUniquePrefixes([
+        "20260803120000_add_keywords_to_sorting_rules.js",
+        "20260803120000_widen_push_subscriptions_endpoint_to_text.js",
+      ]),
+    ).toBe(false);
+    expect(
+      hasUniquePrefixes([
+        "20260803120000_add_keywords_to_sorting_rules.js",
+        "20260803120001_widen_push_subscriptions_endpoint_to_text.js",
+      ]),
+    ).toBe(true);
+  });
+
+  // Proves the convention regex actually rejects malformed shapes, not just
+  // accepts today's real filenames.
+  it("rejects filenames that don't match the convention", () => {
+    const malformed = [
+      "2026080312000_a.js", // 13-digit prefix
+      "202608031200000_a.js", // 15-digit prefix
+      "20260803120000-a.js", // hyphen instead of underscore
+      "20260803120000_A.js", // uppercase in the name segment
+      "20260803120000_a.ts", // wrong extension
+      "20260803120000_.js", // empty name segment
+    ];
+    for (const filename of malformed) {
+      expect(filename).not.toMatch(FILENAME_CONVENTION);
+    }
+    expect("20260803120000_add_keywords_to_sorting_rules.js").toMatch(
+      FILENAME_CONVENTION,
+    );
   });
 });
