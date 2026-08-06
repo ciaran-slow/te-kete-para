@@ -40,7 +40,6 @@ export interface ScheduleDisplayProps {
 }
 
 const BIN_TYPE_KEYS: Record<WasteBinType, TranslationKey> = {
-  "general-rubbish": "schedule.binType.generalRubbish",
   "glass-recycling": "schedule.binType.glassRecycling",
   "mixed-recycling": "schedule.binType.mixedRecycling",
   "yellow-bag-rubbish": "schedule.binType.yellowBagRubbish",
@@ -48,17 +47,15 @@ const BIN_TYPE_KEYS: Record<WasteBinType, TranslationKey> = {
 };
 
 /**
- * "yellow-bag-rubbish" is the one bin type that's a literal yellow bag
- * (inner-city night collection, rules.ts); every other type — including
- * "general-rubbish", a suburban wheelie bin — isn't, so only this one gets
- * kōwhai theming (vision.md's amber accent is scoped to "yellow bag
- * alerts" specifically, not routine rubbish of any kind). Dark text on a
- * tinted fill, not kōwhai-coloured text — same pairing shift-alert-banner.tsx
- * already uses, since kōwhai itself doesn't clear body-text contrast at
- * this size against a light fill.
+ * "yellow-bag-rubbish" is WCC's official rubbish bag — the same container
+ * city-wide, suburban and inner-city alike (ADR 0069) — so it's the only
+ * bin type that gets kōwhai theming (vision.md's amber accent is scoped to
+ * "yellow bag alerts"); the recycling/cardboard types stay neutral. Dark
+ * text on a tinted fill, not kōwhai-coloured text — same pairing
+ * shift-alert-banner.tsx already uses, since kōwhai itself doesn't clear
+ * body-text contrast at this size against a light fill.
  */
 const BIN_TYPE_PILL_CLASS: Record<WasteBinType, string> = {
-  "general-rubbish": "bg-moana/10 text-moana",
   "glass-recycling": "bg-moana/10 text-moana",
   "mixed-recycling": "bg-moana/10 text-moana",
   "yellow-bag-rubbish": "bg-kowhai/20 text-papa-ink",

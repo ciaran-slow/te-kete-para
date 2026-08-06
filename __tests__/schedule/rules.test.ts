@@ -37,7 +37,7 @@ describe("computeCollectionRuleSet", () => {
       throw new Error("expected a suburban rule set");
     }
     expect(result.recyclingType).toBe("glass");
-    expect(result.binTypes).toEqual(["general-rubbish", "glass-recycling"]);
+    expect(result.binTypes).toEqual(["yellow-bag-rubbish", "glass-recycling"]);
   });
 
   test("suburban zone one week after the epoch alternates to a mixed week", () => {
@@ -50,7 +50,7 @@ describe("computeCollectionRuleSet", () => {
       throw new Error("expected a suburban rule set");
     }
     expect(result.recyclingType).toBe("mixed");
-    expect(result.binTypes).toEqual(["general-rubbish", "mixed-recycling"]);
+    expect(result.binTypes).toEqual(["yellow-bag-rubbish", "mixed-recycling"]);
   });
 
   test("the alternating-week boundary flips between Sunday day 7 and Monday day 8", () => {
@@ -203,7 +203,7 @@ describe("computeCollectionRuleSet", () => {
       SUBURBAN,
       new Date(Date.UTC(2026, 0, 12)),
     );
-    expect(resultC.binTypes).toEqual(["general-rubbish", "glass-recycling"]);
+    expect(resultC.binTypes).toEqual(["yellow-bag-rubbish", "glass-recycling"]);
   });
 
   test("a Calendar 2 suburban zone is the exact inverse of Calendar 1 on the same dates", () => {
