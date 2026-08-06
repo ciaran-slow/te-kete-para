@@ -23,7 +23,10 @@ import {
  * `ShiftAlertBanner`, and `ScheduleDisplay` all read this same `selected`
  * value. `PushSubscriptionToggle` only renders once `selected` is non-null —
  * unlike its siblings it has no honest "no address" state, and an
- * `addressId`-less subscription can never be delivered to (ADR 0058).
+ * `addressId`-less subscription can never be delivered to (ADR 0058). Once
+ * selected, it's grouped into the same bordered card as `ScheduleDisplay`
+ * (rather than left a disconnected sibling) so the notification opt-in
+ * reads as "manage alerts for this collection," not an unrelated control.
  */
 export function AddressSchedule() {
   const rawCachedAddress = useSyncExternalStore(
@@ -36,13 +39,21 @@ export function AddressSchedule() {
     [rawCachedAddress],
   );
 
+  const schedule = <ScheduleDisplay address={selected} />;
+
   return (
     <div className="flex w-full max-w-md flex-col items-stretch gap-4">
       <AddressSearch onSelect={writeCachedAddress} />
       <ShiftAlertBanner address={selected} />
-      <ScheduleDisplay address={selected} />
-      {selected !== null && (
-        <PushSubscriptionToggle addressId={selected.id} />
+      {selected === null ? (
+        schedule
+      ) : (
+        <div className="flex flex-col gap-4 rounded-lg border border-moana/20 p-5">
+          {schedule}
+          <div className="border-t border-moana/10 pt-4">
+            <PushSubscriptionToggle addressId={selected.id} />
+          </div>
+        </div>
       )}
     </div>
   );
