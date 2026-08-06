@@ -62,6 +62,7 @@ async function typeAndSettle(value: string) {
 
 beforeEach(() => {
   vi.useFakeTimers();
+  Element.prototype.scrollIntoView = vi.fn();
 });
 
 afterEach(() => {
@@ -152,7 +153,7 @@ describe("AddressSearch", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  test("ArrowDown/ArrowUp move the active descendant without moving DOM focus off the input", async () => {
+  test("ArrowDown/ArrowUp move the active descendant, scrolling the newly active option into view, without moving DOM focus off the input", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue(jsonResponse({ results: [CUBA_MALL, CUBA_STREET] })),
@@ -161,27 +162,68 @@ describe("AddressSearch", () => {
     await typeAndSettle("cuba");
     const field = input();
     act(() => field.focus());
+    const scrollSpy = vi.mocked(Element.prototype.scrollIntoView);
 
     fireEvent.keyDown(field, { key: "ArrowDown" });
     const options = screen.getAllByRole("option");
     expect(options[0]).toHaveAttribute("aria-selected", "true");
     expect(field).toHaveAttribute("aria-activedescendant", options[0]!.id);
     expect(document.activeElement).toBe(field);
+    expect(scrollSpy).toHaveBeenCalledTimes(1);
+    expect(scrollSpy.mock.contexts[0]).toBe(options[0]);
+    expect(scrollSpy).toHaveBeenLastCalledWith({ block: "nearest" });
 
     fireEvent.keyDown(field, { key: "ArrowDown" });
     expect(options[1]).toHaveAttribute("aria-selected", "true");
     expect(document.activeElement).toBe(field);
+    expect(scrollSpy).toHaveBeenCalledTimes(2);
+    expect(scrollSpy.mock.contexts[1]).toBe(options[1]);
 
-    // Clamps at the last option rather than wrapping.
+    // Clamps at the last option rather than wrapping — and, since activeIndex
+    // does not actually change, must not call scrollIntoView a third time.
     fireEvent.keyDown(field, { key: "ArrowDown" });
     expect(options[1]).toHaveAttribute("aria-selected", "true");
+    expect(scrollSpy).toHaveBeenCalledTimes(2);
 
     fireEvent.keyDown(field, { key: "ArrowUp" });
     expect(options[0]).toHaveAttribute("aria-selected", "true");
+    expect(scrollSpy).toHaveBeenCalledTimes(3);
+    expect(scrollSpy.mock.contexts[2]).toBe(options[0]);
 
-    // Clamps at the first option.
+    // Clamps at the first option — no fourth call.
     fireEvent.keyDown(field, { key: "ArrowUp" });
     expect(options[0]).toHaveAttribute("aria-selected", "true");
+    expect(scrollSpy).toHaveBeenCalledTimes(3);
+  });
+
+  test("does not call scrollIntoView when there is no active option: on open, after selecting, and after a new query resets it", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(jsonResponse({ results: [CUBA_MALL, CUBA_STREET] })),
+    );
+    const onSelect = vi.fn();
+    renderSearch({ onSelect });
+    await typeAndSettle("cuba");
+    const scrollSpy = vi.mocked(Element.prototype.scrollIntoView);
+    expect(scrollSpy).not.toHaveBeenCalled();
+
+    fireEvent.keyDown(input(), { key: "ArrowDown" });
+    expect(scrollSpy).toHaveBeenCalledTimes(1);
+
+    fireEvent.mouseDown(screen.getAllByRole("option")[0]!);
+    fireEvent.click(screen.getAllByRole("option")[0]!);
+    expect(onSelect).toHaveBeenCalledExactlyOnceWith(CUBA_MALL);
+    expect(scrollSpy).toHaveBeenCalledTimes(1); // selecting resets activeIndex to -1, no extra call
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(jsonResponse({ results: [CUBA_MALL, CUBA_STREET] })),
+    );
+    await typeAndSettle("cuba");
+    fireEvent.keyDown(input(), { key: "ArrowDown" });
+    expect(scrollSpy).toHaveBeenCalledTimes(2);
+    fireEvent.change(input(), { target: { value: "cubab" } }); // new query resets active index
+    expect(scrollSpy).toHaveBeenCalledTimes(2); // still no extra call on the reset itself
   });
 
   test("Enter selects the active option", async () => {
