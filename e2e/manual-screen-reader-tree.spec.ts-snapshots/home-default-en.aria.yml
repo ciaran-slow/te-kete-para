@@ -12,7 +12,7 @@
   - paragraph
   - paragraph: Search for your address above to see your next collection.
   - separator
-  - heading "What is this?" [level=2]
+  - heading "What Goes Where?" [level=2]
   - text: Search for a household item
   - textbox "Search for a household item":
     - /placeholder: e.g. pizza box
