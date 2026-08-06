@@ -4,8 +4,7 @@ Supersedes `docs/prd0.md` (PRD v0.2). Written by re-comparing `docs/vision.md` a
 
 ## 0. What changed from v0.2, and why
 
-* **FR-03 returns to full ambition.** v0.2 (ADR 0065) explicitly downgraded the WCAG AAA claim to "automated checks only" for prototype speed, citing no time budget and no assignee. That constraint no longer holds for v1 — this document restores a completed human-operated AT pass as a real, scheduled requirement.
-* **FR-05 stays an accepted trade-off, deliberately.** v0.2 (ADR 0064) shipped the sorting search's Te Reo Māori text as an unreviewed machine draft because no fluent-speaker reviewer was available. That constraint has not changed — sourcing one still isn't something this team can facilitate right now. Rather than restore an ambition this document can't actually back, FR-05 is carried forward as-is: the accepted risk stays recorded and visible, not quietly re-promised.
+* **FR-03 and FR-05 both stay accepted trade-offs, deliberately — neither is a near-term concern.** v0.2 downgraded the WCAG AAA claim to automated-checks-only (ADR 0065) and shipped the sorting search's Te Reo Māori text as an unreviewed machine draft (ADR 0064), in both cases because a human reviewer (screen-reader tester; fluent Te Reo speaker) wasn't available. Neither constraint has changed, and — explicitly, not just for now — neither is expected to for the foreseeable future; this is a standing product decision for this prototype, not a gap waiting to be scheduled. Both stay carried forward as-is: the accepted risk stays recorded and visible, not re-promised, re-scheduled, or treated as pending.
 * **Two vision.md features that were never scoped at all** are added as new requirements: FR-06 (kaitiakitanga micro-copy) and FR-07 (weather-triggered shift alerts). Neither was cut deliberately — they simply never made it from `vision.md` §2 and §4B into `prd0.md`'s FR list, and so were never built, never filed as an issue, and never showed up in any review. Confirmed absent via direct code search, not assumption.
 * **The two PRD success metrics that were never measurable** (push delivery success rate, onboarding time) get a real NFR instead of remaining aspirational prose with no instrumentation behind them.
 * **A third vision.md-traceable gap, found the same way as FR-06/FR-07:** vision.md's own opening line — "ensuring that **all Wellingtonians**... can effortlessly track their local rubbish schedule" — implies real address coverage. `db/seeds/01_addresses.js` seeds 17 curated streets. FR-02 was marked "Done" in v0.2 without data completeness ever being part of its acceptance bar, so this gap was never flagged. Added as **FR-08**.
@@ -20,7 +19,7 @@ Supersedes `docs/prd0.md` (PRD v0.2). Written by re-comparing `docs/vision.md` a
 * **Success Metrics:**
   * Zero-friction onboarding (<30 seconds to find schedule) — **now instrumented**, see NFR-04.
   * 90%+ push notification delivery success rate — **now instrumented**, see NFR-04. (The dispatch pipeline itself already retries, alerts, and prunes dead subscriptions per-attempt — ADR 0057, ADR 0061 — but nothing today reports an aggregate delivery-success percentage anywhere a human can check it.)
-  * 100% pass rate on automated WCAG 2.2 AAA checks (axe-core), **plus a completed human-operated assistive-technology pass** — see FR-03.
+  * 100% pass rate on automated WCAG 2.2 AAA checks (axe-core) — unchanged from v0.2; a human-operated assistive-technology pass is explicitly not part of this metric, see FR-03.
   * **>90% test code coverage** enforced via Vitest — unchanged, already enforced (currently 98.2%/99.2%).
 
 ---
@@ -44,11 +43,10 @@ Unchanged from v0.2:
 ### FR-02: Address & Collection Zone Finder — *Shipped, carried forward*
 * **Status:** Done. No change from v0.2.
 
-### FR-03: WCAG 2.2 AAA Accessibility Compliance — *Restored to full ambition*
-* **Requirement:** All components must adhere strictly to WCAG 2.2 AAA guidelines, **verified by both automated tooling and a completed human-operated pass** with real VoiceOver (iOS), TalkBack (Android), and NVDA or JAWS, per `docs/qa/screen-reader-checklist.md`.
-* **Why this is back in scope for v1:** ADR 0065 downgraded this deliberately for the prototype, citing no time budget and no assignee. v1 is the point where that budget needs to actually exist — re-open issue #65 (currently closed as out-of-scope-for-prototype) with an owner and a date, not just a wish.
-* **TDD Strategy:** Automated suite (axe-core, existing) stays as the CI gate; the human pass is a one-time QA milestone, not a new automated gate — record results in a dated `docs/qa/screen-reader-pass-<date>.md` per the existing checklist format, and file issues for any findings.
-* **Acceptance:** #65 closed with an actual dated pass log, not as won't-fix.
+### FR-03: WCAG 2.2 AAA Accessibility Compliance — *Accepted trade-off, carried forward*
+* **Requirement:** Unchanged from v0.2: automated WCAG 2.2 AAA compliance (axe-core in CI and Vitest, plus the computed-accessibility-tree snapshot proxy, ADR 0024).
+* **Status:** Done, with a known, recorded gap — a human-operated pass with real VoiceOver, TalkBack, and NVDA/JAWS (ADR 0065) is not part of this app's current scope. This is not restored to full ambition in v1: it is not a near-term concern for this prototype, now or on any particular horizon, and this document does not commit to a date it can't back.
+* **Carried, not dropped:** the gap stays named here so it does not quietly disappear from view. Issue #65 stays closed as out-of-scope-for-prototype — this is a standing product decision, not a pending item waiting on availability.
 
 ### FR-04: Smart "Night-Before" Push Notifications — *Shipped, carried forward*
 * **Status:** Done — cron-triggered, retried with backoff, alerted on failure, prunes dead subscriptions, re-syncs on address change, displays via service worker. No change from v0.2.
@@ -56,7 +54,7 @@ Unchanged from v0.2:
 ### FR-05: The "He Aha Tēnei?" Sorting Search — *Accepted trade-off, carried forward*
 * **Requirement:** Unchanged from v0.2: a searchable index of common household waste items mapped directly to WCC disposal regulations, localized in English and Te Reo Māori.
 * **Status:** Done, with a known, recorded gap — the Te Reo Māori text (`db/seeds/02_sorting_rules.js`, all 30 `_mi` fields) is a machine draft, never reviewed by a fluent speaker (ADR 0064). This is not restored to full ambition in v1: sourcing a fluent-speaker reviewer is not something this team can facilitate right now, and this document does not commit to a date it can't back.
-* **Carried, not dropped:** this is a live, real gap affecting PRD persona 3 (navigates entirely in Te Reo Māori). It stays named here specifically so it does not quietly disappear from view — re-open issue #69 the moment a reviewer genuinely becomes available; there is no code or planning work blocking that, only availability.
+* **Carried, not dropped:** this is a real gap affecting PRD persona 3 (navigates entirely in Te Reo Māori). It stays named here specifically so it does not quietly disappear from view. Issue #69 stays closed as won't-fix-for-prototype — this is a standing product decision, not a pending item waiting on reviewer availability.
 
 ### FR-06: Kaitiakitanga Micro-Copy — *New, never previously scoped*
 * **Requirement:** Positive-reinforcement micro-copy highlighting environmental guardianship (*kaitiakitanga*) surfaces when a user successfully completes a recycling action or correctly identifies a sorting item — per `vision.md` §2, "Karakia / Kaitiakitanga Micro-Copy."
@@ -107,5 +105,6 @@ Strict TDD; Vitest + CI; merges blocked below 90% coverage. Already enforced via
 Explicitly not requirements of this document — do not infer them from adjacent items:
 
 * Re-litigating any decision recorded in an existing accepted ADR that isn't named above (e.g. the recycling-week epoch anchor, ADR 0042; the dispatcher's per-address gating on `collection_weekday`, tracked separately as issue #144).
+* A human-operated WCAG screen-reader pass (FR-03) and a fluent Te Reo Māori speaker review of the sorting-search content (FR-05) — both are explicitly not a near-term concern for this prototype, not on any particular horizon. A future PRD pass should not restore either to active scope without a genuine change in circumstances (e.g. this app leaving prototype status entirely).
 * New locales beyond English/Te Reo Māori.
 * Native mobile apps — this remains a PWA by design (vision.md §5).
