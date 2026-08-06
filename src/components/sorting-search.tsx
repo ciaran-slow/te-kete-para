@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { X } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/language-provider";
 import {
   getSpeechRecognitionConstructor,
@@ -50,10 +51,12 @@ export function SortingSearch() {
   const [status, setStatus] = useState<Status>("idle");
   const [isListening, setIsListening] = useState(false);
   const [voiceError, setVoiceError] = useState(false);
+  const [dismissedKaitiakitanga, setDismissedKaitiakitanga] = useState(false);
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const controllerRef = useRef<AbortController | undefined>(undefined);
   const recognitionRef = useRef<SpeechRecognition | undefined>(undefined);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Unmount only: cancel whatever debounce/request/recognition is still
   // outstanding.
@@ -99,6 +102,7 @@ export function SortingSearch() {
    * keystroke stream.
    */
   function runSearch(trimmed: string, immediate = false) {
+    setDismissedKaitiakitanga(false);
     setResults([]);
     setStatus("loading");
     if (immediate) {
@@ -189,6 +193,12 @@ export function SortingSearch() {
   };
   const isVisibleStatus =
     status === "loading" || status === "empty" || status === "error";
+  const showKaitiakitanga = status === "done" && !dismissedKaitiakitanga;
+
+  function dismissKaitiakitanga() {
+    setDismissedKaitiakitanga(true);
+    inputRef.current?.focus();
+  }
 
   return (
     <div className="w-full max-w-md">
@@ -201,6 +211,7 @@ export function SortingSearch() {
       <div className="flex gap-2">
         <input
           id={inputId}
+          ref={inputRef}
           type="text"
           autoComplete="off"
           placeholder={t("sortingSearch.placeholder")}
@@ -251,6 +262,29 @@ export function SortingSearch() {
         className={voiceError ? "mt-1 text-sm text-papa-ink" : "sr-only"}
       >
         {voiceError ? t("sortingSearch.voice.error") : ""}
+      </StatusRegion>
+      <StatusRegion
+        as="div"
+        atomic
+        className={
+          showKaitiakitanga
+            ? "mt-2 flex items-start justify-between gap-3 rounded-md border-2 border-kakariki bg-kakariki/10 px-4 py-3 text-sm font-medium text-papa-ink"
+            : "sr-only"
+        }
+      >
+        {showKaitiakitanga && (
+          <>
+            <p className="flex-1">{t("sortingSearch.kaitiakitanga.message")}</p>
+            <button
+              type="button"
+              onClick={dismissKaitiakitanga}
+              aria-label={t("sortingSearch.kaitiakitanga.dismiss")}
+              className="touch-target focus-ring shrink-0 rounded-md text-kakariki"
+            >
+              <X aria-hidden="true" focusable="false" className="mx-auto h-5 w-5" />
+            </button>
+          </>
+        )}
       </StatusRegion>
       <ul
         aria-label={t("sortingSearch.resultsLabel")}
