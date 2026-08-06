@@ -30,7 +30,10 @@ function keyFor(request: { url: string } | string): string {
   return new URL(request.url).pathname;
 }
 
-function createFakeCaches(existingCacheNames: string[] = []) {
+function createFakeCaches(
+  existingCacheNames: string[] = [],
+  failingUrls: string[] = [],
+) {
   const stores = new Map<string, Map<string, unknown>>();
   for (const name of existingCacheNames) stores.set(name, new Map());
 
@@ -40,8 +43,11 @@ function createFakeCaches(existingCacheNames: string[] = []) {
       if (!stores.has(name)) stores.set(name, new Map());
       const store = stores.get(name)!;
       return {
-        async addAll(urls: string[]) {
-          for (const url of urls) store.set(url, { __cached: url });
+        async add(url: string) {
+          if (failingUrls.includes(url)) {
+            throw new Error(`failed to fetch ${url}`);
+          }
+          store.set(url, { __cached: url });
         },
         async match(request: { url: string } | string) {
           return store.get(keyFor(request));
@@ -69,10 +75,11 @@ type FakeCaches = ReturnType<typeof createFakeCaches>;
 function createContext(options: {
   fetchImpl?: (...args: unknown[]) => Promise<unknown>;
   cacheNames?: string[];
+  failingUrls?: string[];
   windowClients?: Array<{ focus: () => Promise<unknown> }>;
 } = {}) {
   const listeners: Record<string, (event: unknown) => void> = {};
-  const caches = createFakeCaches(options.cacheNames);
+  const caches = createFakeCaches(options.cacheNames, options.failingUrls);
   const deleteSpy = vi.fn(caches.delete.bind(caches));
   (caches as FakeCaches & { delete: typeof deleteSpy }).delete = deleteSpy;
 
@@ -173,6 +180,49 @@ describe("install", () => {
     const second = await runInstall();
     expect(second).toEqual(first);
     expect(second).toEqual(PRECACHE_URLS);
+  });
+
+  test("one failing precache URL does not prevent the other four from being cached", async () => {
+    const { listeners, caches } = createContext({ failingUrls: ["/favicon.ico"] });
+    const { event, getPromise } = makeLifecycleEvent();
+
+    listeners.install(event);
+    await getPromise();
+
+    const store = caches.stores.get("tkp-shell-v1");
+    expect(store).toBeDefined();
+    expect([...store!.keys()]).toEqual(
+      PRECACHE_URLS.filter((url) => url !== "/favicon.ico"),
+    );
+  });
+
+  test("logs the failure for the specific URL that failed to precache", async () => {
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const { listeners } = createContext({ failingUrls: ["/favicon.ico"] });
+    const { event, getPromise } = makeLifecycleEvent();
+
+    listeners.install(event);
+    await getPromise();
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      "[sw] precache failed for /favicon.ico",
+      expect.any(Error),
+    );
+  });
+
+  test("run twice with the same URL failing each time yields the identical (missing-one) precache list both times", async () => {
+    const { listeners, caches } = createContext({ failingUrls: ["/favicon.ico"] });
+    const expected = PRECACHE_URLS.filter((url) => url !== "/favicon.ico");
+
+    const runInstall = async () => {
+      const { event, getPromise } = makeLifecycleEvent();
+      listeners.install(event);
+      await getPromise();
+      return [...caches.stores.get("tkp-shell-v1")!.keys()];
+    };
+
+    expect(await runInstall()).toEqual(expected);
+    expect(await runInstall()).toEqual(expected);
   });
 });
 
