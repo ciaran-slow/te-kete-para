@@ -62,7 +62,6 @@ export interface SuburbanRuleSet {
   zone: string;
   binTypes: WasteBinType[];
   timeWindow: TimeWindow;
-  isRecyclingWeek: boolean;
   recyclingType: "glass" | "mixed";
 }
 
@@ -156,7 +155,6 @@ export function computeCollectionRuleSet(
     zone: zone.zone,
     binTypes,
     timeWindow: { start: "07:00", end: null },
-    isRecyclingWeek: true,
     recyclingType,
   };
 }

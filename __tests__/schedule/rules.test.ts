@@ -36,7 +36,6 @@ describe("computeCollectionRuleSet", () => {
     if (result.collectionType !== "suburban-kerbside") {
       throw new Error("expected a suburban rule set");
     }
-    expect(result.isRecyclingWeek).toBe(true);
     expect(result.recyclingType).toBe("glass");
     expect(result.binTypes).toEqual(["general-rubbish", "glass-recycling"]);
   });
