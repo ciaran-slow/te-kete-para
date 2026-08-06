@@ -149,7 +149,7 @@ describe("ScheduleDisplay", () => {
     const items = screen.getAllByRole("listitem");
     expect(items.map((li) => li.textContent)).toEqual([
       "Yellow rubbish bag",
-      "Mixed recycling (paper, plastic, metal)",
+      "Clear bag recycling (paper, cardboard, plastic, cans)",
     ]);
     expect(screen.queryByText("Glass recycling crate")).not.toBeInTheDocument();
 
@@ -174,7 +174,7 @@ describe("ScheduleDisplay", () => {
       "Glass recycling crate",
     ]);
     expect(
-      screen.queryByText("Mixed recycling (paper, plastic, metal)"),
+      screen.queryByText("Clear bag recycling (paper, cardboard, plastic, cans)"),
     ).not.toBeInTheDocument();
   });
 
