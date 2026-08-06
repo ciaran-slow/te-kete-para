@@ -125,48 +125,42 @@ test("each item's own name is marked with its own language", () => {
   ).toHaveAttribute("lang", "mi");
 });
 
-test("announces the destination language's own changed-message on toggle", () => {
+test("announces the destination language's own changed-message on toggle, through a polite, visually-hidden live region", () => {
   renderToggle();
   act(() => screen.getByRole("radio", { name: "Te Reo Māori" }).click());
-  expect(
-    screen.getByText("Kua huri te reo ki te reo Māori."),
-  ).toBeInTheDocument();
+  const announcement = screen.getByText("Kua huri te reo ki te reo Māori.");
+  expect(announcement).toHaveAttribute("aria-live", "polite");
+  expect(announcement.className).toContain("sr-only");
 });
 
 test("announces English's own changed-message when toggling back", () => {
   renderToggle();
   act(() => screen.getByRole("radio", { name: "Te Reo Māori" }).click());
   act(() => screen.getByRole("radio", { name: "English" }).click());
-  expect(
-    screen.getByText("Language changed to English."),
-  ).toBeInTheDocument();
+  const announcement = screen.getByText("Language changed to English.");
+  expect(announcement).toHaveAttribute("aria-live", "polite");
+  expect(announcement.className).toContain("sr-only");
   expect(
     screen.queryByText("Kua huri te reo ki te reo Māori."),
   ).not.toBeInTheDocument();
 });
 
-test("announces nothing on mount", () => {
-  renderToggle();
-  expect(
-    screen.queryByText("Language changed to English."),
-  ).not.toBeInTheDocument();
-  expect(
-    screen.queryByText("Kua huri te reo ki te reo Māori."),
-  ).not.toBeInTheDocument();
+test("announces nothing on mount, but the live region is already mounted so a later change is announced", () => {
+  const { container } = renderToggle();
+  const liveRegion = container.querySelector("[aria-live]");
+  expect(liveRegion).not.toBeNull();
+  expect(liveRegion).toHaveAttribute("aria-live", "polite");
+  expect(liveRegion?.className).toContain("sr-only");
+  expect(liveRegion?.textContent).toBe("");
 });
 
 test("clicking the already-selected language repeatedly does not (re-)announce", () => {
-  renderToggle();
+  const { container } = renderToggle();
   const en = screen.getByRole("radio", { name: "English" });
   act(() => en.click());
   act(() => en.click());
   act(() => en.click());
-  expect(
-    screen.queryByText("Language changed to English."),
-  ).not.toBeInTheDocument();
-  expect(
-    screen.queryByText("Kua huri te reo ki te reo Māori."),
-  ).not.toBeInTheDocument();
+  expect(container.querySelector("[aria-live]")?.textContent).toBe("");
 });
 
 test("toggling there and back three times leaves exactly the latest announcement visible", () => {
