@@ -133,35 +133,52 @@ export function ScheduleDisplay({ address, now }: ScheduleDisplayProps) {
       headingId={ruleSet ? headingId : undefined}
       className="w-full max-w-md text-left text-papa-ink"
     >
-      {schedule === null && <p>{t("schedule.noAddressSelected")}</p>}
+      {schedule === null && (
+        <p className="text-papa-ink/70">{t("schedule.noAddressSelected")}</p>
+      )}
       {schedule !== null && ruleSet === null && schedule.unresolvedCalendarGroup && (
-        <p>{t("schedule.calendarGroupUnconfirmed")}</p>
+        <p className="text-papa-ink/70">
+          {t("schedule.calendarGroupUnconfirmed")}
+        </p>
       )}
       {schedule !== null && ruleSet === null && !schedule.unresolvedCalendarGroup && (
-        <p>{t("schedule.error")}</p>
+        <p className="text-papa-ink/70">{t("schedule.error")}</p>
       )}
       {schedule !== null && ruleSet !== null && (
-        <>
+        <div className="flex flex-col gap-4">
           <h2
             id={headingId}
             className="font-heading text-lg font-semibold text-moana"
           >
             {t("schedule.heading")}
           </h2>
-          <p>
-            <span className="font-medium">{t("schedule.dateLabel")}: </span>
-            {formatUtcCalendarDate(schedule.collectionDateUtc)}
-          </p>
           <div>
-            <p className="font-medium">{t("schedule.binsHeading")}</p>
-            <ul>
+            <p className="text-xs font-medium uppercase tracking-wide text-papa-ink/70">
+              {t("schedule.dateLabel")}
+            </p>
+            <p className="text-2xl font-bold">
+              {formatUtcCalendarDate(schedule.collectionDateUtc)}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wide text-papa-ink/70">
+              {t("schedule.binsHeading")}
+            </p>
+            <ul className="mt-1 flex flex-wrap gap-2">
               {ruleSet.binTypes.map((binType) => (
-                <li key={binType}>{t(BIN_TYPE_KEYS[binType])}</li>
+                <li
+                  key={binType}
+                  className="rounded-full bg-moana/10 px-3 py-1 text-sm font-medium text-moana"
+                >
+                  {t(BIN_TYPE_KEYS[binType])}
+                </li>
               ))}
             </ul>
           </div>
-          <p>{formatTimeWindowLabel(t, ruleSet.timeWindow)}</p>
-        </>
+          <p className="text-sm text-papa-ink/70">
+            {formatTimeWindowLabel(t, ruleSet.timeWindow)}
+          </p>
+        </div>
       )}
     </StatusRegion>
   );
