@@ -26,8 +26,6 @@ export interface SuburbSearchResult {
   collectionWeekday: Weekday | null;
 }
 
-export { escapeLikePattern } from "@/lib/api/escape-like-pattern";
-
 /**
  * Maps a raw `addresses` row to the API's camelCase contract (ADR 0013).
  * `Boolean(...)` closes the gap where knex's sqlite3 dialect returns
