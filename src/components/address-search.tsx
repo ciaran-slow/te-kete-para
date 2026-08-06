@@ -53,6 +53,7 @@ export function AddressSearch({ onSelect }: AddressSearchProps) {
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const controllerRef = useRef<AbortController | undefined>(undefined);
+  const activeOptionRef = useRef<HTMLLIElement | null>(null);
 
   // Unmount only: cancel whatever debounce/request is still outstanding.
   useEffect(() => {
@@ -178,6 +179,15 @@ export function AddressSearch({ onSelect }: AddressSearchProps) {
     isOpen && (status === "loading" || status === "empty" || status === "error");
   const activeOption = activeIndex >= 0 ? results[activeIndex] : undefined;
 
+  // Keeps the highlighted option visible: mainly future-proofing for once
+  // the listbox gains a height constraint, but "nearest" already walks up
+  // to the document today (the `<ul>` itself has no scroll container), so
+  // arrowing past the fold can scroll the page even now.
+  useEffect(() => {
+    if (!activeOption) return;
+    activeOptionRef.current?.scrollIntoView({ block: "nearest" });
+  }, [activeOption]);
+
   return (
     <div className="relative w-full max-w-md">
       <label htmlFor={inputId} className="mb-1 block text-sm font-medium text-papa-ink">
@@ -215,6 +225,7 @@ export function AddressSearch({ onSelect }: AddressSearchProps) {
           <li
             key={result.id}
             id={optionId(result)}
+            ref={index === activeIndex ? activeOptionRef : undefined}
             role="option"
             aria-selected={index === activeIndex}
             onMouseDown={(event) => event.preventDefault()}
