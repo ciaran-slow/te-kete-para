@@ -58,7 +58,7 @@ test("the schedule panel prompts for an address by default", () => {
   renderPage();
   expect(
     screen.getByText(
-      "Search for your address above to see today's collection.",
+      "Search for your address above to see your next collection.",
     ),
   ).toBeInTheDocument();
 });
@@ -68,7 +68,7 @@ test("a stored Te Reo preference renders the Te Reo schedule prompt", () => {
   renderPage();
   expect(
     screen.getByText(
-      "Rapua tō wāhitau i runga ake nei kia kite i te kohinga o tēnei rā.",
+      "Rapua tō wāhitau i runga ake nei kia kite i tō kohinga e whai ake nei.",
     ),
   ).toBeInTheDocument();
 });
@@ -158,6 +158,7 @@ const KARORI: SuburbSearchResult = {
   zone: "SUBURBAN-WEST",
   isInnerCityNightCollection: false,
   recyclingCalendarGroup: 1,
+  collectionWeekday: 3,
 };
 
 function jsonResponse(body: unknown) {
@@ -184,7 +185,7 @@ test("selecting an address fetches GET /api/holidays in addition to rendering to
   const option = await screen.findByRole("option", { name: /Karori Road/ });
   fireEvent.click(option);
 
-  await screen.findByRole("heading", { name: "Today's collection" });
+  await screen.findByRole("heading", { name: "Your next collection" });
   expect(fetchMock).toHaveBeenCalledWith(
     "/api/holidays",
     expect.anything(),

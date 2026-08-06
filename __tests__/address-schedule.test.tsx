@@ -9,6 +9,8 @@ import {
 } from "../src/lib/schedule/address-cache";
 import { expectNoA11yViolations } from "./helpers/a11y";
 
+// collectionWeekday: 1 (Monday) matches GLASS_WEEK_MONDAY below, so today
+// already IS this address's confirmed collection day in every test here.
 const SUBURBAN_ADDRESS: SuburbSearchResult = {
   id: 10,
   streetName: "Karori Road",
@@ -16,6 +18,7 @@ const SUBURBAN_ADDRESS: SuburbSearchResult = {
   zone: "SUBURBAN-WEST",
   isInnerCityNightCollection: false,
   recyclingCalendarGroup: 1,
+  collectionWeekday: 1,
 };
 const INNER_CITY_ADDRESS: SuburbSearchResult = {
   id: 20,
@@ -24,6 +27,7 @@ const INNER_CITY_ADDRESS: SuburbSearchResult = {
   zone: "CBD-INNER",
   isInnerCityNightCollection: true,
   recyclingCalendarGroup: null,
+  collectionWeekday: null,
 };
 
 // Monday 2026-01-12 UTC = a confirmed "glass" week (rules.ts, ADR 0042).
@@ -114,7 +118,7 @@ describe("AddressSchedule", () => {
     renderComposed();
     expect(
       screen.getByText(
-        "Search for your address above to see today's collection.",
+        "Search for your address above to see your next collection.",
       ),
     ).toBeInTheDocument();
   });
@@ -141,7 +145,7 @@ describe("AddressSchedule", () => {
     selectFirstOption();
 
     expect(
-      screen.getByRole("heading", { level: 2, name: "Today's collection" }),
+      screen.getByRole("heading", { level: 2, name: "Your next collection" }),
     ).toBeInTheDocument();
     expect(
       screen.getAllByRole("listitem").map((li) => li.textContent),
@@ -216,7 +220,7 @@ describe("AddressSchedule", () => {
     renderComposed();
 
     expect(
-      screen.getByRole("heading", { level: 2, name: "Today's collection" }),
+      screen.getByRole("heading", { level: 2, name: "Your next collection" }),
     ).toBeInTheDocument();
     expect(
       screen.getAllByRole("listitem").map((li) => li.textContent),
@@ -242,7 +246,7 @@ describe("AddressSchedule", () => {
     expect(() => renderComposed()).not.toThrow();
     expect(
       screen.getByText(
-        "Search for your address above to see today's collection.",
+        "Search for your address above to see your next collection.",
       ),
     ).toBeInTheDocument();
   });
@@ -257,7 +261,7 @@ describe("AddressSchedule", () => {
 
     expect(
       screen.getByText(
-        "Search for your address above to see today's collection.",
+        "Search for your address above to see your next collection.",
       ),
     ).toBeInTheDocument();
   });

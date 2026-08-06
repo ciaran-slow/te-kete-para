@@ -1,10 +1,14 @@
 /**
- * Renders today's computed collection rules for a selected address
- * (FR-02, vision.md §4A/B). Shows *today's* rule set, not a scanned
- * "next collection date" — see ADR 0019 for why. "Today" is always the
- * viewer's local calendar date, computed only on a render path that is
- * reachable exclusively client-side, after a user selection — see ADR 0018
- * for why that is safe and why it must stay that way.
+ * Renders the genuine next collection for a selected address (FR-02,
+ * vision.md §4A/B): the next real calendar date this address is actually
+ * collected on, and the bin types/time window that apply on that date —
+ * not "today's rules regardless of whether today is a real collection day"
+ * (ADR 0019's compromise, superseded by ADR 0066 now that per-address
+ * `collectionWeekday` data exists, ADR 0063/issue #117). "Today" (the scan's
+ * starting point) is still always the viewer's local calendar date, computed
+ * only on a render path that is reachable exclusively client-side, after a
+ * user selection — see ADR 0018 for why that is safe and why it must stay
+ * that way; that constraint is unchanged by ADR 0066.
  */
 "use client";
 
@@ -20,6 +24,10 @@ import {
   type TimeWindow,
   type WasteBinType,
 } from "@/lib/schedule/rules";
+import {
+  findNextCollectionDate,
+  type CollectionDayClassification,
+} from "@/lib/schedule/collection-day";
 
 export interface ScheduleDisplayProps {
   address: SuburbSearchResult | null;
@@ -78,7 +86,7 @@ function formatTimeWindowLabel(
 
 interface ComputedSchedule {
   ruleSet: CollectionRuleSet | null;
-  todayUtc: Date;
+  collectionDateUtc: Date;
   /** Only meaningful when ruleSet is null. */
   unresolvedCalendarGroup: boolean;
 }
@@ -89,19 +97,24 @@ function computeSchedule(
 ): ComputedSchedule {
   const todayUtc = todayAsUtcCalendarDate(now ?? new Date());
   try {
+    const classification: CollectionDayClassification = {
+      isInnerCityNightCollection: address.isInnerCityNightCollection,
+      collectionWeekday: address.collectionWeekday,
+    };
+    const collectionDateUtc = findNextCollectionDate(classification, todayUtc);
     const ruleSet = computeCollectionRuleSet(
       {
         zone: address.zone,
         isInnerCityNightCollection: address.isInnerCityNightCollection,
         recyclingCalendarGroup: address.recyclingCalendarGroup,
       },
-      todayUtc,
+      collectionDateUtc,
     );
-    return { ruleSet, todayUtc, unresolvedCalendarGroup: false };
+    return { ruleSet, collectionDateUtc, unresolvedCalendarGroup: false };
   } catch (err) {
     return {
       ruleSet: null,
-      todayUtc,
+      collectionDateUtc: todayUtc,
       unresolvedCalendarGroup: err instanceof UnresolvedRecyclingCalendarGroupError,
     };
   }
@@ -137,7 +150,7 @@ export function ScheduleDisplay({ address, now }: ScheduleDisplayProps) {
           </h2>
           <p>
             <span className="font-medium">{t("schedule.dateLabel")}: </span>
-            {formatUtcCalendarDate(schedule.todayUtc)}
+            {formatUtcCalendarDate(schedule.collectionDateUtc)}
           </p>
           <div>
             <p className="font-medium">{t("schedule.binsHeading")}</p>

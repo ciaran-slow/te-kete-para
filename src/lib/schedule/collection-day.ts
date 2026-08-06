@@ -18,8 +18,8 @@
  *
  * Consuming these functions inside `<ScheduleDisplay>`/`<ShiftAlertBanner>`
  * to restore a genuine per-address claim (superseding ADR 0019/ADR 0053) is
- * issue #134's scope, not this one's — this module deliberately stops at
- * the data + pure-function layer.
+ * done by issue #134 (ADR 0066) — this module itself is unchanged by that
+ * issue, having already stopped at the data + pure-function layer.
  */
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;

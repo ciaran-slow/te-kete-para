@@ -8,11 +8,19 @@
  * returns null so SSR and first client render agree — see ADR 0052 for why
  * that stays safe under ADR 0018's client-only-"today" rule even though it
  * gives `selected` a second way to become non-null.
+ *
+ * ADDRESS_CACHE_VERSION bumped 2 -> 3 (ADR 0066, issue #134) when
+ * `collectionWeekday` was added to `SuburbSearchResult`: a payload cached
+ * under the old shape lacks that field, so it is quarantined (treated as
+ * "nothing cached") rather than silently fed to
+ * `findNextCollectionDate`/`isCollectionDay` with a missing value — same
+ * contract the 1 -> 2 bump already established for `recyclingCalendarGroup`
+ * (ADR 0059, issue #102).
  */
 import type { SuburbSearchResult } from "@/components/address-search";
 
 export const ADDRESS_CACHE_KEY = "tkp.selectedAddress";
-export const ADDRESS_CACHE_VERSION = 2;
+export const ADDRESS_CACHE_VERSION = 3;
 const ADDRESS_CACHE_CHANGE_EVENT = "tkp:selected-address-change";
 
 interface CachedAddressPayload {
@@ -68,7 +76,12 @@ function isSuburbSearchResult(value: unknown): value is SuburbSearchResult {
     typeof v.isInnerCityNightCollection === "boolean" &&
     (v.recyclingCalendarGroup === 1 ||
       v.recyclingCalendarGroup === 2 ||
-      v.recyclingCalendarGroup === null)
+      v.recyclingCalendarGroup === null) &&
+    (v.collectionWeekday === null ||
+      (typeof v.collectionWeekday === "number" &&
+        Number.isInteger(v.collectionWeekday) &&
+        v.collectionWeekday >= 0 &&
+        v.collectionWeekday <= 6))
   );
 }
 

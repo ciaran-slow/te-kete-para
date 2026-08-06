@@ -9,8 +9,8 @@
   - text: Search for your street address
   - combobox "Search for your street address": Cuba Street, Te Aro
   - paragraph
-  - region "Today's collection":
-    - heading "Today's collection" [level=2]
+  - region "Your next collection":
+    - heading "Your next collection" [level=2]
     - paragraph: "Date: 31/07/2026"
     - paragraph: Bins to put out
     - list:

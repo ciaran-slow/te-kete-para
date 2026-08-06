@@ -19,7 +19,7 @@ import { test, expect, type Page } from "@playwright/test";
 /* English UI strings from src/lib/i18n/dictionaries.ts. Every test starts
    from a fresh context (default locale "en"), so English is what renders. */
 const SEARCH_LABEL = "Search for your street address";
-const SCHEDULE_HEADING = "Today's collection";
+const SCHEDULE_HEADING = "Your next collection";
 const NO_RESULTS_TEXT =
   "No matching addresses. Check the spelling and try again.";
 const SEARCH_ERROR_TEXT =
@@ -34,9 +34,16 @@ const SEARCH_ERROR_TEXT =
  * ordinary future dates (every mixed week / every Tuesday).
  *
  * 2026-07-31 10:00 NZST — a Friday in a glass week — reproduces the bin
- * lists of the recorded pass (docs/qa/screen-reader-pass-2026-07-31.md).
- * The component reads the viewer's *local* calendar date (ADR 0018), so the
- * timezone is pinned to Pacific/Auckland alongside the clock.
+ * lists of the recorded pass (docs/qa/screen-reader-pass-2026-07-31.md) for
+ * the inner-city golden (every night is a collection day, so "today" and
+ * "next collection" are the same date there). Since ADR 0066 (issue #134),
+ * `<ScheduleDisplay>` shows the next REAL collection date, not unconditionally
+ * today's: Karori Road's confirmed collectionWeekday is Wednesday (3,
+ * db/seeds/01_addresses.js), so from this pinned Friday the suburban golden's
+ * next collection date is Wednesday 2026-08-05 — a *mixed* recycling week,
+ * not the glass week this Friday itself falls in. The component reads the
+ * viewer's *local* calendar date (ADR 0018) as the scan's starting point, so
+ * the timezone is pinned to Pacific/Auckland alongside the clock.
  */
 const PINNED_SCHEDULE_TIME = new Date("2026-07-31T10:00:00+12:00");
 

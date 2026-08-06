@@ -45,15 +45,18 @@
   interactive element; the listbox rows take only `.touch-target`, since
   they never receive real DOM focus (ADR 0014).
 * **Schedule Display:** `src/components/schedule-display.tsx` renders
-  `<ScheduleDisplay>`, which shows today's computed collection rules
-  (`computeCollectionRuleSet`, §2B) for the address selected via
-  `<AddressSearch>`. It renders through the shared `<StatusRegion>`
-  (ADR 0021), which supplies the
-  `aria-live`/`aria-atomic`/`aria-labelledby` plumbing. It shows
-  *today's* rules, not a scanned "next
-  collection date" — ADR 0019 — and only ever computes "today" on a
-  render path reachable exclusively client-side, after a user selection —
-  ADR 0018. The two components are composed by the colocated
+  `<ScheduleDisplay>`, which shows the genuine next collection
+  (`findNextCollectionDate`, `src/lib/schedule/collection-day.ts`, ADR
+  0063) and its computed collection rules (`computeCollectionRuleSet`,
+  §2B) for the address selected via `<AddressSearch>`. It renders through
+  the shared `<StatusRegion>` (ADR 0021), which supplies the
+  `aria-live`/`aria-atomic`/`aria-labelledby` plumbing. It shows the next
+  real collection date on or after today — not unconditionally *today's*
+  rules regardless of whether today is actually a collection day (ADR
+  0019's compromise, superseded by ADR 0066, issue #134) — and only ever
+  computes "today" (the scan's starting point) on a render path reachable
+  exclusively client-side, after a user selection — ADR 0018. The two
+  components are composed by the colocated
   `src/app/address-schedule.tsx`, rendered directly from `src/app/page.tsx`
   (a Server Component) per ADR 0011. `selected` is sourced from a
   `useSyncExternalStore` over a versioned `localStorage` cache of the
@@ -89,10 +92,13 @@
   `<ShiftAlertBanner>` (vision.md §4B, issue #24), which announces an
   upcoming holiday-shifted collection through the shared `<StatusRegion>`
   (ADR 0021), bilingual per `LanguageContext`. Its pure `findUpcomingShift`
-  helper scans a 7-day window (today + 6 days, inclusive) over the
-  council-wide holiday list, delegating shift math — including cascading
-  adjacent-holiday chains (ADR 0030) — to `computeHolidayShift` (§2B); the
-  window length is a recorded product judgment call (ADR 0032). Rendering
+  helper scans a 7-day window (today + 6 days, inclusive) for a date that
+  is both a listed holiday and confirmed (via `isCollectionDay`,
+  `src/lib/schedule/collection-day.ts`, ADR 0063) to be this address's
+  real collection day (ADR 0066, issue #134), delegating shift math —
+  including cascading adjacent-holiday chains (ADR 0030) — to
+  `computeHolidayShift` (§2B); the window length is a recorded product
+  judgment call (ADR 0032). Rendering
   and fetching are gated on the same address-selection prop
   `<ScheduleDisplay>` uses (ADR 0018): with no address selected the banner
   stays an empty `sr-only` live region and never fetches. Once an address
@@ -105,14 +111,16 @@
   prop becomes available" components should follow it rather than
   re-litigating. Composed into `address-schedule.tsx` alongside
   `<ScheduleDisplay>` (issue #83), now that #78 has closed (ADR 0031, ADR
-  0038). Its wording is deliberately council-wide ("Collections normally
-  due... move to..."), not a per-address claim: nothing in
-  `addresses`/`schedules`/`CollectionRuleSet` marks a real collection day
-  for a given street (ADR 0019), so asserting "your collection" would be
-  false precision for a resident whose street isn't actually collected on
-  the affected day (ADR 0053). A genuine per-address version of this
-  banner is tracked as a distinct, larger data-sourcing effort (issue
-  #117), not part of this change.
+  0038). Its wording now asserts a genuine per-address claim ("Your
+  collection due... shifts to...", ADR 0066, issue #134), superseding ADR
+  0053's council-wide wording ("Collections normally due... move to..."),
+  which existed only because no per-street collection-day data existed
+  yet — that gap closed with `addresses.collection_weekday` (ADR 0063,
+  issue #117). When an address's weekday can't be confirmed, the banner
+  shows nothing rather than falling back to the old generic wording (ADR
+  0066). The nightly dispatch pipeline (§2B below) is not yet gated on
+  this same per-address data — tracked as issue #144, not part of this
+  change.
 * **Web App Manifest & Core Shell Caching:** `src/app/manifest.ts` (Next's
   App Router manifest convention, resolved at `/manifest.webmanifest`)
   supplies the installable-app name, Papa/Moana theme colours, and two
@@ -354,7 +362,7 @@
 ### C. Data Persistence Layer
 * **Database Engine:** **SQLite3** stored as an embedded file database (`/data/teketepara.db`).
 * **Core Schemas:**
-  * `addresses`: Wellington street indices, council zones, suburb classifications (Suburban vs. CBD night collection), which of WCC's two independently-phased alternating recycling calendars the address follows (`recycling_calendar_group`, 1 or 2, `null` for CBD rows; confirmed per-address against WCC's live per-street lookup tool, ADR 0059, issue #102), and — for suburban rows — which real WCC weekday the address's weekly kerbside collection actually falls on (`collection_weekday`, 0–6 per `Date#getUTCDay()`, `null` for CBD rows and any address not yet confirmed; confirmed per-address against the same WCC live per-street lookup tool, ADR 0063, issue #117). `src/lib/schedule/collection-day.ts` exports the pure `isCollectionDay`/`findNextCollectionDate` functions that consume this field (no DB access, ADR 0015); wiring them into `<ScheduleDisplay>`/`<ShiftAlertBanner>` to restore a genuine per-address claim is issue #134's scope, not yet done.
+  * `addresses`: Wellington street indices, council zones, suburb classifications (Suburban vs. CBD night collection), which of WCC's two independently-phased alternating recycling calendars the address follows (`recycling_calendar_group`, 1 or 2, `null` for CBD rows; confirmed per-address against WCC's live per-street lookup tool, ADR 0059, issue #102), and — for suburban rows — which real WCC weekday the address's weekly kerbside collection actually falls on (`collection_weekday`, 0–6 per `Date#getUTCDay()`, `null` for CBD rows and any address not yet confirmed; confirmed per-address against the same WCC live per-street lookup tool, ADR 0063, issue #117). `src/lib/schedule/collection-day.ts` exports the pure `isCollectionDay`/`findNextCollectionDate` functions that consume this field (no DB access, ADR 0015), now wired into `<ScheduleDisplay>`/`<ShiftAlertBanner>` to restore a genuine per-address claim (ADR 0066, issue #134, superseding ADR 0019/ADR 0053). The nightly dispatch pipeline (§2B) does not yet consult this field — tracked as issue #144.
   * `schedules`: migrated (issue #2) but still empty and unqueried — real per-street collection-day data lives on `addresses.collection_weekday` instead (ADR 0063), not as date-mapped rows here. This table remains a placeholder for a possible future per-date override model (e.g. one-off route changes), not the home for regular weekly collection days.
   * `i18n_strings`: Relational translation keys with explicit English (`en`) and Te Reo Māori (`mi`) text columns.
   * `sorting_rules`: Item keys, bilingual descriptions, WCC disposal instructions, and a `keywords` column — a curated, author-added set of extra search terms included in `GET /api/sorting/search`'s match scope (ADR 0035), populated incrementally as real recall gaps are found rather than translated/verified content, so it isn't blocked by #69/#70. The rest of the seed dataset (`db/seeds/02_sorting_rules.js`) is confirmed against live wellington.govt.nz pages (ADR 0054, issue #70) — a browser User-Agent bypasses the site's 403-to-bare-request block, which blocked PR #88's verify pass and every session before it. All 15 rows are now fully confirmed (ADR 0054, ADR 0060), with four corrected (pizza-box, polystyrene-packaging, light-bulb, aerosol-can) — `aerosol-can`'s empty-vs-full handling split (issue #119) turned out to be invented: WCC's own disposal-lookup tool sends aerosol and spray cans straight to kerbside general rubbish regardless of fill state, not split between general rubbish and hazardous waste. The Te Reo Māori text still awaits review by a fluent speaker (tracked by issue #69) — a similar confirm-against-real-data pattern to the schedule epoch resolved in ADR 0042 (§2B, issue #59). #69 blocks #21 surfacing this text to users. Queried by `GET /api/sorting/search` (ADR 0025, ADR 0035).

@@ -21,10 +21,10 @@ describe("GET /api/suburbs/search", () => {
     // ORDER BY street_name, so the ordering assertions below actually fail
     // if the route drops its .orderBy("street_name") clause.
     await getDb()("addresses").insert([
-      { street_name: "Cuba Street", suburb: "Te Aro", zone: "CBD-INNER", is_inner_city_night_collection: true, recycling_calendar_group: null },
-      { street_name: "Karori Road", suburb: "Karori", zone: "SUBURBAN-WEST", is_inner_city_night_collection: false, recycling_calendar_group: 1 },
-      { street_name: "Cuba Mall", suburb: "Te Aro", zone: "CBD-INNER", is_inner_city_night_collection: true, recycling_calendar_group: null },
-      { street_name: "Ōwhiro Bay Parade", suburb: "Owhiro Bay", zone: "SUBURBAN-SOUTH", is_inner_city_night_collection: false, recycling_calendar_group: 2 },
+      { street_name: "Cuba Street", suburb: "Te Aro", zone: "CBD-INNER", is_inner_city_night_collection: true, recycling_calendar_group: null, collection_weekday: null },
+      { street_name: "Karori Road", suburb: "Karori", zone: "SUBURBAN-WEST", is_inner_city_night_collection: false, recycling_calendar_group: 1, collection_weekday: 3 },
+      { street_name: "Cuba Mall", suburb: "Te Aro", zone: "CBD-INNER", is_inner_city_night_collection: true, recycling_calendar_group: null, collection_weekday: null },
+      { street_name: "Ōwhiro Bay Parade", suburb: "Owhiro Bay", zone: "SUBURBAN-SOUTH", is_inner_city_night_collection: false, recycling_calendar_group: 2, collection_weekday: 4 },
     ]);
   });
 
@@ -50,6 +50,7 @@ describe("GET /api/suburbs/search", () => {
       zone: "SUBURBAN-WEST",
       isInnerCityNightCollection: false,
       recyclingCalendarGroup: 1,
+      collectionWeekday: 3,
     });
     // The JSON *type* matters: sqlite hands knex 0/1, and 0 == false would
     // satisfy a loose comparison — assert the mapped value is a boolean.
@@ -74,6 +75,7 @@ describe("GET /api/suburbs/search", () => {
       expect(result.isInnerCityNightCollection).toBe(true);
       expect(typeof result.isInnerCityNightCollection).toBe("boolean");
       expect(result.recyclingCalendarGroup).toBeNull();
+      expect(result.collectionWeekday).toBeNull();
     }
   });
 
@@ -166,15 +168,31 @@ describe("GET /api/suburbs/search", () => {
       expect(response.status).toBe(200);
       expect(
         response.body.results.map(
-          (result: { streetName: string; isInnerCityNightCollection: boolean; recyclingCalendarGroup: number | null }) => ({
+          (result: {
+            streetName: string;
+            isInnerCityNightCollection: boolean;
+            recyclingCalendarGroup: number | null;
+            collectionWeekday: number | null;
+          }) => ({
             streetName: result.streetName,
             isInnerCityNightCollection: result.isInnerCityNightCollection,
             recyclingCalendarGroup: result.recyclingCalendarGroup,
+            collectionWeekday: result.collectionWeekday,
           }),
         ),
       ).toEqual([
-        { streetName: "Cuba Mall", isInnerCityNightCollection: true, recyclingCalendarGroup: null },
-        { streetName: "Cuba Street", isInnerCityNightCollection: true, recyclingCalendarGroup: null },
+        {
+          streetName: "Cuba Mall",
+          isInnerCityNightCollection: true,
+          recyclingCalendarGroup: null,
+          collectionWeekday: null,
+        },
+        {
+          streetName: "Cuba Street",
+          isInnerCityNightCollection: true,
+          recyclingCalendarGroup: null,
+          collectionWeekday: null,
+        },
       ]);
     }
   });
@@ -193,7 +211,7 @@ describe("GET /api/suburbs/search", () => {
     expect(escapeLikePattern("Cuba")).toBe("Cuba");
   });
 
-  it("toSuburbSearchResult casts sqlite's 1/0 to real JSON booleans and maps recycling_calendar_group", () => {
+  it("toSuburbSearchResult casts sqlite's 1/0 to real JSON booleans and maps recycling_calendar_group/collection_weekday", () => {
     const base = {
       id: 7,
       street_name: "Aro Street",
@@ -205,25 +223,31 @@ describe("GET /api/suburbs/search", () => {
       ...base,
       is_inner_city_night_collection: 1,
       recycling_calendar_group: null,
+      collection_weekday: null,
     });
     expect(truthy.isInnerCityNightCollection).toBe(true);
     expect(typeof truthy.isInnerCityNightCollection).toBe("boolean");
     expect(truthy.recyclingCalendarGroup).toBeNull();
+    expect(truthy.collectionWeekday).toBeNull();
 
     const falsy = toSuburbSearchResult({
       ...base,
       is_inner_city_night_collection: 0,
       recycling_calendar_group: 2,
+      collection_weekday: 5,
     });
     expect(falsy.isInnerCityNightCollection).toBe(false);
     expect(typeof falsy.isInnerCityNightCollection).toBe("boolean");
     expect(falsy.recyclingCalendarGroup).toBe(2);
+    expect(falsy.collectionWeekday).toBe(5);
 
     const unexpectedRawValue = toSuburbSearchResult({
       ...base,
       is_inner_city_night_collection: 0,
       recycling_calendar_group: 3,
+      collection_weekday: 7,
     });
     expect(unexpectedRawValue.recyclingCalendarGroup).toBeNull();
+    expect(unexpectedRawValue.collectionWeekday).toBeNull();
   });
 });

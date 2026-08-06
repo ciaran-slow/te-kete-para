@@ -10,6 +10,9 @@ import { LanguageProvider } from "../../src/lib/i18n/language-provider";
 import { writeStoredLocale } from "../../src/lib/i18n/locale-storage";
 import { expectNoA11yViolations } from "../helpers/a11y";
 
+// collectionWeekday: 1 (Monday) — matches GLASS_WEEK_MONDAY/MIXED_WEEK_MONDAY
+// below, both literal Mondays, so today already IS this address's confirmed
+// collection day in every existing test using this fixture.
 const SUBURBAN_ADDRESS: SuburbSearchResult = {
   id: 10,
   streetName: "Karori Road",
@@ -17,6 +20,7 @@ const SUBURBAN_ADDRESS: SuburbSearchResult = {
   zone: "SUBURBAN-WEST",
   isInnerCityNightCollection: false,
   recyclingCalendarGroup: 1,
+  collectionWeekday: 1,
 };
 const INNER_CITY_ADDRESS: SuburbSearchResult = {
   id: 20,
@@ -25,6 +29,7 @@ const INNER_CITY_ADDRESS: SuburbSearchResult = {
   zone: "CBD-INNER",
   isInnerCityNightCollection: true,
   recyclingCalendarGroup: null,
+  collectionWeekday: null,
 };
 // Defensive/failure-path fixture only — real /api/suburbs/search results
 // never have a blank zone.
@@ -35,6 +40,21 @@ const BLANK_ZONE_ADDRESS: SuburbSearchResult = {
   zone: "   ",
   isInnerCityNightCollection: false,
   recyclingCalendarGroup: 1,
+  collectionWeekday: 1,
+};
+// A suburban address with an otherwise-valid zone but an unconfirmed
+// collectionWeekday (ADR 0063: null for a suburban address not yet
+// confirmed) — unreachable with today's fully-confirmed seed data, but the
+// component must still degrade to the same error state as a malformed zone,
+// via findNextCollectionDate's RangeError, not crash or show a bogus date.
+const UNCONFIRMED_WEEKDAY_ADDRESS: SuburbSearchResult = {
+  id: 41,
+  streetName: "Unconfirmed Street",
+  suburb: "Nowhere",
+  zone: "SUBURBAN-WEST",
+  isInnerCityNightCollection: false,
+  recyclingCalendarGroup: 1,
+  collectionWeekday: null,
 };
 // A real, valid suburban address whose recyclingCalendarGroup has not yet
 // been confirmed against WCC's per-street tool (ADR 0059's known gap) —
@@ -47,6 +67,10 @@ const UNCONFIRMED_CALENDAR_ADDRESS: SuburbSearchResult = {
   zone: "SUBURBAN-SOUTH",
   isInnerCityNightCollection: false,
   recyclingCalendarGroup: null,
+  // Monday, matching GLASS_WEEK_MONDAY below, so findNextCollectionDate
+  // resolves cleanly and the recyclingCalendarGroup rejection inside
+  // computeCollectionRuleSet is the only throw this fixture exercises.
+  collectionWeekday: 1,
 };
 
 // Matches rules.test.ts's epoch fixture: a glass week, mid-UTC-day so the
@@ -61,6 +85,15 @@ const NON_CARDBOARD_WEDNESDAY = new Date(Date.UTC(2026, 0, 14, 1));
 // "mixed-recycling" is invisible to both `tsc` (the wrong key is still a
 // valid TranslationKey) and the whole suite.
 const MIXED_WEEK_MONDAY = new Date(Date.UTC(2026, 0, 19, 1));
+// Saturday, two days before GLASS_WEEK_MONDAY (2026-01-12) and one full week
+// before the recycling epoch (rules.ts's RECYCLING_EPOCH_UTC_MS), so it falls
+// in the *mixed* half of the alternation — the opposite bin type from the
+// glass week SUBURBAN_ADDRESS's next real collection date (the following
+// Monday) actually falls in. A pre-#134 "just show today's rules"
+// implementation would render THIS date with the MIXED bin, not the glass
+// one — this fixture is chosen specifically so that regression fails on both
+// the date shown and the bin type shown, not just one.
+const SATURDAY_BEFORE_GLASS_WEEK_MONDAY = new Date(Date.UTC(2026, 0, 10, 1));
 
 function renderDisplay(address: SuburbSearchResult | null, now?: Date) {
   return render(
@@ -79,7 +112,7 @@ describe("ScheduleDisplay", () => {
   test("with no address selected, prompts inside a polite atomic live region with no aria-labelledby", () => {
     renderDisplay(null);
     const prompt = screen.getByText(
-      "Search for your address above to see today's collection.",
+      "Search for your address above to see your next collection.",
     );
     const section = prompt.closest("section");
     expect(section).not.toBeNull();
@@ -93,7 +126,7 @@ describe("ScheduleDisplay", () => {
 
     const heading = screen.getByRole("heading", {
       level: 2,
-      name: "Today's collection",
+      name: "Your next collection",
     });
     const section = heading.closest("section");
     expect(section).not.toBeNull();
@@ -124,6 +157,27 @@ describe("ScheduleDisplay", () => {
     expect(screen.getByText("Put out by 07:00")).toBeInTheDocument();
   });
 
+  test("a suburban address shows the next confirmed collection day's date and bin types, not today's, when today isn't a collection day", () => {
+    // SUBURBAN_ADDRESS's collectionWeekday is 1 (Monday). "Now" is the
+    // Saturday two days before GLASS_WEEK_MONDAY (2026-01-10, not a Monday),
+    // so the next real collection day is the following Monday, 2026-01-12 —
+    // a different date, and (per the fixture's own comment) a different
+    // recycling week, than today.
+    renderDisplay(SUBURBAN_ADDRESS, SATURDAY_BEFORE_GLASS_WEEK_MONDAY);
+
+    expect(screen.getByText("12/01/2026")).toBeInTheDocument();
+    expect(screen.queryByText("10/01/2026")).not.toBeInTheDocument();
+
+    const items = screen.getAllByRole("listitem");
+    expect(items.map((li) => li.textContent)).toEqual([
+      "General rubbish",
+      "Glass recycling crate",
+    ]);
+    expect(
+      screen.queryByText("Mixed recycling (paper, plastic, metal)"),
+    ).not.toBeInTheDocument();
+  });
+
   test("inner-city address on a Tuesday shows the yellow bag, cardboard, and the night collection window", () => {
     renderDisplay(INNER_CITY_ADDRESS, CARDBOARD_TUESDAY);
 
@@ -152,7 +206,10 @@ describe("ScheduleDisplay", () => {
     act(() => writeStoredLocale("mi"));
 
     expect(
-      screen.getByRole("heading", { level: 2, name: "Te kohinga o tēnei rā" }),
+      screen.getByRole("heading", {
+        level: 2,
+        name: "Tō kohinga e whai ake nei",
+      }),
     ).toBeInTheDocument();
     expect(screen.getByText("Para Whānui")).toBeInTheDocument();
     expect(screen.getByText("Kete Karāhe")).toBeInTheDocument();
@@ -168,7 +225,7 @@ describe("ScheduleDisplay", () => {
 
     expect(
       screen.getByText(
-        "We couldn't work out today's collection for this address. Please try again.",
+        "We couldn't work out your next collection for this address. Please try again.",
       ),
     ).toBeInTheDocument();
     expect(screen.queryAllByRole("listitem")).toHaveLength(0);
@@ -195,6 +252,23 @@ describe("ScheduleDisplay", () => {
     expect(screen.queryAllByRole("listitem")).toHaveLength(0);
   });
 
+  test("a suburban address with an unconfirmed collectionWeekday shows the translated error, not a bogus date (distinct throw path from the blank-zone case)", () => {
+    expect(() =>
+      renderDisplay(UNCONFIRMED_WEEKDAY_ADDRESS, GLASS_WEEK_MONDAY),
+    ).not.toThrow();
+
+    expect(
+      screen.getByText(
+        "We couldn't work out your next collection for this address. Please try again.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryAllByRole("listitem")).toHaveLength(0);
+    expect(screen.queryByText(/\d{2}\/\d{2}\/\d{4}/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { level: 2 }),
+    ).not.toBeInTheDocument();
+  });
+
   test("repeated address changes never leave stale content behind", () => {
     const view = renderDisplay(null);
     const display = (address: SuburbSearchResult | null) =>
@@ -211,7 +285,7 @@ describe("ScheduleDisplay", () => {
     ).toEqual(["General rubbish", "Glass recycling crate"]);
     expect(
       screen.queryByText(
-        "Search for your address above to see today's collection.",
+        "Search for your address above to see your next collection.",
       ),
     ).not.toBeInTheDocument();
 
@@ -230,7 +304,7 @@ describe("ScheduleDisplay", () => {
     ).not.toBeInTheDocument();
     expect(
       screen.getByText(
-        "Search for your address above to see today's collection.",
+        "Search for your address above to see your next collection.",
       ),
     ).toBeInTheDocument();
 
@@ -240,7 +314,10 @@ describe("ScheduleDisplay", () => {
       screen.getAllByRole("listitem").map((li) => li.textContent),
     ).toEqual(["General rubbish", "Glass recycling crate"]);
     expect(
-      screen.getAllByRole("heading", { level: 2, name: "Today's collection" }),
+      screen.getAllByRole("heading", {
+        level: 2,
+        name: "Your next collection",
+      }),
     ).toHaveLength(1);
 
     // suburban → unconfirmed calendar group

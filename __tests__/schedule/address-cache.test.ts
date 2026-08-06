@@ -17,6 +17,7 @@ const ADDRESS_A: SuburbSearchResult = {
   zone: "SUBURBAN-WEST",
   isInnerCityNightCollection: false,
   recyclingCalendarGroup: 1,
+  collectionWeekday: 3,
 };
 const ADDRESS_B: SuburbSearchResult = {
   id: 20,
@@ -25,6 +26,7 @@ const ADDRESS_B: SuburbSearchResult = {
   zone: "CBD-INNER",
   isInnerCityNightCollection: true,
   recyclingCalendarGroup: null,
+  collectionWeekday: null,
 };
 
 afterEach(() => {
@@ -112,6 +114,61 @@ test("recyclingCalendarGroup of 0 (or another non-1/2/null value) is rejected", 
   const payload = JSON.stringify({
     version: ADDRESS_CACHE_VERSION,
     address: { ...ADDRESS_A, recyclingCalendarGroup: 0 },
+  });
+  expect(parseCachedAddress(payload)).toBeNull();
+});
+
+test("a payload cached under the pre-collectionWeekday shape (ADDRESS_CACHE_VERSION 2) is quarantined, not misread (issue #134)", () => {
+  const oldShapePayload = JSON.stringify({
+    version: 2,
+    address: {
+      id: 10,
+      streetName: "Karori Road",
+      suburb: "Karori",
+      zone: "SUBURBAN-WEST",
+      isInnerCityNightCollection: false,
+      recyclingCalendarGroup: 1,
+    },
+  });
+  expect(parseCachedAddress(oldShapePayload)).toBeNull();
+});
+
+test("repeated parse calls of the same version-2 (pre-collectionWeekday) payload consistently return null, not just on the first call", () => {
+  const oldShapePayload = JSON.stringify({
+    version: 2,
+    address: {
+      id: 10,
+      streetName: "Karori Road",
+      suburb: "Karori",
+      zone: "SUBURBAN-WEST",
+      isInnerCityNightCollection: false,
+      recyclingCalendarGroup: 1,
+    },
+  });
+  for (let attempt = 0; attempt < 3; attempt++) {
+    expect(parseCachedAddress(oldShapePayload)).toBeNull();
+  }
+});
+
+test("a current-version payload missing collectionWeekday is rejected, not just old-version payloads", () => {
+  const payload = JSON.stringify({
+    version: ADDRESS_CACHE_VERSION,
+    address: {
+      id: 10,
+      streetName: "Karori Road",
+      suburb: "Karori",
+      zone: "SUBURBAN-WEST",
+      isInnerCityNightCollection: false,
+      recyclingCalendarGroup: 1,
+    },
+  });
+  expect(parseCachedAddress(payload)).toBeNull();
+});
+
+test("collectionWeekday of 7 (or another out-of-0-6/null value) is rejected", () => {
+  const payload = JSON.stringify({
+    version: ADDRESS_CACHE_VERSION,
+    address: { ...ADDRESS_A, collectionWeekday: 7 },
   });
   expect(parseCachedAddress(payload)).toBeNull();
 });

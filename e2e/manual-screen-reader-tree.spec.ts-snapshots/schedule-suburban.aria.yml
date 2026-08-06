@@ -9,13 +9,13 @@
   - text: Search for your street address
   - combobox "Search for your street address": Karori Road, Karori
   - paragraph
-  - region "Today's collection":
-    - heading "Today's collection" [level=2]
-    - paragraph: "Date: 31/07/2026"
+  - region "Your next collection":
+    - heading "Your next collection" [level=2]
+    - paragraph: "Date: 05/08/2026"
     - paragraph: Bins to put out
     - list:
       - listitem: General rubbish
-      - listitem: Glass recycling crate
+      - listitem: Mixed recycling (paper, plastic, metal)
     - paragraph: "Put out by 07:00"
   - separator
   - paragraph: āēīōū ĀĒĪŌŪ — Para Whānui, Rauemi Hangarua, Kete Karāhe, Āpopo

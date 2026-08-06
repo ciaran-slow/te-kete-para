@@ -9,7 +9,7 @@
   - text: Search for your street address
   - combobox "Search for your street address": Karori
   - paragraph: We couldn't search addresses right now. Please try again.
-  - paragraph: Search for your address above to see today's collection.
+  - paragraph: Search for your address above to see your next collection.
   - separator
   - paragraph: āēīōū ĀĒĪŌŪ — Para Whānui, Rauemi Hangarua, Kete Karāhe, Āpopo
   - list "Wellington colour tokens":
