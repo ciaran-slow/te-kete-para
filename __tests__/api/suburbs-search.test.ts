@@ -3,10 +3,8 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import request from "supertest";
 import { getDb } from "@/lib/db";
 import * as searchRoute from "@/app/api/suburbs/search/route";
-import {
-  escapeLikePattern,
-  toSuburbSearchResult,
-} from "@/app/api/suburbs/search/route";
+import { toSuburbSearchResult } from "@/app/api/suburbs/search/route";
+import { escapeLikePattern } from "@/lib/api/escape-like-pattern";
 import { createRequestListener, setupTestDb, teardownTestDb } from "../helpers/api";
 
 const app = createRequestListener(searchRoute);
