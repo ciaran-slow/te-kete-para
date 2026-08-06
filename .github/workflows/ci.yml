@@ -18,6 +18,10 @@ env:
 
 jobs:
   gates:
+    # Job name is the literal string GitHub's branch-protection required
+    # status check on `main` matches against — keep byte-identical, or
+    # update it in the same PR at Settings → Branches → main → required
+    # status checks (docs/architecture.md "Merge Enforcement"; #45, #155).
     name: lint, typecheck, test, build
     runs-on: ubuntu-latest
     steps:
