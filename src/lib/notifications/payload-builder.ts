@@ -8,7 +8,6 @@ export interface LocalizedPushContent {
 }
 
 const BIN_TYPE_KEYS: Record<WasteBinType, TranslationKey> = {
-  "general-rubbish": "schedule.binType.generalRubbish",
   "glass-recycling": "schedule.binType.glassRecycling",
   "mixed-recycling": "schedule.binType.mixedRecycling",
   "yellow-bag-rubbish": "schedule.binType.yellowBagRubbish",

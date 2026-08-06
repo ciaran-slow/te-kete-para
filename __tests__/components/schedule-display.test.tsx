@@ -136,7 +136,7 @@ describe("ScheduleDisplay", () => {
 
     const items = screen.getAllByRole("listitem");
     expect(items.map((li) => li.textContent)).toEqual([
-      "General rubbish",
+      "Yellow rubbish bag",
       "Glass recycling crate",
     ]);
 
@@ -148,7 +148,7 @@ describe("ScheduleDisplay", () => {
 
     const items = screen.getAllByRole("listitem");
     expect(items.map((li) => li.textContent)).toEqual([
-      "General rubbish",
+      "Yellow rubbish bag",
       "Mixed recycling (paper, plastic, metal)",
     ]);
     expect(screen.queryByText("Glass recycling crate")).not.toBeInTheDocument();
@@ -170,7 +170,7 @@ describe("ScheduleDisplay", () => {
 
     const items = screen.getAllByRole("listitem");
     expect(items.map((li) => li.textContent)).toEqual([
-      "General rubbish",
+      "Yellow rubbish bag",
       "Glass recycling crate",
     ]);
     expect(
@@ -211,7 +211,7 @@ describe("ScheduleDisplay", () => {
         name: "Tō kohinga e whai ake nei",
       }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Para Whānui")).toBeInTheDocument();
+    expect(screen.getByText("Pēke Kōwhai Para")).toBeInTheDocument();
     expect(screen.getByText("Kete Karāhe")).toBeInTheDocument();
     expect(
       screen.getByText("Whakaputahia i mua i te 07:00"),
@@ -282,7 +282,7 @@ describe("ScheduleDisplay", () => {
     display(SUBURBAN_ADDRESS);
     expect(
       screen.getAllByRole("listitem").map((li) => li.textContent),
-    ).toEqual(["General rubbish", "Glass recycling crate"]);
+    ).toEqual(["Yellow rubbish bag", "Glass recycling crate"]);
     expect(
       screen.queryByText(
         "Search for your address above to see your next collection.",
@@ -294,7 +294,7 @@ describe("ScheduleDisplay", () => {
     expect(
       screen.getAllByRole("listitem").map((li) => li.textContent),
     ).toEqual(["Yellow rubbish bag"]);
-    expect(screen.queryByText("General rubbish")).not.toBeInTheDocument();
+    expect(screen.queryByText("Glass recycling crate")).not.toBeInTheDocument();
 
     // inner-city → null
     display(null);
@@ -312,7 +312,7 @@ describe("ScheduleDisplay", () => {
     display(SUBURBAN_ADDRESS);
     expect(
       screen.getAllByRole("listitem").map((li) => li.textContent),
-    ).toEqual(["General rubbish", "Glass recycling crate"]);
+    ).toEqual(["Yellow rubbish bag", "Glass recycling crate"]);
     expect(
       screen.getAllByRole("heading", {
         level: 2,
@@ -328,13 +328,13 @@ describe("ScheduleDisplay", () => {
       ),
     ).toBeInTheDocument();
     expect(screen.queryAllByRole("listitem")).toHaveLength(0);
-    expect(screen.queryByText("General rubbish")).not.toBeInTheDocument();
+    expect(screen.queryByText("Yellow rubbish bag")).not.toBeInTheDocument();
 
     // unconfirmed calendar group → suburban again
     display(SUBURBAN_ADDRESS);
     expect(
       screen.getAllByRole("listitem").map((li) => li.textContent),
-    ).toEqual(["General rubbish", "Glass recycling crate"]);
+    ).toEqual(["Yellow rubbish bag", "Glass recycling crate"]);
     expect(
       screen.queryByText(
         "We haven't confirmed this address's recycling calendar yet. Check back soon.",

@@ -1,8 +1,13 @@
 /**
  * Pure collection-rule computation for a Wellington zone (vision.md §4A):
- * suburban 7:00 AM kerbside + alternating glass/mixed recycling, vs.
- * inner-city/Te Aro 5:30–10:00 PM yellow-bag night collection with Tuesday
- * cardboard. No DB access — classification is passed in explicitly rather
+ * suburban 7:00 AM kerbside yellow-bag rubbish + alternating glass/mixed
+ * recycling, vs. inner-city/Te Aro 5:30–10:00 PM yellow-bag night collection
+ * with Tuesday cardboard. WCC's official rubbish bag is yellow city-wide
+ * (vision.md §1: "suburban yellow bags... inner-city night collections
+ * [also] yellow bags") — there is no separate wheelie-bin general-rubbish
+ * container in either zone; only the collection time and the accompanying
+ * recycling/cardboard items differ (ADR 0069). No DB access — classification
+ * is passed in explicitly rather
  * than re-derived from the zone string (ADR 0015), and the alternating
  * recycling cadence is anchored to a sourced WCC calendar date (ADR
  * 0042). Which of WCC's two independently-phased calendars a given
@@ -20,7 +25,6 @@
  */
 
 export type WasteBinType =
-  | "general-rubbish"
   | "glass-recycling"
   | "mixed-recycling"
   | "yellow-bag-rubbish"
@@ -147,7 +151,7 @@ export function computeCollectionRuleSet(
   const isGlassWeek =
     zone.recyclingCalendarGroup === 1 ? isGlassWeekCalendar1 : !isGlassWeekCalendar1;
   const recyclingType: "glass" | "mixed" = isGlassWeek ? "glass" : "mixed";
-  const binTypes: WasteBinType[] = ["general-rubbish"];
+  const binTypes: WasteBinType[] = ["yellow-bag-rubbish"];
   binTypes.push(isGlassWeek ? "glass-recycling" : "mixed-recycling");
 
   return {

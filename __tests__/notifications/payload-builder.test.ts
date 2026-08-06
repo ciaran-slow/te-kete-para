@@ -45,7 +45,7 @@ describe("buildLocalizedPushContent", () => {
     const result = buildLocalizedPushContent(payload);
 
     expect(result.title).toBe(dictionaries.en["notification.collectionReminder.title"]);
-    expect(result.body).toContain(dictionaries.en["schedule.binType.generalRubbish"]);
+    expect(result.body).toContain(dictionaries.en["schedule.binType.yellowBagRubbish"]);
     expect(result.body).toContain(dictionaries.en["schedule.binType.glassRecycling"]);
     expect(result.body).toContain(dictionaries.en["schedule.putOutBy"]);
     expect(result.body).toContain("07:00");

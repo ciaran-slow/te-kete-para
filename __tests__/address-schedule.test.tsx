@@ -149,7 +149,7 @@ describe("AddressSchedule", () => {
     ).toBeInTheDocument();
     expect(
       screen.getAllByRole("listitem").map((li) => li.textContent),
-    ).toEqual(["General rubbish", "Glass recycling crate"]);
+    ).toEqual(["Yellow rubbish bag", "Glass recycling crate"]);
 
     const stored = JSON.parse(
       window.localStorage.getItem(ADDRESS_CACHE_KEY) as string,
@@ -224,7 +224,7 @@ describe("AddressSchedule", () => {
     ).toBeInTheDocument();
     expect(
       screen.getAllByRole("listitem").map((li) => li.textContent),
-    ).toEqual(["General rubbish", "Glass recycling crate"]);
+    ).toEqual(["Yellow rubbish bag", "Glass recycling crate"]);
     // NFR-02's guarantee (ADR 0052) is that ScheduleDisplay's own render
     // never depends on a network call — it doesn't extend to ShiftAlertBanner
     // (issue #83), a separate proactive-enhancement component composed
@@ -278,7 +278,7 @@ describe("AddressSchedule", () => {
 
     expect(
       screen.getAllByRole("listitem").map((li) => li.textContent),
-    ).toEqual(["General rubbish", "Glass recycling crate"]);
+    ).toEqual(["Yellow rubbish bag", "Glass recycling crate"]);
 
     await typeAndSettle("Cuba");
     selectFirstOption();
