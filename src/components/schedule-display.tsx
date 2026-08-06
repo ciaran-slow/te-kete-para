@@ -52,13 +52,16 @@ const BIN_TYPE_KEYS: Record<WasteBinType, TranslationKey> = {
  * (inner-city night collection, rules.ts); every other type — including
  * "general-rubbish", a suburban wheelie bin — isn't, so only this one gets
  * kōwhai theming (vision.md's amber accent is scoped to "yellow bag
- * alerts" specifically, not routine rubbish of any kind).
+ * alerts" specifically, not routine rubbish of any kind). Dark text on a
+ * tinted fill, not kōwhai-coloured text — same pairing shift-alert-banner.tsx
+ * already uses, since kōwhai itself doesn't clear body-text contrast at
+ * this size against a light fill.
  */
 const BIN_TYPE_PILL_CLASS: Record<WasteBinType, string> = {
   "general-rubbish": "bg-moana/10 text-moana",
   "glass-recycling": "bg-moana/10 text-moana",
   "mixed-recycling": "bg-moana/10 text-moana",
-  "yellow-bag-rubbish": "bg-kowhai/15 text-kowhai",
+  "yellow-bag-rubbish": "bg-kowhai/20 text-papa-ink",
   cardboard: "bg-moana/10 text-moana",
 };
 
