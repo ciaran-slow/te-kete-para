@@ -45,7 +45,7 @@ To serve *all* members of the Wellington community, the app is engineered to mee
 * **Inner-City Night Rules:** Automatically shifts behavior for Te Aro and CBD users, switching reminders to evening timeframes (5:30 PM – 10:00 PM yellow bag windows and Tuesday night cardboards).
 
 ### B. Smart Holiday & Weather Shift Alerts
-* Wellington’s southerlies and holiday schedules disrupt normal routines. The app automatically recalculates changes when collections shift (e.g., Good Friday or Christmas moving to Saturday) and issues proactive alerts.
+* Wellington’s southerlies and holiday schedules disrupt normal routines. The app automatically recalculates changes when collections shift (e.g., Good Friday or Christmas moving to Saturday) and issues proactive alerts. The weather half of this feature is not implemented in this prototype — no structured WCC data source exists to drive it without fabrication (ADR 0074).
 
 ### C. The "He Aha Tēnei?" (What is this?) Sorting Engine
 * A voice-enabled, screen-reader-friendly search bar where users can type or dictate an item (e.g., *pizza box*, *coffee cup*, *aerosol can*). It immediately returns WCC-specific sorting instructions fully localized in English or Te Reo Māori.
