@@ -38,6 +38,9 @@ export const en = {
   "sortingSearch.voice.listening": "Listening…",
   "sortingSearch.voice.error":
     "We couldn't hear you clearly. Please try again or type your search.",
+  "sortingSearch.kaitiakitanga.message":
+    "Ka pai! Sorting that correctly helps you act as a kaitiaki — a guardian of Wellington's environment.",
+  "sortingSearch.kaitiakitanga.dismiss": "Dismiss this message",
   "schedule.heading": "Your next collection",
   "schedule.noAddressSelected":
     "Search for your address above to see your next collection.",
@@ -111,6 +114,9 @@ export const mi: Record<TranslationKey, string> = {
   "sortingSearch.voice.listening": "E whakarongo ana…",
   "sortingSearch.voice.error":
     "Kāore i mārama te rongo i a koe. Whakamātauria anō, tuhia rānei tō rapunga.",
+  "sortingSearch.kaitiakitanga.message":
+    "Ka pai! Mā te whakariterite tika e āwhina ana koe ki te mahi kaitiaki mō te taiao o Te Whanganui-a-Tara.",
+  "sortingSearch.kaitiakitanga.dismiss": "Katia tēnei karere",
   "schedule.heading": "Tō kohinga e whai ake nei",
   "schedule.noAddressSelected":
     "Rapua tō wāhitau i runga ake nei kia kite i tō kohinga e whai ake nei.",

@@ -67,6 +67,12 @@ Unchanged from v0.2:
 * **Why this is new, not a bug:** `ShiftAlertBanner`/`holiday-shift.ts` (ADR 0030, ADR 0032) implement the holiday half of this vision-doc feature completely and well. The weather half was never scoped as an issue, never built, and never appeared in any prior review because nothing was tracking it as owed.
 * **Open question for planning, not this document:** WCC does not appear to publish a structured, machine-readable weather-disruption-to-collection-schedule feed (unlike its public holiday calendar). Planning must first establish whether a real data source exists before design — if none exists, the honest outcome may be an ADR documenting that this vision-doc feature is currently infeasible without a data source, not a built feature. Do not fabricate synthetic weather data to satisfy this requirement.
 * **TDD Strategy:** Deferred to planning pending the data-source question above.
+* **Status:** Infeasible without a data source — investigated and recorded in ADR
+  0074. No structured, machine-readable weather-disruption-to-collection-schedule
+  data source exists; `ShiftAlertBanner`/`holiday-shift.ts` remain holiday-only.
+  This is a standing product decision, not a pending item awaiting a data source
+  that might appear — re-open only if WCC or another authoritative source publishes
+  one.
 
 ### FR-08: Full Wellington Street & Address Coverage — *New, never previously scoped*
 * **Requirement:** `AddressSearch`/`FR-02` should find any real Wellington City street a resident types, not just the 17 curated ones in `db/seeds/01_addresses.js` (5 inner-city, 12 suburban across 5 zones) — matching vision.md's own framing that this app serves "all Wellingtonians," not a demo subset.

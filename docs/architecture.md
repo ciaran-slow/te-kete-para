@@ -233,10 +233,14 @@
   camelCase fields and both locales' description/disposal-instructions text in
   every result (ADR 0013, ADR 0025, ADR 0035, ADR 0040); `keywords` is
   match-only and never appears in the response. `escapeLikePattern`
-  (`src/lib/api/escape-like-pattern.ts`) remains a standalone, independently
-  tested helper shared with `/api/suburbs/search` but is no longer invoked by
-  either route's matching logic, since a plain JS substring check has no
-  wildcard syntax to escape.
+  (`src/lib/api/escape-like-pattern.ts`) is no longer invoked by either
+  route's matching logic, since a plain JS substring check has no wildcard
+  syntax to escape — `/api/suburbs/search` used to share it too, but #150
+  removed that route's last reference, so the helper now has zero production
+  consumers repo-wide and is exercised only by its own test coverage
+  (`__tests__/api/suburbs-search.test.ts`). ADR 0040 kept it rather than
+  deleting it as dead code, as a standalone, tested helper held in reserve
+  against any future return to SQL `LIKE` matching.
 * **Holidays Endpoint:** `GET /api/holidays` (`src/app/api/holidays/route.ts`)
   takes no query parameters and returns every row of the `holidays` table
   (§2C) ordered by `holiday_date` ascending, camelCase-mapped to
