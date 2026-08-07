@@ -90,6 +90,10 @@ needs its own DB read (`holidays`), its own test fixtures against the seeded
 start gating on the shifted date instead of the nominal one, none of which
 this issue's scope (or plan) anticipated.
 
+**Resolved by issue #185 / ADR 0077** — see ADR 0077 for how the dispatcher
+now resolves a holiday-shifted real collection date before gating on
+`collectionWeekday`.
+
 ## Alternatives considered
 
 ### A (chosen): visible `console.error` no-op for unconfirmed `collectionWeekday`, silent no-op for a confirmed non-match
@@ -166,9 +170,10 @@ Friday and Christmas Day both fall on a Friday in 2026 and no address is
 seeded with `collection_weekday: 5`, so those two holiday weeks affect zero
 currently-seeded addresses this year, though a future Friday-collection
 address would hit the same bug there too. See the "Known limitation"
-callout above and issue #185, filed to track the fix. Revisit trigger:
-issue #185 landing (`dispatcher.ts` gaining holiday-shift awareness), and —
-independently of that — the "unconfirmed" branch should stay unreachable in
+callout above and issue #185, filed to track the fix. **Issue #185 has now
+landed (ADR 0077)**, resolving this for the New Year's Day week and any
+future holiday-shifted week. Revisit trigger, independent of that: the
+"unconfirmed" branch should stay unreachable in
 practice for any address seeded going forward, under the same
 confirm-before-seed discipline ADR 0063 and ADR 0059 both already
 established for their own fields. If a second `collection-day.ts` caller

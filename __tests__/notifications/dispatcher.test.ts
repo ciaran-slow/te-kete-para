@@ -2,8 +2,11 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { getDb } from "@/lib/db";
 import { computeCollectionRuleSet, type ZoneClassification } from "@/lib/schedule/rules";
+import type { CollectionDayClassification } from "@/lib/schedule/collection-day";
+import type { HolidayRecord } from "@/lib/schedule/holiday-shift";
 import {
   collectNightlyDispatchCandidates,
+  isRealCollectionDay,
   planDispatchForSubscription,
   tomorrowInNzAsUtcDate,
   type DispatchSubscription,
@@ -103,6 +106,87 @@ function subscriptionWith(overrides: Partial<DispatchSubscription>): DispatchSub
     ...overrides,
   };
 }
+
+// New Year's Day 2026 is a Thursday; WCC shifts it 2 days to Saturday
+// 2026-01-03 (matches db/seeds/03_holidays.js's confirmed real row).
+const NEW_YEARS_2026: HolidayRecord = { date: "2026-01-01", shiftDays: 2 };
+
+const THURSDAY_CLASSIFICATION: CollectionDayClassification = {
+  isInnerCityNightCollection: false,
+  collectionWeekday: 4,
+};
+const MONDAY_CLASSIFICATION: CollectionDayClassification = {
+  isInnerCityNightCollection: false,
+  collectionWeekday: 1,
+};
+const INNER_CITY_CLASSIFICATION: CollectionDayClassification = {
+  isInnerCityNightCollection: true,
+  collectionWeekday: null,
+};
+
+describe("isRealCollectionDay", () => {
+  test("a suburban address's nominal weekday matching a listed holiday's own date is NOT a real collection day", () => {
+    // Falsifiable: a plain isCollectionDay check (no holiday awareness)
+    // would return true here — 2026-01-01 is a Thursday, matching
+    // collectionWeekday 4. This assertion only passes with the fix.
+    expect(
+      isRealCollectionDay(THURSDAY_CLASSIFICATION, utcDate(2026, 1, 1), [NEW_YEARS_2026]),
+    ).toBe(false);
+  });
+
+  test("the fully-resolved shifted date is a real collection day even though its own weekday doesn't nominally match", () => {
+    // Falsifiable: a plain isCollectionDay check on 2026-01-03 (a Saturday,
+    // weekday 6) against collectionWeekday 4 is false. This assertion only
+    // passes with the fix.
+    expect(
+      isRealCollectionDay(THURSDAY_CLASSIFICATION, utcDate(2026, 1, 3), [NEW_YEARS_2026]),
+    ).toBe(true);
+  });
+
+  test("a date unconnected to any holiday is unaffected — ordinary nominal match still returns true", () => {
+    expect(
+      isRealCollectionDay(MONDAY_CLASSIFICATION, utcDate(2026, 1, 12), [NEW_YEARS_2026]),
+    ).toBe(true);
+  });
+
+  test("a date unconnected to any holiday still returns false on a genuine weekday mismatch", () => {
+    expect(
+      isRealCollectionDay(MONDAY_CLASSIFICATION, utcDate(2026, 1, 13), [NEW_YEARS_2026]),
+    ).toBe(false);
+  });
+
+  test("an inner-city classification is always eligible, even on the holiday's own date (issue #185 scope)", () => {
+    expect(
+      isRealCollectionDay(INNER_CITY_CLASSIFICATION, utcDate(2026, 1, 1), [NEW_YEARS_2026]),
+    ).toBe(true);
+  });
+
+  test("an empty holidays array behaves exactly like a plain nominal isCollectionDay check", () => {
+    expect(isRealCollectionDay(THURSDAY_CLASSIFICATION, utcDate(2026, 1, 1), [])).toBe(true);
+  });
+
+  test("a two-hop holiday chain resolves correctly (ADR 0030)", () => {
+    const chain: HolidayRecord[] = [
+      { date: "2026-01-01", shiftDays: 1 },
+      { date: "2026-01-02", shiftDays: 1 },
+    ];
+
+    expect(isRealCollectionDay(THURSDAY_CLASSIFICATION, utcDate(2026, 1, 3), chain)).toBe(true);
+  });
+
+  test("repeat calls are deterministic and never mutate the caller's holidays", () => {
+    const holidays = [NEW_YEARS_2026];
+
+    const resultA = isRealCollectionDay(THURSDAY_CLASSIFICATION, utcDate(2026, 1, 3), holidays);
+    const resultB = isRealCollectionDay(THURSDAY_CLASSIFICATION, utcDate(2026, 1, 3), holidays);
+    const resultC = isRealCollectionDay(THURSDAY_CLASSIFICATION, utcDate(2026, 1, 3), holidays);
+
+    expect(resultA).toBe(true);
+    expect(resultB).toBe(true);
+    expect(resultC).toBe(true);
+    expect(holidays).toEqual([NEW_YEARS_2026]);
+  });
+});
 
 describe("planDispatchForSubscription", () => {
   test("suburban zone with a resolvable classification builds a payload with the correct ruleSet", () => {
@@ -254,6 +338,56 @@ describe("planDispatchForSubscription", () => {
 
     const resultC = planDispatchForSubscription(subscription, NOW);
     expect(resultC!.ruleSet.binTypes).not.toContain("cardboard");
+  });
+});
+
+describe("planDispatchForSubscription — holiday-shift awareness (issue #185)", () => {
+  const NOW_HOLIDAY_EVE = new Date("2025-12-31T06:00:00Z"); // NZDT 19:00 Dec 31 -> tomorrow = 2026-01-01
+  const NOW_SHIFT_EVE = new Date("2026-01-02T06:00:00Z"); // NZDT 19:00 Jan 2 -> tomorrow = 2026-01-03
+
+  test("a suburban subscriber whose nominal weekday matches the holiday's own date gets no payload for the holiday date", () => {
+    const subscription = subscriptionWith({ collectionWeekday: 4 });
+
+    expect(
+      planDispatchForSubscription(subscription, NOW_HOLIDAY_EVE, [NEW_YEARS_2026]),
+    ).toBeNull();
+  });
+
+  test("without a holidays list (the default []), the same subscriber WOULD wrongly get a payload for the holiday date", () => {
+    // Falsifying counterpart to the test above: same subscriber, same now,
+    // only the holidays argument differs — proving the holidays argument
+    // is what suppresses the wrong dispatch, not a coincidence.
+    const subscription = subscriptionWith({ collectionWeekday: 4 });
+
+    expect(planDispatchForSubscription(subscription, NOW_HOLIDAY_EVE)).not.toBeNull();
+  });
+
+  test("the same subscriber gets a payload for the real, shifted collection date", () => {
+    const subscription = subscriptionWith({ collectionWeekday: 4 });
+
+    const result = planDispatchForSubscription(subscription, NOW_SHIFT_EVE, [NEW_YEARS_2026]);
+
+    expect(result).not.toBeNull();
+    expect(result!.collectionDate).toBe("2026-01-03");
+  });
+
+  test("an inner-city subscriber still dispatches on the holiday's own date (holiday closures not modelled for inner-city, issue #185 scope)", () => {
+    const subscription = subscriptionWith({ zone: INNER_CITY_ZONE, collectionWeekday: null });
+
+    expect(
+      planDispatchForSubscription(subscription, NOW_HOLIDAY_EVE, [NEW_YEARS_2026]),
+    ).not.toBeNull();
+  });
+
+  test("repeat calls with the same subscription/now/holidays return deep-equal results and never mutate the holidays array", () => {
+    const subscription = subscriptionWith({ collectionWeekday: 4 });
+    const holidays = [NEW_YEARS_2026];
+
+    const resultA = planDispatchForSubscription(subscription, NOW_SHIFT_EVE, holidays);
+    const resultB = planDispatchForSubscription(subscription, NOW_SHIFT_EVE, holidays);
+
+    expect(resultA).toEqual(resultB);
+    expect(holidays).toEqual([NEW_YEARS_2026]);
   });
 });
 
@@ -441,5 +575,103 @@ describe("collectNightlyDispatchCandidates", () => {
       a.endpoint.localeCompare(b.endpoint);
 
     expect([...first].sort(sortByEndpoint)).toEqual([...second].sort(sortByEndpoint));
+  });
+});
+
+async function seedHolidayDispatchFixtures(): Promise<void> {
+  const db = getDb();
+
+  await db("holidays").insert({
+    holiday_date: "2026-01-01",
+    name_en: "New Year's Day",
+    name_mi: "Te Rā Tau Hou",
+    shift_days: 2,
+  });
+
+  const [thursdayAddressId] = await db("addresses").insert({
+    street_name: "Thursday Suburban Street",
+    suburb: "Karori",
+    zone: "zone-east",
+    is_inner_city_night_collection: false,
+    recycling_calendar_group: 1,
+    collection_weekday: 4, // Thursday — matches New Year's Day's own weekday
+  });
+
+  const [mondayAddressId] = await db("addresses").insert({
+    street_name: "Monday Suburban Street",
+    suburb: "Island Bay",
+    zone: "zone-south",
+    is_inner_city_night_collection: false,
+    recycling_calendar_group: 1,
+    collection_weekday: 1, // Monday — control, unconnected to the holiday
+  });
+
+  await db("push_subscriptions").insert([
+    {
+      endpoint: "https://push.example/thursday-suburban",
+      p256dh: "p256dh-thursday-suburban",
+      auth: "auth-thursday-suburban",
+      language_preference: "en",
+      address_id: thursdayAddressId,
+    },
+    {
+      endpoint: "https://push.example/monday-suburban",
+      p256dh: "p256dh-monday-suburban",
+      auth: "auth-monday-suburban",
+      language_preference: "en",
+      address_id: mondayAddressId,
+    },
+  ]);
+}
+
+describe("collectNightlyDispatchCandidates — holiday-shift awareness (issue #185)", () => {
+  const NOW_HOLIDAY_EVE = new Date("2025-12-31T06:00:00Z"); // NZDT 19:00 Dec 31 -> tomorrow = 2026-01-01
+  const NOW_SHIFT_EVE = new Date("2026-01-02T06:00:00Z"); // NZDT 19:00 Jan 2 -> tomorrow = 2026-01-03
+  const NOW_ORDINARY_THURSDAY_EVE = new Date("2026-01-14T06:00:00Z"); // NZDT 19:00 Jan 14 -> tomorrow = 2026-01-15
+
+  beforeAll(async () => {
+    await setupTestDb();
+    await seedHolidayDispatchFixtures();
+  });
+
+  afterAll(async () => {
+    await teardownTestDb();
+  });
+
+  test("a Thursday-collection subscriber gets no dispatch candidate for the holiday's own date (2026-01-01)", async () => {
+    const candidates = await collectNightlyDispatchCandidates(NOW_HOLIDAY_EVE);
+    const endpoints = candidates.map((c) => c.endpoint);
+
+    expect(endpoints).not.toContain("https://push.example/thursday-suburban");
+    expect(endpoints).not.toContain("https://push.example/monday-suburban");
+  });
+
+  test("the same subscriber gets a dispatch candidate for the real, shifted collection date (2026-01-03), called twice with identical results", async () => {
+    const first = await collectNightlyDispatchCandidates(NOW_SHIFT_EVE);
+    const second = await collectNightlyDispatchCandidates(NOW_SHIFT_EVE);
+
+    const sortByEndpoint = (a: { endpoint: string }, b: { endpoint: string }) =>
+      a.endpoint.localeCompare(b.endpoint);
+    expect([...first].sort(sortByEndpoint)).toEqual([...second].sort(sortByEndpoint));
+
+    const thursday = first.find((c) => c.endpoint === "https://push.example/thursday-suburban");
+    expect(thursday).toBeDefined();
+    expect(thursday!.collectionDate).toBe("2026-01-03");
+
+    expect(first.map((c) => c.endpoint)).not.toContain("https://push.example/monday-suburban");
+  });
+
+  test("a non-holiday week is unaffected — ordinary Thursday collection still dispatches normally", async () => {
+    const candidates = await collectNightlyDispatchCandidates(NOW_ORDINARY_THURSDAY_EVE);
+
+    const thursday = candidates.find(
+      (c) => c.endpoint === "https://push.example/thursday-suburban",
+    );
+    expect(thursday).toBeDefined();
+    expect(thursday!.collectionDate).toBe("2026-01-15");
+
+    expect(candidates.map((c) => c.endpoint)).not.toContain(
+      "https://push.example/monday-suburban",
+    );
   });
 });
