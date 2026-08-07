@@ -332,7 +332,12 @@
   `src/lib/schedule/collection-day.ts`) — a confirmed non-matching weekday is
   a silent no-op, but an unconfirmed `collectionWeekday` logs the same way
   the `recyclingCalendarGroup` case does, for the same reason (issue #144,
-  ADR 0073). Every other rejection reason stays a silent no-op.
+  ADR 0073). Every other rejection reason stays a silent no-op. This
+  weekday match is against the address's *nominal* `collectionWeekday`
+  only — the gate has no awareness of a holiday shift
+  (`computeHolidayShift`, above), so it is currently wrong in both
+  directions during a holiday-shifted collection week (tracked separately,
+  issue #185).
   `src/lib/notifications/payload-builder.ts`'s `buildLocalizedPushContent`
   renders that rule set into a localized `{ title, body }` via the shared
   dictionaries (§2A), keyed on each subscription's `languagePreference` — a

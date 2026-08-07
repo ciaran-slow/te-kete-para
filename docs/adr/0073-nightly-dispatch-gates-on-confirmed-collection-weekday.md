@@ -68,6 +68,28 @@ classification with a null weekday) is a plain `if` in `dispatcher.ts`,
 checked *before* calling it — not a new named-error subclass mirroring
 `UnresolvedRecyclingCalendarGroupError`. See Alternative D below for why.
 
+**Known limitation, deliberately not fixed here:** `isCollectionDay` compares
+tomorrow's *actual* weekday against the address's *nominal* `collectionWeekday`
+and has no awareness of `src/lib/schedule/holiday-shift.ts`'s
+`computeHolidayShift` — a gap that predates this issue (`dispatcher.ts` never
+called `computeHolidayShift`) but was inert before this change, since the
+old "fire every night" behaviour happened to still cover a holiday-shifted
+collection date by accident. Now that dispatch is gated on nominal weekday
+match, a holiday-shifted collection (e.g. a Thursday collection pushed to the
+following Saturday, ADR 0038) gets this backwards: a push still fires the eve
+of the holiday itself (nominal weekday matches, nothing is actually
+collected that day) and no push fires the eve of the real shifted Saturday
+collection (nominal weekday doesn't match, even though that is the address's
+real collection day that week). This is the same failure class issue #144's
+own "Why" describes, just from the holiday-shift axis rather than the
+day-of-week axis, and it also desyncs the dispatcher from `<ShiftAlertBanner>`,
+which does apply the shift. Filed as issue #185, tracked separately rather
+than folded in here — teaching `dispatcher.ts` about `computeHolidayShift`
+needs its own DB read (`holidays`), its own test fixtures against the seeded
+2026 holiday rows, and a decision about how far ahead of the holiday to
+start gating on the shifted date instead of the nominal one, none of which
+this issue's scope (or plan) anticipated.
+
 ## Alternatives considered
 
 ### A (chosen): visible `console.error` no-op for unconfirmed `collectionWeekday`, silent no-op for a confirmed non-match
@@ -128,17 +150,24 @@ checked *before* calling it — not a new named-error subclass mirroring
 
 ## Trade-offs and consequences
 
-Suburban subscribers now only receive a "collection tomorrow" push on their
-real, confirmed collection day — closing the bug named in issue #144's "Why."
-Every currently-seeded suburban address is already confirmed (ADR 0063), so
-no currently-seeded subscriber's nightly notification volume changes; only a
-future, not-yet-confirmed suburban address would newly no-op (visibly, via
-`console.error`, not silently) instead of continuing to fire every night the
-way today's dispatcher would for a hypothetical unconfirmed row. Revisit
-trigger: none anticipated specifically for this decision; the "unconfirmed"
-branch should stay unreachable in practice for any address seeded going
-forward, under the same confirm-before-seed discipline ADR 0063 and ADR 0059
-both already established for their own fields. If a second `collection-day.ts`
-caller ever needs to distinguish "unconfirmed" from other rejection reasons
-the way `dispatcher.ts` now can via a plain `if`, Alternative D above should
-be revisited.
+Suburban subscribers now only receive a "collection tomorrow" push on a day
+whose weekday matches their real, confirmed collection day — closing the bug
+named in issue #144's "Why" for the ordinary weekly cycle, which is every
+week of the year except the three 2026 holiday weeks (ADR 0038). Every
+currently-seeded suburban address is already confirmed (ADR 0063), so no
+currently-seeded subscriber's nightly notification volume changes *in a
+non-holiday week*; only a future, not-yet-confirmed suburban address would
+newly no-op (visibly, via `console.error`, not silently) instead of
+continuing to fire every night the way today's dispatcher would for a
+hypothetical unconfirmed row. In a holiday-shifted week, this issue's own
+gate is now wrong in both directions for the 7 currently-seeded
+`collection_weekday: 4` (Thursday) addresses — see the "Known limitation"
+callout above and issue #185, filed to track the fix. Revisit trigger:
+issue #185 landing (`dispatcher.ts` gaining holiday-shift awareness), and —
+independently of that — the "unconfirmed" branch should stay unreachable in
+practice for any address seeded going forward, under the same
+confirm-before-seed discipline ADR 0063 and ADR 0059 both already
+established for their own fields. If a second `collection-day.ts` caller
+ever needs to distinguish "unconfirmed" from other rejection reasons the way
+`dispatcher.ts` now can via a plain `if`, Alternative D above should be
+revisited.
