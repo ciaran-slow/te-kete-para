@@ -30,6 +30,7 @@ async function seedOneSubscription(endpoint: string): Promise<void> {
     zone: "zone-east",
     is_inner_city_night_collection: false,
     recycling_calendar_group: 1,
+    collection_weekday: 1, // Monday — matches NOW's tomorrow (2026-01-12)
   });
   await db("push_subscriptions").insert({
     endpoint,

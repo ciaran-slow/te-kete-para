@@ -5,6 +5,12 @@ import {
   type CollectionRuleSet,
   type ZoneClassification,
 } from "@/lib/schedule/rules";
+import {
+  isCollectionDay,
+  toCollectionDayClassification,
+  type CollectionDayClassification,
+  type Weekday,
+} from "@/lib/schedule/collection-day";
 import { isLocale, type Locale } from "@/lib/i18n/dictionaries";
 
 /** A push_subscriptions row joined with its address's zone classification, if any. */
@@ -16,6 +22,13 @@ export interface DispatchSubscription {
   languagePreference: Locale;
   /** null when address_id is null, or the addresses row is unresolvable. */
   zone: ZoneClassification | null;
+  /**
+   * Which real WCC weekday this address's weekly kerbside collection falls
+   * on (ADR 0063), already narrowed to 0-6 or null. Null for an inner-city
+   * night-collection address (collects every night, not one weekday) or a
+   * suburban address not yet confirmed. Meaningless when `zone` is null.
+   */
+  collectionWeekday: Weekday | null;
 }
 
 /**
@@ -73,16 +86,19 @@ function formatUtcIsoDate(date: Date): string {
 
 /**
  * Decides whether `subscription` needs a payload built for tomorrow (NZ
- * local), and builds it if so. Returns null — a no-op — when the
- * subscription has no resolvable zone classification (no linked address, or
- * `computeCollectionRuleSet` rejects the zone/date pair). Given the current
- * schedule model (the `schedules` per-date/per-zone table exists but is not
- * yet populated or read by anything — `computeCollectionRuleSet` returns a
- * valid rule set for every date once a zone classification resolves), a
- * resolvable zone always means "tomorrow is a collection day": the only
- * no-op path reachable today is a missing/invalid address link. This is a
- * known simplification, not a hidden bug — a future per-street collection
- * calendar (schedules table) would gate here too, once it exists.
+ * local), and builds it if so. Returns null — a no-op — in three cases: no
+ * resolvable zone classification (no linked address, or
+ * `computeCollectionRuleSet` rejects the zone/date pair — logging when the
+ * specific reason is an unresolved `recyclingCalendarGroup`, ADR 0068); an
+ * inner-city-night-collection address is always eligible past that point
+ * (collects every night); a suburban address additionally needs its
+ * confirmed `collectionWeekday` (ADR 0063) to equal tomorrow's NZ weekday
+ * (`isCollectionDay`, ADR 0073) — a confirmed non-matching weekday is a
+ * silent no-op (today just isn't this address's collection day), but an
+ * unconfirmed (`null`) `collectionWeekday` logs a `console.error` exactly
+ * like the `recyclingCalendarGroup` case, because it is the same class of
+ * bug: a permanent per-address data gap that would otherwise silently
+ * exclude a subscriber from every future nightly run.
  */
 export function planDispatchForSubscription(
   subscription: DispatchSubscription,
@@ -100,6 +116,22 @@ export function planDispatchForSubscription(
         `[dispatcher] Dropping subscription ${subscription.id} (zone "${subscription.zone.zone}"): recyclingCalendarGroup is unresolved.`,
       );
     }
+    return null;
+  }
+
+  const dayClassification: CollectionDayClassification = {
+    isInnerCityNightCollection: subscription.zone.isInnerCityNightCollection,
+    collectionWeekday: subscription.collectionWeekday,
+  };
+
+  if (!dayClassification.isInnerCityNightCollection && dayClassification.collectionWeekday === null) {
+    console.error(
+      `[dispatcher] Dropping subscription ${subscription.id} (zone "${subscription.zone.zone}"): collectionWeekday is unconfirmed.`,
+    );
+    return null;
+  }
+
+  if (!isCollectionDay(dayClassification, tomorrow)) {
     return null;
   }
 
@@ -123,6 +155,7 @@ interface DispatchRow {
   zone: string | null;
   is_inner_city_night_collection: number | null;
   recycling_calendar_group: number | null;
+  collection_weekday: number | null;
 }
 
 /**
@@ -153,6 +186,7 @@ export async function collectNightlyDispatchCandidates(
       "a.zone as zone",
       "a.is_inner_city_night_collection as is_inner_city_night_collection",
       "a.recycling_calendar_group as recycling_calendar_group",
+      "a.collection_weekday as collection_weekday",
     );
 
   const candidates: DispatchPayload[] = [];
@@ -174,6 +208,13 @@ export async function collectNightlyDispatchCandidates(
                   ? row.recycling_calendar_group
                   : null,
             },
+      collectionWeekday:
+        row.zone === null
+          ? null
+          : toCollectionDayClassification({
+              is_inner_city_night_collection: row.is_inner_city_night_collection ?? false,
+              collection_weekday: row.collection_weekday,
+            }).collectionWeekday,
     };
     const candidate = planDispatchForSubscription(subscription, now);
     if (candidate !== null) candidates.push(candidate);
