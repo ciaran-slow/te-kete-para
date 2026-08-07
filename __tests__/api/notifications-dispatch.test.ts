@@ -19,12 +19,18 @@ describe("GET /api/notifications/dispatch", () => {
     await setupTestDb();
     vi.stubEnv("CRON_SECRET", SECRET);
 
+    // Inner-city (not suburban) so this route smoke test stays deterministic
+    // regardless of which real calendar day it runs on: this route calls
+    // `new Date()` directly (no injectable "now"), and an inner-city
+    // subscriber bypasses the collection_weekday gate entirely (ADR 0073).
+    // Weekday-gate semantics themselves are covered in dispatcher.test.ts.
     const [resolvableAddressId] = await getDb()("addresses").insert({
-      street_name: "Suburban Street",
-      suburb: "Karori",
-      zone: "zone-east",
-      is_inner_city_night_collection: false,
-      recycling_calendar_group: 1,
+      street_name: "Cuba Street",
+      suburb: "Te Aro",
+      zone: "zone-cbd",
+      is_inner_city_night_collection: true,
+      recycling_calendar_group: null,
+      collection_weekday: null,
     });
 
     await getDb()("push_subscriptions").insert([

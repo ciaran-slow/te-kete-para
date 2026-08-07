@@ -70,6 +70,7 @@ async function seedDispatchFixtures(): Promise<void> {
     zone: "zone-east",
     is_inner_city_night_collection: false,
     recycling_calendar_group: 1,
+    collection_weekday: 1, // Monday — matches NOW's tomorrow (2026-01-12)
   });
 
   const [innerCityAddressId] = await db("addresses").insert({
@@ -150,6 +151,7 @@ describe("runNightlyDispatch — pruning (issue #111)", () => {
       zone: "zone-east",
       is_inner_city_night_collection: false,
       recycling_calendar_group: 1,
+      collection_weekday: 1, // Monday — matches NOW's tomorrow (2026-01-12)
     });
     const [subscriptionId] = await db("push_subscriptions").insert({
       endpoint,

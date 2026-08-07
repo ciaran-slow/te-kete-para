@@ -119,9 +119,8 @@
   yet — that gap closed with `addresses.collection_weekday` (ADR 0063,
   issue #117). When an address's weekday can't be confirmed, the banner
   shows nothing rather than falling back to the old generic wording (ADR
-  0066). The nightly dispatch pipeline (§2B below) is not yet gated on
-  this same per-address data — tracked as issue #144, not part of this
-  change.
+  0066). The nightly dispatch pipeline (§2B below) is now also gated on
+  this same per-address data (ADR 0073, issue #144).
 * **Web App Manifest & Core Shell Caching:** `src/app/manifest.ts` (Next's
   App Router manifest convention, resolved at `/manifest.webmanifest`)
   supplies the installable-app name, Papa/Moana theme colours, and two
@@ -330,8 +329,19 @@
   line identifying the subscription and zone whenever it drops a candidate
   specifically because `recyclingCalendarGroup` is unresolved, so that
   otherwise-permanent, silent exclusion from every future nightly run is now
-  visible (issue #131, ADR 0068) — every other rejection reason stays a
-  silent no-op, unchanged.
+  visible (issue #131, ADR 0068). Past that point, an inner-city-night-
+  collection subscriber is always eligible; a suburban subscriber
+  additionally needs its confirmed `addresses.collection_weekday` (ADR 0063)
+  to match tomorrow's NZ weekday (`isCollectionDay`,
+  `src/lib/schedule/collection-day.ts`) — a confirmed non-matching weekday is
+  a silent no-op, but an unconfirmed `collectionWeekday` logs the same way
+  the `recyclingCalendarGroup` case does, for the same reason (issue #144,
+  ADR 0073). Every other rejection reason stays a silent no-op. This
+  weekday match is against the address's *nominal* `collectionWeekday`
+  only — the gate has no awareness of a holiday shift
+  (`computeHolidayShift`, above), so it is currently wrong in both
+  directions during a holiday-shifted collection week (tracked separately,
+  issue #185).
   `src/lib/notifications/payload-builder.ts`'s `buildLocalizedPushContent`
   renders that rule set into a localized `{ title, body }` via the shared
   dictionaries (§2A), keyed on each subscription's `languagePreference` — a
@@ -369,7 +379,7 @@
 ### C. Data Persistence Layer
 * **Database Engine:** **SQLite3** stored as an embedded file database (`/data/teketepara.db`).
 * **Core Schemas:**
-  * `addresses`: Wellington street indices, council zones, suburb classifications (Suburban vs. CBD night collection), which of WCC's two independently-phased alternating recycling calendars the address follows (`recycling_calendar_group`, 1 or 2, `null` for CBD rows; confirmed per-address against WCC's live per-street lookup tool, ADR 0059, issue #102), and — for suburban rows — which real WCC weekday the address's weekly kerbside collection actually falls on (`collection_weekday`, 0–6 per `Date#getUTCDay()`, `null` for CBD rows and any address not yet confirmed; confirmed per-address against the same WCC live per-street lookup tool, ADR 0063, issue #117). `src/lib/schedule/collection-day.ts` exports the pure `isCollectionDay`/`findNextCollectionDate` functions that consume this field (no DB access, ADR 0015), now wired into `<ScheduleDisplay>`/`<ShiftAlertBanner>` to restore a genuine per-address claim (ADR 0066, issue #134, superseding ADR 0019/ADR 0053). The nightly dispatch pipeline (§2B) does not yet consult this field — tracked as issue #144.
+  * `addresses`: Wellington street indices, council zones, suburb classifications (Suburban vs. CBD night collection), which of WCC's two independently-phased alternating recycling calendars the address follows (`recycling_calendar_group`, 1 or 2, `null` for CBD rows; confirmed per-address against WCC's live per-street lookup tool, ADR 0059, issue #102), and — for suburban rows — which real WCC weekday the address's weekly kerbside collection actually falls on (`collection_weekday`, 0–6 per `Date#getUTCDay()`, `null` for CBD rows and any address not yet confirmed; confirmed per-address against the same WCC live per-street lookup tool, ADR 0063, issue #117). `src/lib/schedule/collection-day.ts` exports the pure `isCollectionDay`/`findNextCollectionDate` functions that consume this field (no DB access, ADR 0015), now wired into `<ScheduleDisplay>`/`<ShiftAlertBanner>` to restore a genuine per-address claim (ADR 0066, issue #134, superseding ADR 0019/ADR 0053). The nightly dispatch pipeline (§2B) now also gates its per-subscriber decision on this field (ADR 0073, issue #144).
   * `schedules`: migrated (issue #2) but still empty and unqueried — real per-street collection-day data lives on `addresses.collection_weekday` instead (ADR 0063), not as date-mapped rows here. This table remains a placeholder for a possible future per-date override model (e.g. one-off route changes), not the home for regular weekly collection days.
   * `i18n_strings`: Relational translation keys with explicit English (`en`) and Te Reo Māori (`mi`) text columns.
   * `sorting_rules`: Item keys, bilingual descriptions, WCC disposal instructions, and a `keywords` column — a curated, author-added set of extra search terms included in `GET /api/sorting/search`'s match scope (ADR 0035), populated incrementally as real recall gaps are found rather than translated/verified content, so it isn't blocked by #69/#70. The rest of the seed dataset (`db/seeds/02_sorting_rules.js`) is confirmed against live wellington.govt.nz pages (ADR 0054, issue #70) — a browser User-Agent bypasses the site's 403-to-bare-request block, which blocked PR #88's verify pass and every session before it. All 15 rows are now fully confirmed (ADR 0054, ADR 0060), with four corrected (pizza-box, polystyrene-packaging, light-bulb, aerosol-can) — `aerosol-can`'s empty-vs-full handling split (issue #119) turned out to be invented: WCC's own disposal-lookup tool sends aerosol and spray cans straight to kerbside general rubbish regardless of fill state, not split between general rubbish and hazardous waste. The Te Reo Māori text still awaits review by a fluent speaker (tracked by issue #69) — a similar confirm-against-real-data pattern to the schedule epoch resolved in ADR 0042 (§2B, issue #59). #69 blocks #21 surfacing this text to users. Queried by `GET /api/sorting/search` (ADR 0025, ADR 0035).

@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { getDb } from "@/lib/db";
 import { computeCollectionRuleSet, type ZoneClassification } from "@/lib/schedule/rules";
 import {
@@ -99,6 +99,7 @@ function subscriptionWith(overrides: Partial<DispatchSubscription>): DispatchSub
     auth: "auth-secret",
     languagePreference: "en",
     zone: SUBURBAN_ZONE,
+    collectionWeekday: 1, // Monday — matches NOW's tomorrow (2026-01-12)
     ...overrides,
   };
 }
@@ -183,6 +184,63 @@ describe("planDispatchForSubscription", () => {
     }
   });
 
+  test("a suburban zone whose confirmed collectionWeekday does NOT match tomorrow's NZ weekday returns null, without logging", () => {
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      const subscription = subscriptionWith({ zone: SUBURBAN_ZONE, collectionWeekday: 3 });
+
+      expect(planDispatchForSubscription(subscription, NOW)).toBeNull();
+      expect(spy).not.toHaveBeenCalled();
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  test("a suburban zone whose confirmed collectionWeekday matches tomorrow's NZ weekday still builds a payload", () => {
+    const subscription = subscriptionWith({ zone: SUBURBAN_ZONE, collectionWeekday: 1 });
+
+    const result = planDispatchForSubscription(subscription, NOW);
+
+    expect(result).not.toBeNull();
+    expect(result!.collectionDate).toBe("2026-01-12");
+  });
+
+  test("an inner-city zone dispatches regardless of collectionWeekday (always eligible)", () => {
+    const subscription = subscriptionWith({ zone: INNER_CITY_ZONE, collectionWeekday: null });
+
+    expect(planDispatchForSubscription(subscription, NOW)).not.toBeNull();
+  });
+
+  test("a suburban zone with collectionWeekday: null (unconfirmed) returns null and logs a [dispatcher] error naming collectionWeekday", () => {
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      const subscription = subscriptionWith({ zone: SUBURBAN_ZONE, collectionWeekday: null });
+
+      expect(planDispatchForSubscription(subscription, NOW)).toBeNull();
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(expect.stringContaining(`[dispatcher]`));
+      expect(spy).toHaveBeenCalledWith(expect.stringContaining(`collectionWeekday`));
+      expect(spy).toHaveBeenCalledWith(expect.stringContaining(`${subscription.id}`));
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  test("a suburban zone with collectionWeekday: null logs again on every repeat call, not just once", () => {
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      const subscription = subscriptionWith({ zone: SUBURBAN_ZONE, collectionWeekday: null });
+
+      expect(planDispatchForSubscription(subscription, NOW)).toBeNull();
+      expect(planDispatchForSubscription(subscription, NOW)).toBeNull();
+
+      expect(spy).toHaveBeenCalledTimes(2);
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
   test("repeat calls with the same subscription and now return deep-equal but independently-mutable results", () => {
     const subscription = subscriptionWith({ zone: SUBURBAN_ZONE });
 
@@ -208,6 +266,7 @@ async function seedDispatchFixtures(): Promise<void> {
     zone: "zone-east",
     is_inner_city_night_collection: false,
     recycling_calendar_group: 1,
+    collection_weekday: 1, // Monday — matches NOW's tomorrow (2026-01-12)
   });
 
   const [suburbanCalendar2AddressId] = await db("addresses").insert({
@@ -216,6 +275,7 @@ async function seedDispatchFixtures(): Promise<void> {
     zone: "zone-south",
     is_inner_city_night_collection: false,
     recycling_calendar_group: 2,
+    collection_weekday: 1,
   });
 
   const [innerCityAddressId] = await db("addresses").insert({
@@ -223,6 +283,24 @@ async function seedDispatchFixtures(): Promise<void> {
     suburb: "Te Aro",
     zone: "zone-cbd",
     is_inner_city_night_collection: true,
+  });
+
+  const [mismatchedWeekdayAddressId] = await db("addresses").insert({
+    street_name: "Mismatched Weekday Street",
+    suburb: "Brooklyn",
+    zone: "zone-west",
+    is_inner_city_night_collection: false,
+    recycling_calendar_group: 1,
+    collection_weekday: 3, // Wednesday; tomorrow (fixed NOW) is Monday (1) — a genuine mismatch
+  });
+
+  const [unconfirmedWeekdayAddressId] = await db("addresses").insert({
+    street_name: "Unconfirmed Weekday Street",
+    suburb: "Kelburn",
+    zone: "zone-west",
+    is_inner_city_night_collection: false,
+    recycling_calendar_group: 1,
+    collection_weekday: null,
   });
 
   await db("push_subscriptions").insert([
@@ -254,10 +332,26 @@ async function seedDispatchFixtures(): Promise<void> {
       language_preference: "en",
       address_id: null,
     },
+    {
+      endpoint: "https://push.example/suburban-mismatched-weekday",
+      p256dh: "p256dh-mismatched-weekday",
+      auth: "auth-mismatched-weekday",
+      language_preference: "en",
+      address_id: mismatchedWeekdayAddressId,
+    },
+    {
+      endpoint: "https://push.example/suburban-unconfirmed-weekday",
+      p256dh: "p256dh-unconfirmed-weekday",
+      auth: "auth-unconfirmed-weekday",
+      language_preference: "en",
+      address_id: unconfirmedWeekdayAddressId,
+    },
   ]);
 }
 
 describe("collectNightlyDispatchCandidates", () => {
+  let errorSpy: ReturnType<typeof vi.spyOn>;
+
   beforeAll(async () => {
     await setupTestDb();
     await seedDispatchFixtures();
@@ -267,13 +361,26 @@ describe("collectNightlyDispatchCandidates", () => {
     await teardownTestDb();
   });
 
-  test("returns exactly the three linked subscriptions' candidates, omitting the null-address subscription", async () => {
+  beforeEach(() => {
+    // The seeded unconfirmed-weekday subscription logs a [dispatcher] error
+    // on every call in this describe block; suppress it here so it doesn't
+    // pollute every other test's output.
+    errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    errorSpy.mockRestore();
+  });
+
+  test("returns exactly the three eligible subscriptions' candidates, omitting the null-address, weekday-mismatched, and weekday-unconfirmed subscriptions", async () => {
     const candidates = await collectNightlyDispatchCandidates(NOW);
 
     expect(candidates).toHaveLength(3);
 
     const bySubscription = new Map(candidates.map((c) => [c.endpoint, c]));
     expect(bySubscription.has("https://push.example/no-address")).toBe(false);
+    expect(bySubscription.has("https://push.example/suburban-mismatched-weekday")).toBe(false);
+    expect(bySubscription.has("https://push.example/suburban-unconfirmed-weekday")).toBe(false);
 
     const suburban = bySubscription.get("https://push.example/suburban");
     expect(suburban?.ruleSet.collectionType).toBe("suburban-kerbside");
@@ -283,6 +390,21 @@ describe("collectNightlyDispatchCandidates", () => {
 
     const innerCity = bySubscription.get("https://push.example/inner-city");
     expect(innerCity?.ruleSet.collectionType).toBe("inner-city-night");
+  });
+
+  test("a suburban subscriber whose confirmed collection_weekday does not match tomorrow's weekday produces no dispatch candidate (issue #144)", async () => {
+    const candidates = await collectNightlyDispatchCandidates(NOW);
+    const endpoints = candidates.map((c) => c.endpoint);
+
+    expect(endpoints).not.toContain("https://push.example/suburban-mismatched-weekday");
+  });
+
+  test("a suburban subscriber with an unconfirmed collection_weekday produces no dispatch candidate and logs a [dispatcher] error naming collectionWeekday (issue #144)", async () => {
+    const candidates = await collectNightlyDispatchCandidates(NOW);
+    const endpoints = candidates.map((c) => c.endpoint);
+
+    expect(endpoints).not.toContain("https://push.example/suburban-unconfirmed-weekday");
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining("collectionWeekday"));
   });
 
   test("resolves opposite recycling parity for two suburban subscriptions on different addresses.recycling_calendar_group (issue #102)", async () => {
