@@ -11,6 +11,11 @@ import {
   type CollectionDayClassification,
   type Weekday,
 } from "@/lib/schedule/collection-day";
+import {
+  computeHolidayShift,
+  formatUtcDateString,
+  type HolidayRecord,
+} from "@/lib/schedule/holiday-shift";
 import { isLocale, type Locale } from "@/lib/i18n/dictionaries";
 
 /** A push_subscriptions row joined with its address's zone classification, if any. */
@@ -85,6 +90,54 @@ function formatUtcIsoDate(date: Date): string {
 }
 
 /**
+ * Whether `date` is a genuine collection day for `classification`, correcting
+ * `isCollectionDay`'s plain nominal-weekday match for a WCC holiday shift
+ * (ADR 0038, `computeHolidayShift`) in both directions issue #185 identified:
+ *
+ * - `date` is itself a listed holiday: nothing is actually collected that
+ *   day even though its own weekday may nominally match `collectionWeekday`
+ *   — the collection is delayed, not skipped, so this must be a `false`
+ *   even when the plain nominal check would say `true`.
+ * - `date` is the fully chain-resolved (ADR 0030) shifted date of some
+ *   *other* listed holiday whose own weekday matches `collectionWeekday` —
+ *   the real, delayed collection day for this address that week, even
+ *   though `date`'s own weekday doesn't nominally match.
+ *
+ * Scoped to suburban (weekday-gated) addresses: an inner-city-night
+ * subscriber is always eligible regardless of `date`, unchanged from ADR
+ * 0073 — see ADR 0077 for why holiday-awareness is not extended to
+ * inner-city dispatch here.
+ *
+ * Checks `date` against every row in `holidays` rather than a fixed number
+ * of days ahead/behind it: unlike `<ShiftAlertBanner>`'s `LOOKAHEAD_DAYS`
+ * (ADR 0032), which bounds an arbitrary UX "how far ahead to warn" choice,
+ * there is no calendar distance beyond which a holiday shift stops being
+ * relevant to `date` — only a data-size one, and `holidays` is already
+ * established to be small and fetched in full, unfiltered, for the same
+ * reason (ADR 0032's Decision for `/api/holidays`). See ADR 0077.
+ */
+export function isRealCollectionDay(
+  classification: CollectionDayClassification,
+  date: Date,
+  holidays: HolidayRecord[],
+): boolean {
+  if (classification.isInnerCityNightCollection) return true;
+
+  if (computeHolidayShift(date, holidays).isShifted) return false;
+
+  if (isCollectionDay(classification, date)) return true;
+
+  const dateStr = formatUtcDateString(date.getTime());
+  return holidays.some((holiday) => {
+    const holidayDate = new Date(`${holiday.date}T00:00:00Z`);
+    return (
+      isCollectionDay(classification, holidayDate) &&
+      computeHolidayShift(holidayDate, holidays).shiftedDate === dateStr
+    );
+  });
+}
+
+/**
  * Decides whether `subscription` needs a payload built for tomorrow (NZ
  * local), and builds it if so. Returns null — a no-op — in three cases: no
  * resolvable zone classification (no linked address, or
@@ -92,17 +145,22 @@ function formatUtcIsoDate(date: Date): string {
  * specific reason is an unresolved `recyclingCalendarGroup`, ADR 0068); an
  * inner-city-night-collection address is always eligible past that point
  * (collects every night); a suburban address additionally needs its
- * confirmed `collectionWeekday` (ADR 0063) to equal tomorrow's NZ weekday
- * (`isCollectionDay`, ADR 0073) — a confirmed non-matching weekday is a
- * silent no-op (today just isn't this address's collection day), but an
- * unconfirmed (`null`) `collectionWeekday` logs a `console.error` exactly
- * like the `recyclingCalendarGroup` case, because it is the same class of
- * bug: a permanent per-address data gap that would otherwise silently
- * exclude a subscriber from every future nightly run.
+ * confirmed `collectionWeekday` (ADR 0063) to resolve to tomorrow's *real*,
+ * holiday-shift-aware collection day (`isRealCollectionDay`, ADR 0077,
+ * superseding ADR 0073's plain `isCollectionDay` nominal-weekday check) — a
+ * confirmed non-matching day is a silent no-op (tomorrow just isn't this
+ * address's real collection day), but an unconfirmed (`null`)
+ * `collectionWeekday` logs a `console.error` exactly like the
+ * `recyclingCalendarGroup` case, because it is the same class of bug: a
+ * permanent per-address data gap that would otherwise silently exclude a
+ * subscriber from every future nightly run. `holidays` defaults to `[]` so
+ * a caller with no holiday data (e.g. this file's pre-#185 tests) gets
+ * exactly the old plain-nominal-match behaviour unchanged.
  */
 export function planDispatchForSubscription(
   subscription: DispatchSubscription,
   now: Date,
+  holidays: HolidayRecord[] = [],
 ): DispatchPayload | null {
   if (subscription.zone === null) return null;
 
@@ -131,7 +189,7 @@ export function planDispatchForSubscription(
     return null;
   }
 
-  if (!isCollectionDay(dayClassification, tomorrow)) {
+  if (!isRealCollectionDay(dayClassification, tomorrow, holidays)) {
     return null;
   }
 
@@ -158,6 +216,11 @@ interface DispatchRow {
   collection_weekday: number | null;
 }
 
+interface HolidayDispatchRow {
+  holiday_date: string;
+  shift_days: number;
+}
+
 /**
  * DB-aware entry point: joins every push_subscriptions row against its
  * address (left join — a subscription with no address_id, or whose
@@ -170,11 +233,29 @@ interface DispatchRow {
  * into an empty array — a silent empty result here means nobody gets
  * notified tonight with no error anywhere; #110's trigger route decides how
  * a rejection here surfaces (alerting, retry, etc.).
+ *
+ * Also reads the entire `holidays` table once per run (mirroring
+ * `src/app/api/holidays/route.ts`'s own query shape, ADR 0077, issue #185)
+ * and passes it to every `planDispatchForSubscription` call below, so a
+ * suburban subscriber's gate is holiday-shift-aware
+ * (`isRealCollectionDay`). Reading it once per run rather than once per
+ * subscription means a malformed `holidays` row rejects this entire call,
+ * not just one subscription — an accepted trade-off, see ADR 0077's
+ * Trade-offs.
  */
 export async function collectNightlyDispatchCandidates(
   now: Date,
 ): Promise<DispatchPayload[]> {
   const db = getDb();
+
+  const holidayRows: HolidayDispatchRow[] = await db("holidays")
+    .orderBy("holiday_date", "asc")
+    .select("holiday_date", "shift_days");
+  const holidays: HolidayRecord[] = holidayRows.map((row) => ({
+    date: row.holiday_date,
+    shiftDays: row.shift_days,
+  }));
+
   const rows: DispatchRow[] = await db("push_subscriptions as ps")
     .leftJoin("addresses as a", "ps.address_id", "a.id")
     .select(
@@ -216,7 +297,7 @@ export async function collectNightlyDispatchCandidates(
               collection_weekday: row.collection_weekday,
             }).collectionWeekday,
     };
-    const candidate = planDispatchForSubscription(subscription, now);
+    const candidate = planDispatchForSubscription(subscription, now, holidays);
     if (candidate !== null) candidates.push(candidate);
   }
   return candidates;

@@ -324,7 +324,8 @@
   `src/lib/notifications/dispatcher.ts` (#27, ADR 0044) exports
   `collectNightlyDispatchCandidates`, joining active `push_subscriptions` to
   their address's zone and computing tomorrow's NZ-local collection rule set
-  via `tomorrowInNzAsUtcDate` + `computeCollectionRuleSet` (above).
+  via `tomorrowInNzAsUtcDate` + `computeCollectionRuleSet` (above). It also
+  reads the entire `holidays` table once per run (ADR 0077, issue #185).
   `planDispatchForSubscription` logs a `console.error("[dispatcher] ...")`
   line identifying the subscription and zone whenever it drops a candidate
   specifically because `recyclingCalendarGroup` is unresolved, so that
@@ -332,16 +333,21 @@
   visible (issue #131, ADR 0068). Past that point, an inner-city-night-
   collection subscriber is always eligible; a suburban subscriber
   additionally needs its confirmed `addresses.collection_weekday` (ADR 0063)
-  to match tomorrow's NZ weekday (`isCollectionDay`,
-  `src/lib/schedule/collection-day.ts`) — a confirmed non-matching weekday is
-  a silent no-op, but an unconfirmed `collectionWeekday` logs the same way
-  the `recyclingCalendarGroup` case does, for the same reason (issue #144,
-  ADR 0073). Every other rejection reason stays a silent no-op. This
-  weekday match is against the address's *nominal* `collectionWeekday`
-  only — the gate has no awareness of a holiday shift
-  (`computeHolidayShift`, above), so it is currently wrong in both
-  directions during a holiday-shifted collection week (tracked separately,
-  issue #185).
+  to resolve to tomorrow's *real*, holiday-shift-aware collection day
+  (`isRealCollectionDay`, `src/lib/notifications/dispatcher.ts`, ADR 0077,
+  issue #185) — a confirmed non-matching day is a silent no-op, but an
+  unconfirmed `collectionWeekday` logs the same way the
+  `recyclingCalendarGroup` case does, for the same reason (issue #144, ADR
+  0073). Every other rejection reason stays a silent no-op.
+  `isRealCollectionDay` corrects the plain nominal-weekday match
+  `isCollectionDay` alone would give in both directions during a
+  holiday-shifted collection week: it suppresses a candidate whose *nominal*
+  weekday matches a listed holiday's own date (nothing is collected that
+  day) and produces one for the holiday's chain-resolved (ADR 0030) shifted
+  date instead, checking against every row in `holidays` rather than a
+  fixed lookahead/lookback window (ADR 0077). Inner-city-night-collection
+  dispatch remains unaffected by holiday shifts (ADR 0077's scope
+  decision).
   `src/lib/notifications/payload-builder.ts`'s `buildLocalizedPushContent`
   renders that rule set into a localized `{ title, body }` via the shared
   dictionaries (§2A), keyed on each subscription's `languagePreference` — a
@@ -394,7 +400,9 @@
     uniform 1. The Te Reo Māori names remain an unreviewed draft pending a
     fluent-speaker review — the same open status as `sorting_rules` (issue
     #69) — so `name_mi` should still be treated as provisional by any
-    future consumer.
+    future consumer. The nightly dispatch pipeline (§2B) now also reads
+    this table to resolve a holiday-shifted real collection date before
+    gating on `collection_weekday` (ADR 0077, issue #185).
   * `users` & `push_subscriptions`: User preferences, language toggles, address foreign keys, and Web Push tokens.
   * *Database Testing:* Vitest verifies migration up/down cycles against clean test databases before test execution.
 * **Dependencies:** `knex` (query builder + migration runner) and `sqlite3` (driver). `sqlite3` is already on Next.js's auto-external package list; `knex` is not, and its dynamic dialect requires break when bundled into a route handler, so `next.config.ts` sets `serverExternalPackages: ["knex"]` (ADR 0002).
