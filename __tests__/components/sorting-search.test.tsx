@@ -211,6 +211,131 @@ describe("SortingSearch", () => {
     ).toBeInTheDocument();
   });
 
+  test("a successful match shows the visible, announced kaitiakitanga banner with a dismiss button", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(jsonResponse({ results: [PIZZA_BOX] })),
+    );
+    renderSearch();
+    await typeAndSettle("pizza");
+
+    const banner = screen.getByText(
+      "Ka pai! Sorting that correctly helps you act as a kaitiaki — a guardian of Wellington's environment.",
+    );
+    expect(banner).toBeInTheDocument();
+    expect(banner.closest("[aria-live]")).toHaveAttribute("aria-live", "polite");
+    expect(banner.closest("[aria-live]")?.className).not.toContain("sr-only");
+    expect(
+      screen.getByRole("button", { name: "Dismiss this message" }),
+    ).toBeInTheDocument();
+  });
+
+  test("an empty result set shows no kaitiakitanga banner", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse({ results: [] })));
+    renderSearch();
+    await typeAndSettle("zzz-no-match");
+
+    expect(screen.queryByText(/Ka pai!/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Dismiss this message" }),
+    ).not.toBeInTheDocument();
+  });
+
+  test("an error response shows no kaitiakitanga banner", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("network error")));
+    renderSearch();
+    await typeAndSettle("pizza");
+
+    expect(screen.queryByText(/Ka pai!/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Dismiss this message" }),
+    ).not.toBeInTheDocument();
+  });
+
+  test("dismissing the kaitiakitanga banner removes it and returns focus to the search input", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(jsonResponse({ results: [PIZZA_BOX] })),
+    );
+    renderSearch();
+    await typeAndSettle("pizza");
+
+    fireEvent.click(screen.getByRole("button", { name: "Dismiss this message" }));
+
+    expect(screen.queryByText(/Ka pai!/)).not.toBeInTheDocument();
+    expect(input()).toHaveFocus();
+  });
+
+  test("a new distinct successful query re-shows the kaitiakitanga banner after a prior dismissal", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ results: [PIZZA_BOX] }));
+    vi.stubGlobal("fetch", fetchMock);
+    renderSearch();
+    await typeAndSettle("pizza");
+    fireEvent.click(screen.getByRole("button", { name: "Dismiss this message" }));
+    expect(screen.queryByText(/Ka pai!/)).not.toBeInTheDocument();
+
+    fetchMock.mockResolvedValue(jsonResponse({ results: [GLASS_JAR] }));
+    await typeAndSettle("box");
+
+    expect(screen.getByText(/Ka pai!/)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Dismiss this message" }),
+    ).toBeInTheDocument();
+  });
+
+  test("repeating the same successful query three times shows exactly one banner and one dismiss button each time, never stacking", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(jsonResponse({ results: [PIZZA_BOX] })),
+    );
+    renderSearch();
+
+    for (let attempt = 0; attempt < 3; attempt++) {
+      await typeAndSettle("");
+      await typeAndSettle("pizza");
+      expect(screen.getAllByText(/Ka pai!/)).toHaveLength(1);
+      expect(
+        screen.getAllByRole("button", { name: "Dismiss this message" }),
+      ).toHaveLength(1);
+    }
+  });
+
+  test("a voice-dictated successful match also shows the kaitiakitanga banner", async () => {
+    stubSpeechRecognition();
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ results: [PIZZA_BOX] }));
+    vi.stubGlobal("fetch", fetchMock);
+    renderSearch();
+
+    fireEvent.click(screen.getByRole("button", { name: "Search by voice" }));
+    const recognition = FakeSpeechRecognition.instances[0]!;
+    act(() => {
+      recognition.onresult?.(speechResultEvent("pizza box"));
+    });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0);
+    });
+
+    expect(screen.getByText(/Ka pai!/)).toBeInTheDocument();
+  });
+
+  test("switching the locale re-renders the kaitiakitanga banner text in Te Reo", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ results: [PIZZA_BOX] }));
+    vi.stubGlobal("fetch", fetchMock);
+    renderSearch();
+    await typeAndSettle("pizza");
+    expect(screen.getByText(/Ka pai!/)).toBeInTheDocument();
+
+    act(() => writeStoredLocale("mi"));
+
+    expect(
+      screen.getByText(
+        "Ka pai! Mā te whakariterite tika e āwhina ana koe ki te mahi kaitiaki mō te taiao o Te Whanganui-a-Tara.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/Sorting that correctly helps/)).not.toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
   test("unmounting while a debounce timer is pending clears it and does not throw", () => {
     vi.stubGlobal("fetch", vi.fn());
     const { unmount } = renderSearch();
@@ -569,6 +694,9 @@ describe("SortingSearch", () => {
       await Promise.resolve();
     });
     await expectNoA11yViolations(container); // results
+
+    fireEvent.click(screen.getByRole("button", { name: "Dismiss this message" }));
+    await expectNoA11yViolations(container); // kaitiakitanga dismissed
 
     fireEvent.change(input(), { target: { value: "" } });
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse({ results: [] })));
