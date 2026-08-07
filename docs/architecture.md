@@ -181,6 +181,15 @@
   newer one already landed for the same `endpoint` (#140, ADR 0067) — the
   client-side `AbortController` alone only stops the client from acting on a
   stale response, not the server from having already processed it.
+* **Onboarding-Time Instrumentation (NFR-04, ADR 0076):**
+  `src/app/address-schedule.tsx` reports a self-hosted, always-on,
+  PII-free duration sample — `performance.now()` at the moment a fresh
+  `<AddressSearch>` selection (never a cache-restored address, ADR 0052)
+  first resolves to a real schedule (`computeSchedule(...).ruleSet !==
+  null`, exported from `src/components/schedule-display.tsx`) — to `POST
+  /api/metrics/onboarding-time`, which logs a structured line and returns
+  204. No DB write, no third-party analytics, no identifier of any kind.
+  Reported at most once per page load via a `useRef` guard.
 * **Localization State:** `LanguageProvider` (`src/lib/i18n/language-provider.tsx`) holds the selected locale and exposes `useTranslation()` → `{ locale, setLocale, t }`. Flat dot-delimited keys live in `src/lib/i18n/dictionaries.ts`, where `en` is the source of truth (`as const`) and `mi` is typed `Record<TranslationKey, string>`, so drift fails `tsc` as well as the runtime parity test (ADR 0010). The locale is read from `localStorage` (`tkp.locale`) through `useSyncExternalStore`, never during render and never via `setState` in an effect — `react-hooks/set-state-in-effect` is an error in this repo (ADR 0009). `getServerSnapshot` returns `en` so `/` stays statically prerendered, which costs a brief flash of English before Te Reo on a hard load; the inline-script alternative that would remove it is recorded as rejected in ADR 0009. The provider mirrors the locale onto `<html lang>` in an effect so screen readers pick the right voice (vision.md §3). Macron-safe rendering comes from the Inter / Plus Jakarta Sans `latin-ext` subsets (ADR 0005).
 * **Client Testing Strategy (Vitest + Testing Library + Axe):**
   * Unit tests verify bilingual UI component rendering, dictionary interpolation, and macron preservation.
@@ -376,6 +385,11 @@
   (`src/lib/notifications/alerting.ts`) to
   `process.env.DISPATCH_ALERT_WEBHOOK_URL` — an unprovisioned config gap in
   every environment today, same pattern as `CRON_SECRET` (#122, ADR 0061).
+  The route's success path also logs one structured
+  `nightly_dispatch_summary` line per run — `attempted`/`succeeded`/
+  `failed`/`successRatePercent` — satisfying NFR-04's push-delivery-rate
+  metric without a new persisted schema (ADR 0076); `successRatePercent`
+  is `null`, not `100`, when zero candidates were attempted that night.
   `public/sw.js`'s `push` listener now
   calls `self.registration.showNotification(...)` to display what gets
   sent, falling back to a generic notification on a malformed/absent
