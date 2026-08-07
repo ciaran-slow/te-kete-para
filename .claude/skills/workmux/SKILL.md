@@ -191,15 +191,141 @@ file matching your own currently-live pane (check `tmux list-panes -a -F
 After any workmux/tmux crash, before resuming normal work:
 
 1. Run `workmux resurrect` to restore worktree windows.
-2. Clean up any stale agent state files per the recovery steps above —
+2. **Resume the real conversation in each restored pane — `resurrect`
+   only restores the window/pane layout, not the agent's memory.** It
+   launches a brand-new, empty `claude` process in the agent pane. Typing
+   `claude --continue` (or any other shell command) directly into that
+   pane does NOT work — the pane is already inside a live, empty Claude
+   Code TUI, so the text is submitted as a *chat message*, not executed
+   as a shell command, and the fresh session will happily generate a
+   plausible-sounding but context-free reply (it can fake plausibility by
+   reading git state with tools). This also poisons `--continue` for
+   later: that accidental exchange creates a new, more-recently-modified
+   transcript in the same project directory, so `--continue` (which
+   picks the most-recently-modified transcript) will resume the
+   contaminated stray session instead of the real one, even after you've
+   exited it cleanly.
+
+   Correct procedure, per pane:
+   - Before touching the pane, find the real pre-crash session id:
+     `ls -lt ~/.claude/projects/<slugified-worktree-path>/*.jsonl` — the
+     large, old file is the real conversation; anything created since
+     the crash is a stray.
+   - Confirm the pane is at a shell prompt (not already inside a running
+     Claude TUI) before sending anything. If a fresh empty session is
+     already running there, exit it first with the chat command `/exit`
+     (not Ctrl-C, which doesn't reliably quit it) — the stray transcript
+     it leaves behind is harmless and doesn't need cleanup.
+   - Then run the real resume as an actual shell command:
+     `tmux send-keys -t <pane> "claude --resume <real-session-id>" Enter`.
+
+3. **Regenerate the sidebar/`workmux status` entry for each resumed
+   pane — it will not reappear on its own.** `workmux status` (and the
+   sidebar/dashboard built on it) is driven entirely by per-pane JSON
+   files at `~/.local/state/workmux/agents/tmux__<encoded-socket>__<pane-
+   id>.json`, written only by the `PostToolUse`/`Stop`/`UserPromptSubmit`
+   hooks in `~/.claude/settings.json` (each just runs `workmux
+   set-window-status <state>`). Those hooks fire only on a *new* turn —
+   a bare `--resume` that just redisplays history fires nothing, so the
+   lane stays invisible in the sidebar until its agent does something on
+   its own. Don't wait for that (and don't nudge the agent into unwanted
+   action just to populate a status file); regenerate it directly:
+   - `workmux set-window-status <state>` resolves *which pane's* file to
+     write via the `TMUX_PANE` env var of the process invoking it — not
+     cwd, not any pane search. Run bare in some other shell pane, it
+     silently writes (or updates) *that shell pane's own* entry
+     (`"command": "zsh"`), which `workmux status` filters out as
+     non-agent — this looks like a no-op but isn't one, it just wrote to
+     the wrong key.
+   - It also expects the same stdin JSON a real Claude Code hook
+     receives (`session_id`, `transcript_path`, `cwd`,
+     `hook_event_name`) to populate the file's fields.
+   - Fix: invoke it from any other pane/shell with `TMUX_PANE` overridden
+     to the *agent's* pane id, piping in that JSON, e.g.:
+     ```bash
+     TMUX_PANE=%1 bash -c 'echo "{\"session_id\":\"<id>\",\"transcript_path\":\"<path>.jsonl\",\"cwd\":\"<worktree-path>\",\"hook_event_name\":\"Stop\"}" | workmux set-window-status done'
+     ```
+     This creates the correctly-keyed file (`"command": "claude"`,
+     `"agent_kind": "claude"`) and the lane reappears in `workmux status
+     --json` and the sidebar within ~1s. Never send text into the live
+     agent pane itself to try to trigger this — it lands in the chat
+     input, not a shell.
+
+4. Clean up any stale agent state files per the recovery steps above —
    compare `ls ~/.local/state/workmux/agents/` against `tmux list-panes -a`
-   and remove entries for panes that no longer exist.
-3. Audit all open PRs for redundancy against `main`, not just merge
+   and remove entries for panes that no longer exist. This also applies
+   after normal (non-crash) lane cleanup — see the note below.
+5. Audit all open PRs for redundancy against `main`, not just merge
    conflicts. A crash can leave an agent's work already landed through one
    path while its own PR is still open — rebase each PR branch onto `main`
    locally and check `git diff --stat`; an empty diff means the content
    already landed elsewhere and the PR should be closed as redundant, not
    merged.
+
+### A lane cannot fully close itself out
+
+An agent instructed to "close out this lane once merged" (per the
+merge/cleanup policy) can get most of the way there on its own — merging
+the PR, deleting the now-merged branch from other worktrees, removing
+worktrees it created for its own use (e.g. a scratch verify checkout) —
+but it reliably stops short of the very last step: removing its **own**
+active worktree/window. That operation is self-referential (it would be
+asking workmux to tear down the window the command is running in) and
+gets silently skipped in favor of a "wrapped up, all done" summary
+message instead of an error.
+
+Don't take a lane's own "I've closed everything out" summary as proof the
+worktree is actually gone. After it reports done, check from *outside*
+that pane:
+
+```bash
+git worktree list          # is the lane's own worktree still here?
+workmux list                # does its branch/window still show up?
+```
+
+If so, finish it from the parent/orchestrating session, the same way as
+any other merged lane: `workmux rm <handle> -f`, then remove the now-dangling
+`~/.local/state/workmux/agents/tmux__*.json` file for that pane per the
+recovery steps above.
+
+### Babysitting a long-running dispatched agent's permission prompts
+
+When a lane (or a background sub-agent it dispatches, e.g. for
+independent verification) runs many multi-step shell commands under
+`--permission-mode acceptEdits`, compound `cd && ...` commands and some
+individual tools still stop for interactive approval. Watching for these
+by hand-writing a one-off polling loop against raw `tmux capture-pane`
+text is tempting but has broken the same three ways every time it's been
+tried live:
+
+1. Exact-string matches for a status phrase (e.g. "Waiting for 1
+   background agent to finish") miss it when the terminal wraps it
+   across two lines — leading to false "it's finished" conclusions while
+   the task is still genuinely running.
+2. Content-hash dedup (to avoid re-approving the same visible prompt on
+   every poll) gets defeated by volatile text captured in the same
+   screen — elapsed-time counters, token counts, spinner glyphs — which
+   changes every few seconds and makes every poll look like a "new"
+   prompt, causing the same single prompt to be approved (or flagged)
+   dozens of times a few seconds apart.
+3. Trying to infer task *completion* from free-form TUI status text is
+   inherently unreliable — prefer an authoritative external signal
+   (`gh pr view --json state`, `git log origin/main`) over parsing
+   scrollback.
+
+Use `scripts/watch-and-approve.sh <pane-id> [max-seconds]` (in this
+skill's directory) instead of writing a new one-off loop — it fixes all
+three: it flattens wrapped lines before matching, uses an edge-triggered
+state machine (act only when a prompt newly *appears*, never again while
+the same one is still visible) instead of content hashing, and does not
+attempt to detect completion at all. Confirm completion yourself from an
+authoritative source once the script's approvals stop being needed, then
+stop it.
+
+It auto-approves anything that doesn't match its denylist (destructive
+git/gh operations, `sudo`, etc. — see the script for the exact list) and
+prints a line for every prompt it acts on or flags, so it's safe to run
+under the Monitor tool.
 
 ### `npm run build` fails with "Symlink ... points out of the filesystem root"
 
