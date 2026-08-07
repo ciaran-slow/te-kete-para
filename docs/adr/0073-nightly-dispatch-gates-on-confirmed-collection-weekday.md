@@ -159,9 +159,13 @@ currently-seeded subscriber's nightly notification volume changes *in a
 non-holiday week*; only a future, not-yet-confirmed suburban address would
 newly no-op (visibly, via `console.error`, not silently) instead of
 continuing to fire every night the way today's dispatcher would for a
-hypothetical unconfirmed row. In a holiday-shifted week, this issue's own
-gate is now wrong in both directions for the 7 currently-seeded
-`collection_weekday: 4` (Thursday) addresses — see the "Known limitation"
+hypothetical unconfirmed row. In the New Year's Day holiday week
+specifically, this issue's own gate is now wrong in both directions for the
+7 currently-seeded `collection_weekday: 4` (Thursday) addresses — Good
+Friday and Christmas Day both fall on a Friday in 2026 and no address is
+seeded with `collection_weekday: 5`, so those two holiday weeks affect zero
+currently-seeded addresses this year, though a future Friday-collection
+address would hit the same bug there too. See the "Known limitation"
 callout above and issue #185, filed to track the fix. Revisit trigger:
 issue #185 landing (`dispatcher.ts` gaining holiday-shift awareness), and —
 independently of that — the "unconfirmed" branch should stay unreachable in
