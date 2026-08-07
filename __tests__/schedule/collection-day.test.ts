@@ -6,6 +6,7 @@ import {
   type CollectionDayClassification,
   type Weekday,
 } from "../../src/lib/schedule/collection-day";
+import { UnresolvedZoneClassificationError } from "../../src/lib/schedule/rules";
 
 const SUBURBAN_WEDNESDAY: CollectionDayClassification = {
   isInnerCityNightCollection: false,
@@ -47,6 +48,14 @@ describe("toCollectionDayClassification", () => {
         collection_weekday: 6,
       }).collectionWeekday,
     ).toBe(6);
+  });
+
+  test("maps is_inner_city_night_collection null to null, not false (issue #178, ADR 0075)", () => {
+    const unresolved = toCollectionDayClassification({
+      is_inner_city_night_collection: null,
+      collection_weekday: null,
+    });
+    expect(unresolved.isInnerCityNightCollection).toBeNull();
   });
 
   test("maps collection_weekday null to null", () => {
@@ -164,6 +173,21 @@ describe("isCollectionDay", () => {
       ),
     );
   });
+
+  test("isInnerCityNightCollection null throws UnresolvedZoneClassificationError, identically on repeat calls", () => {
+    const unresolved: CollectionDayClassification = {
+      isInnerCityNightCollection: null,
+      collectionWeekday: null,
+    };
+    const validDate = new Date(Date.UTC(2026, 7, 5));
+
+    expect(() => isCollectionDay(unresolved, validDate)).toThrow(
+      new UnresolvedZoneClassificationError("isCollectionDay"),
+    );
+    expect(() => isCollectionDay(unresolved, validDate)).toThrow(
+      new UnresolvedZoneClassificationError("isCollectionDay"),
+    );
+  });
 });
 
 describe("findNextCollectionDate", () => {
@@ -273,6 +297,21 @@ describe("findNextCollectionDate", () => {
       new RangeError(
         "findNextCollectionDate: collectionWeekday must be 0-6 for a suburban address.",
       ),
+    );
+  });
+
+  test("isInnerCityNightCollection null throws UnresolvedZoneClassificationError, identically on repeat calls", () => {
+    const unresolved: CollectionDayClassification = {
+      isInnerCityNightCollection: null,
+      collectionWeekday: null,
+    };
+    const validDate = new Date(Date.UTC(2026, 7, 5));
+
+    expect(() => findNextCollectionDate(unresolved, validDate)).toThrow(
+      new UnresolvedZoneClassificationError("findNextCollectionDate"),
+    );
+    expect(() => findNextCollectionDate(unresolved, validDate)).toThrow(
+      new UnresolvedZoneClassificationError("findNextCollectionDate"),
     );
   });
 });

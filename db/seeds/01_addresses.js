@@ -1,25 +1,32 @@
 /**
- * addresses: a representative, fixed sample of Wellington streets, suburbs,
- * council zones, the inner-city CBD night-collection flag
- * (architecture.md §2C, issue #10), which of WCC's two independently-phased
- * alternating recycling calendars (`recycling_calendar_group`, 1 or 2, ADR
- * 0042) each suburban row actually follows (ADR 0059, issue #102), and —
- * for every suburban row — which real WCC weekday its weekly kerbside
- * collection actually falls on (`collection_weekday`, 0-6 per
- * `Date#getUTCDay()`, ADR 0063, issue #117). Both are confirmed per-address
- * against WCC's live per-street lookup tool, `null` for every CBD/night-
- * collection row, which neither alternates glass/mixed nor collects on a
- * single weekday. Idempotent by delete-then-reinsert — see ADR 0012 for
- * why, including the FK-nulling trade-off this accepts on re-run against a
- * database that already has users/push_subscriptions pointing at a
- * previously-seeded address id.
+ * addresses: a two-tier registry of Wellington streets and suburbs.
  *
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
+ * Tier 1 — CURATED_ADDRESSES below: 17 hand-curated rows with a fully
+ * confirmed operational classification — council zone, the inner-city CBD
+ * night-collection flag (architecture.md §2C, issue #10), which of WCC's
+ * two independently-phased alternating recycling calendars
+ * (`recycling_calendar_group`, 1 or 2, ADR 0042) each suburban row actually
+ * follows (ADR 0059, issue #102), and which real WCC weekday its weekly
+ * kerbside collection falls on (`collection_weekday`, 0-6 per
+ * `Date#getUTCDay()`, ADR 0063, issue #117). All confirmed per-address
+ * against WCC's live per-street lookup tool; `null` for every CBD/night-
+ * collection row, which neither alternates glass/mixed nor collects on a
+ * single weekday.
+ *
+ * Tier 2 — bulk rows sourced from `db/seeds/data/wellington-streets.json`
+ * (issue #178, ADR 0075): every other street/suburb pair in WCC's own
+ * street-search registry, bulk-imported so it is *findable* by name (FR-08)
+ * while its classification is left genuinely unresolved
+ * (`zone: "zone-unconfirmed"`, the other three fields `null`) rather than
+ * guessed — see ADR 0075 for why a guessed `false` would be worse than not
+ * finding the address at all. Phase 2 (issue #188) confirms these.
+ *
+ * Idempotent by delete-then-reinsert — see ADR 0012 for why, including the
+ * FK-nulling trade-off this accepts on re-run against a database that
+ * already has users/push_subscriptions pointing at a previously-seeded
+ * address id.
  */
-exports.seed = async function seed(knex) {
-  await knex("addresses").del();
-  await knex("addresses").insert([
+const CURATED_ADDRESSES = [
     // CBD / Te Aro — inner-city night collection (5:30pm–10pm, PRD persona 2)
     { street_name: "Cuba Street", suburb: "Te Aro", zone: "zone-cbd", is_inner_city_night_collection: true, recycling_calendar_group: null, collection_weekday: null },
     { street_name: "Wakefield Street", suburb: "Te Aro", zone: "zone-cbd", is_inner_city_night_collection: true, recycling_calendar_group: null, collection_weekday: null },
@@ -56,5 +63,44 @@ exports.seed = async function seed(knex) {
     // is NOT one collection weekday either (issue #117).
     { street_name: "Tinakori Road", suburb: "Thorndon", zone: "zone-north", is_inner_city_night_collection: false, recycling_calendar_group: 2, collection_weekday: 2 },
     { street_name: "Broderick Road", suburb: "Johnsonville", zone: "zone-north", is_inner_city_night_collection: false, recycling_calendar_group: 1, collection_weekday: 1 },
-  ]);
+];
+
+exports.CURATED_ADDRESSES = CURATED_ADDRESSES;
+
+// Bulk-imported streets (issue #178, ADR 0075), sourced from WCC's own
+// street-search registry via scripts/import-wellington-streets.js and
+// checked in as a static fixture — no network access at seed time. Every
+// row's operational classification is genuinely unresolved: `zone` gets the
+// transparent sentinel "zone-unconfirmed" (ADR 0075 — `zone` never drives
+// rule computation, ADR 0059), and the three fields that DO drive rule
+// computation are `null`, never guessed.
+// This file is CommonJS on purpose: the Knex CLI loads it directly with
+// `require`, outside the Next.js bundler (mirrors knexfile.js's convention).
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const wellingtonStreets = require("./data/wellington-streets.json");
+const BULK_ADDRESSES = wellingtonStreets.streets.map(({ streetName, suburb }) => ({
+  street_name: streetName,
+  suburb,
+  zone: "zone-unconfirmed",
+  is_inner_city_night_collection: null,
+  recycling_calendar_group: null,
+  collection_weekday: null,
+}));
+
+/**
+ * @param { import("knex").Knex } knex
+ * @returns { Promise<void> }
+ */
+exports.seed = async function seed(knex) {
+  await knex("addresses").del();
+  await knex("addresses").insert(CURATED_ADDRESSES);
+  // Deviation from the plan's literal "insert [...CURATED_ADDRESSES,
+  // ...bulkRows]" in one call: a single insert() of BULK_ADDRESSES's ~2000+
+  // rows hits SQLite's SQLITE_MAX_COMPOUND_SELECT limit (default 500) —
+  // knex's sqlite3 dialect builds a multi-row insert as
+  // `select ... union all select ...`, one compound term per row, which a
+  // batch this size overflows. batchInsert splits BULK_ADDRESSES into
+  // chunks safely under that limit; behaviour (every row present, same
+  // idempotent delete-then-reinsert semantics, ADR 0012) is unchanged.
+  await knex.batchInsert("addresses", BULK_ADDRESSES, 200);
 };

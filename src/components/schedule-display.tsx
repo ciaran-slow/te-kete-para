@@ -21,6 +21,7 @@ import { StatusRegion } from "./status-region";
 import {
   computeCollectionRuleSet,
   UnresolvedRecyclingCalendarGroupError,
+  UnresolvedZoneClassificationError,
   type CollectionRuleSet,
   type TimeWindow,
   type WasteBinType,
@@ -132,6 +133,8 @@ interface ComputedSchedule {
   collectionDateUtc: Date;
   /** Only meaningful when ruleSet is null. */
   unresolvedCalendarGroup: boolean;
+  /** Only meaningful when ruleSet is null. */
+  unresolvedClassification: boolean;
 }
 
 function computeSchedule(
@@ -153,12 +156,18 @@ function computeSchedule(
       },
       collectionDateUtc,
     );
-    return { ruleSet, collectionDateUtc, unresolvedCalendarGroup: false };
+    return {
+      ruleSet,
+      collectionDateUtc,
+      unresolvedCalendarGroup: false,
+      unresolvedClassification: false,
+    };
   } catch (err) {
     return {
       ruleSet: null,
       collectionDateUtc: todayUtc,
       unresolvedCalendarGroup: err instanceof UnresolvedRecyclingCalendarGroupError,
+      unresolvedClassification: err instanceof UnresolvedZoneClassificationError,
     };
   }
 }
@@ -184,9 +193,15 @@ export function ScheduleDisplay({ address, now }: ScheduleDisplayProps) {
           {t("schedule.calendarGroupUnconfirmed")}
         </p>
       )}
-      {schedule !== null && ruleSet === null && !schedule.unresolvedCalendarGroup && (
-        <p className="text-papa-ink/70">{t("schedule.error")}</p>
+      {schedule !== null && ruleSet === null && schedule.unresolvedClassification && (
+        <p className="text-papa-ink/70">{t("schedule.classificationUnconfirmed")}</p>
       )}
+      {schedule !== null &&
+        ruleSet === null &&
+        !schedule.unresolvedCalendarGroup &&
+        !schedule.unresolvedClassification && (
+          <p className="text-papa-ink/70">{t("schedule.error")}</p>
+        )}
       {schedule !== null && ruleSet !== null && (
         <div className="flex flex-col gap-4">
           <h2

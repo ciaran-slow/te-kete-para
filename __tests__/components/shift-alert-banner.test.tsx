@@ -41,6 +41,14 @@ const KARORI_UNCONFIRMED: SuburbSearchResult = {
   ...KARORI,
   collectionWeekday: null,
 };
+// A bulk-imported street (issue #178, ADR 0075) whose CBD/night-collection
+// status hasn't been confirmed yet — isInnerCityNightCollection is
+// genuinely null, not defaulted false.
+const KARORI_UNCONFIRMED_CLASSIFICATION: SuburbSearchResult = {
+  ...KARORI,
+  isInnerCityNightCollection: null,
+  collectionWeekday: null,
+};
 const CUBA_STREET: SuburbSearchResult = {
   id: 20,
   streetName: "Cuba Street",
@@ -378,6 +386,16 @@ describe("ShiftAlertBanner", () => {
   test("renders no visible alert when the address's collection day is unconfirmed, even with a genuine holiday in range", () => {
     const view = renderBanner({
       address: KARORI_UNCONFIRMED,
+      now: CHRISTMAS_DAY,
+      holidays: [CHRISTMAS],
+    });
+
+    expect(view.container.textContent).toBe("");
+  });
+
+  test("renders no visible alert for an address with isInnerCityNightCollection: null (bulk-imported, unconfirmed), even with a genuine holiday in range (issue #178)", () => {
+    const view = renderBanner({
+      address: KARORI_UNCONFIRMED_CLASSIFICATION,
       now: CHRISTMAS_DAY,
       holidays: [CHRISTMAS],
     });

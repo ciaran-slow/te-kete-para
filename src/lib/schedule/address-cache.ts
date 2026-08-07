@@ -16,6 +16,15 @@
  * `findNextCollectionDate`/`isCollectionDay` with a missing value — same
  * contract the 1 -> 2 bump already established for `recyclingCalendarGroup`
  * (ADR 0059, issue #102).
+ *
+ * Version deliberately NOT bumped again for issue #178/ADR 0075's widening
+ * of `isInnerCityNightCollection` to `boolean | null`: unlike the two prior
+ * bumps above (each added a wholly new required field an old payload would
+ * lack entirely), this widens an *existing* field's allowed value set —
+ * every payload cached under version 3 already has a real `boolean` there,
+ * which remains valid under the new type. See ADR 0075's "Trade-offs"
+ * section for why this is a narrower case than the two bumps above, not an
+ * inconsistency with them.
  */
 import type { SuburbSearchResult } from "@/components/address-search";
 
@@ -73,7 +82,9 @@ function isSuburbSearchResult(value: unknown): value is SuburbSearchResult {
     typeof v.streetName === "string" &&
     typeof v.suburb === "string" &&
     typeof v.zone === "string" &&
-    typeof v.isInnerCityNightCollection === "boolean" &&
+    (v.isInnerCityNightCollection === true ||
+      v.isInnerCityNightCollection === false ||
+      v.isInnerCityNightCollection === null) &&
     (v.recyclingCalendarGroup === 1 ||
       v.recyclingCalendarGroup === 2 ||
       v.recyclingCalendarGroup === null) &&

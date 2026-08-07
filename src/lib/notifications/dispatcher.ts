@@ -2,6 +2,7 @@ import { getDb } from "@/lib/db";
 import {
   computeCollectionRuleSet,
   UnresolvedRecyclingCalendarGroupError,
+  UnresolvedZoneClassificationError,
   type CollectionRuleSet,
   type ZoneClassification,
 } from "@/lib/schedule/rules";
@@ -115,12 +116,20 @@ export function planDispatchForSubscription(
       console.error(
         `[dispatcher] Dropping subscription ${subscription.id} (zone "${subscription.zone.zone}"): recyclingCalendarGroup is unresolved.`,
       );
+    } else if (err instanceof UnresolvedZoneClassificationError) {
+      console.error(
+        `[dispatcher] Dropping subscription ${subscription.id} (zone "${subscription.zone.zone}"): isInnerCityNightCollection is unresolved.`,
+      );
     }
     return null;
   }
 
+  // computeCollectionRuleSet having succeeded already proves
+  // isInnerCityNightCollection was resolved one way or the other — derive
+  // it from the rule engine's own decision rather than re-reading the
+  // nullable raw field a second time.
   const dayClassification: CollectionDayClassification = {
-    isInnerCityNightCollection: subscription.zone.isInnerCityNightCollection,
+    isInnerCityNightCollection: ruleSet.collectionType === "inner-city-night",
     collectionWeekday: subscription.collectionWeekday,
   };
 
@@ -202,7 +211,10 @@ export async function collectNightlyDispatchCandidates(
           ? null
           : {
               zone: row.zone,
-              isInnerCityNightCollection: Boolean(row.is_inner_city_night_collection),
+              isInnerCityNightCollection:
+                row.is_inner_city_night_collection === null
+                  ? null
+                  : Boolean(row.is_inner_city_night_collection),
               recyclingCalendarGroup:
                 row.recycling_calendar_group === 1 || row.recycling_calendar_group === 2
                   ? row.recycling_calendar_group
@@ -212,7 +224,7 @@ export async function collectNightlyDispatchCandidates(
         row.zone === null
           ? null
           : toCollectionDayClassification({
-              is_inner_city_night_collection: row.is_inner_city_night_collection ?? false,
+              is_inner_city_night_collection: row.is_inner_city_night_collection,
               collection_weekday: row.collection_weekday,
             }).collectionWeekday,
     };

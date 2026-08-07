@@ -247,5 +247,13 @@ describe("GET /api/suburbs/search", () => {
     });
     expect(unexpectedRawValue.recyclingCalendarGroup).toBeNull();
     expect(unexpectedRawValue.collectionWeekday).toBeNull();
+
+    const unconfirmedClassification = toSuburbSearchResult({
+      ...base,
+      is_inner_city_night_collection: null,
+      recycling_calendar_group: null,
+      collection_weekday: null,
+    });
+    expect(unconfirmedClassification.isInnerCityNightCollection).toBeNull();
   });
 });

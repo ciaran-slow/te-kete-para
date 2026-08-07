@@ -3,14 +3,20 @@ import Knex from "knex";
 import knexConfigs from "../../../knexfile.js";
 
 /**
- * db/seeds/01_addresses.js: the fixed 17-row Wellington reference sample —
- * 5 CBD night-collection rows (Te Aro + Wellington Central) and 12 standard
- * kerbside rows across the east/south/west/north zones. Idempotency is
+ * db/seeds/01_addresses.js: a two-tier registry (issue #178, ADR 0075) — the
+ * 17 curated rows (5 CBD night-collection, Te Aro + Wellington Central; 12
+ * standard kerbside across the east/south/west/north zones, all with a
+ * fully confirmed classification), plus a much larger set of bulk-imported
+ * rows sourced from WCC's own street-search registry, each genuinely
+ * unresolved (`zone: "zone-unconfirmed"`, the other three fields `null`).
+ * The exact bulk-import count depends on the live script run (§2, ADR 0075)
+ * and isn't hardcoded here — these tests assert properties (present,
+ * unresolved, deduped) rather than a magic total. Idempotency is
  * delete-then-reinsert (ADR 0012), which these tests pin down as deliberate
  * behaviour: repeated runs, destructive re-seed, and the FK-nulling side
  * effect are all asserted, not just documented.
  */
-const SEEDED_ROW_COUNT = 17;
+const CURATED_ROW_COUNT = 17;
 
 describe("addresses seed", () => {
   let db: ReturnType<typeof Knex> | undefined;
@@ -20,13 +26,19 @@ describe("addresses seed", () => {
     db = undefined;
   });
 
-  it("seeds exactly 17 rows, including Cuba Street as CBD night collection", async () => {
+  it("seeds the 17 curated rows unchanged, including Cuba Street as CBD night collection", async () => {
     db = Knex(knexConfigs.test);
     await db.migrate.latest();
     await db.seed.run();
 
-    const [{ n }] = await db("addresses").count({ n: "*" });
-    expect(n).toBe(SEEDED_ROW_COUNT);
+    // Curated rows are exactly the ones with a resolved (non-null)
+    // is_inner_city_night_collection — bulk-imported rows always have null
+    // there (ADR 0075) — so this scopes to "curated" without hardcoding a
+    // street-name list.
+    const [{ n }] = await db("addresses")
+      .whereNotNull("is_inner_city_night_collection")
+      .count({ n: "*" });
+    expect(n).toBe(CURATED_ROW_COUNT);
 
     // The sqlite3 driver returns SQLite's boolean-as-INTEGER storage as 0/1
     // on a plain select — confirmed empirically against this driver, and
@@ -44,6 +56,59 @@ describe("addresses seed", () => {
     ]);
   });
 
+  it("seeds strictly more than the 17 curated rows now that WCC's full street registry is bulk-imported (issue #178)", async () => {
+    db = Knex(knexConfigs.test);
+    await db.migrate.latest();
+    await db.seed.run();
+
+    const [{ n }] = await db("addresses").count({ n: "*" });
+    expect(n).toBeGreaterThan(CURATED_ROW_COUNT);
+  });
+
+  it("every bulk-imported row has zone: zone-unconfirmed and every classification field null (issue #178, ADR 0075)", async () => {
+    db = Knex(knexConfigs.test);
+    await db.migrate.latest();
+    await db.seed.run();
+
+    const bulkRows = await db("addresses").whereNull("is_inner_city_night_collection");
+    expect(bulkRows.length).toBeGreaterThan(0);
+    for (const row of bulkRows) {
+      expect(row.zone).toBe("zone-unconfirmed");
+      expect(row.is_inner_city_night_collection).toBeNull();
+      expect(row.recycling_calendar_group).toBeNull();
+      expect(row.collection_weekday).toBeNull();
+    }
+  });
+
+  it("has no duplicate (street_name, suburb) pair anywhere in the table, curated or bulk-imported", async () => {
+    db = Knex(knexConfigs.test);
+    await db.migrate.latest();
+    await db.seed.run();
+
+    const duplicates = await db("addresses")
+      .select("street_name", "suburb")
+      .count({ n: "*" })
+      .groupBy("street_name", "suburb")
+      .havingRaw("count(*) > 1");
+    expect(duplicates).toEqual([]);
+  });
+
+  it("includes a real, non-curated street confirmed present in the live import (Wadestown Road, Wadestown) with unresolved classification", async () => {
+    db = Knex(knexConfigs.test);
+    await db.migrate.latest();
+    await db.seed.run();
+
+    const rows = await db("addresses").where({
+      street_name: "Wadestown Road",
+      suburb: "Wadestown",
+    });
+    expect(rows).toHaveLength(1);
+    expect(rows[0].zone).toBe("zone-unconfirmed");
+    expect(rows[0].is_inner_city_night_collection).toBeNull();
+    expect(rows[0].recycling_calendar_group).toBeNull();
+    expect(rows[0].collection_weekday).toBeNull();
+  });
+
   it("represents both classifications: 5 CBD night-collection rows, 12 standard", async () => {
     db = Knex(knexConfigs.test);
     await db.migrate.latest();
@@ -59,12 +124,17 @@ describe("addresses seed", () => {
     expect(standardKerbside).toBe(12);
   });
 
-  it("spans all five council zones and 13 distinct suburbs", async () => {
+  it("the 17 curated rows span all five council zones and 13 distinct suburbs", async () => {
     db = Knex(knexConfigs.test);
     await db.migrate.latest();
     await db.seed.run();
 
-    const zones = await db("addresses").distinct("zone");
+    // Scoped to curated rows: bulk-imported rows all carry the sentinel
+    // "zone-unconfirmed" (ADR 0075) and span hundreds of real suburbs, which
+    // would otherwise swamp this assertion.
+    const zones = await db("addresses")
+      .whereNotNull("is_inner_city_night_collection")
+      .distinct("zone");
     expect(zones.map((row) => row.zone).sort()).toEqual([
       "zone-cbd",
       "zone-east",
@@ -73,8 +143,25 @@ describe("addresses seed", () => {
       "zone-west",
     ]);
 
-    const suburbs = await db("addresses").distinct("suburb");
+    const suburbs = await db("addresses")
+      .whereNotNull("is_inner_city_night_collection")
+      .distinct("suburb");
     expect(suburbs).toHaveLength(13);
+  });
+
+  it("bulk-imported rows introduce the zone-unconfirmed sentinel and many more suburbs than the curated 13 (issue #178)", async () => {
+    db = Knex(knexConfigs.test);
+    await db.migrate.latest();
+    await db.seed.run();
+
+    const unconfirmedZoneCount = await db("addresses")
+      .where({ zone: "zone-unconfirmed" })
+      .count({ n: "*" })
+      .first();
+    expect(Number(unconfirmedZoneCount?.n)).toBeGreaterThan(0);
+
+    const allSuburbs = await db("addresses").distinct("suburb");
+    expect(allSuburbs.length).toBeGreaterThan(13);
   });
 
   it("carries each suburban row's WCC-confirmed recyclingCalendarGroup, and null for every CBD row (issue #102)", async () => {
@@ -190,14 +277,38 @@ describe("addresses seed", () => {
     await expect(db.seed.run()).rejects.toThrow(/no such table: addresses/);
   });
 
-  it("running the seed three times in a row leaves exactly 17 rows every time", async () => {
+  it("running the seed three times in a row leaves the exact same total row count and curated/unconfirmed split every time", async () => {
     db = Knex(knexConfigs.test);
     await db.migrate.latest();
 
+    let expectedTotal: number | undefined;
+    let expectedCurated: number | undefined;
+    let expectedUnconfirmed: number | undefined;
+
     for (let run = 1; run <= 3; run += 1) {
       await db.seed.run();
-      const [{ n }] = await db("addresses").count({ n: "*" });
-      expect({ run, n }).toEqual({ run, n: SEEDED_ROW_COUNT });
+      const [{ n: total }] = await db("addresses").count({ n: "*" });
+      const [{ n: curated }] = await db("addresses")
+        .whereNotNull("is_inner_city_night_collection")
+        .count({ n: "*" });
+      const [{ n: unconfirmed }] = await db("addresses")
+        .whereNull("is_inner_city_night_collection")
+        .count({ n: "*" });
+
+      if (run === 1) {
+        expectedTotal = Number(total);
+        expectedCurated = Number(curated);
+        expectedUnconfirmed = Number(unconfirmed);
+        expect(expectedCurated).toBe(CURATED_ROW_COUNT);
+        expect(expectedTotal).toBeGreaterThan(CURATED_ROW_COUNT);
+      } else {
+        expect({ run, total: Number(total) }).toEqual({ run, total: expectedTotal });
+        expect({ run, curated: Number(curated) }).toEqual({ run, curated: expectedCurated });
+        expect({ run, unconfirmed: Number(unconfirmed) }).toEqual({
+          run,
+          unconfirmed: expectedUnconfirmed,
+        });
+      }
     }
   });
 
@@ -206,18 +317,20 @@ describe("addresses seed", () => {
     await db.migrate.latest();
     await db.seed.run();
 
+    const [{ n: seededTotal }] = await db("addresses").count({ n: "*" });
+
     await db("addresses").insert({
       street_name: "Test Street",
       suburb: "Test Suburb",
       zone: "zone-test",
     });
     const [{ n: beforeReseed }] = await db("addresses").count({ n: "*" });
-    expect(beforeReseed).toBe(SEEDED_ROW_COUNT + 1);
+    expect(Number(beforeReseed)).toBe(Number(seededTotal) + 1);
 
     await db.seed.run();
 
     const [{ n }] = await db("addresses").count({ n: "*" });
-    expect(n).toBe(SEEDED_ROW_COUNT);
+    expect(Number(n)).toBe(Number(seededTotal));
     expect(
       await db("addresses").where({ street_name: "Test Street" }),
     ).toEqual([]);

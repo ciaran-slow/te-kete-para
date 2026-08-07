@@ -1,7 +1,10 @@
 // @vitest-environment node
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { getDb } from "@/lib/db";
-import { computeCollectionRuleSet, type ZoneClassification } from "@/lib/schedule/rules";
+import {
+  computeCollectionRuleSet,
+  type ZoneClassification,
+} from "@/lib/schedule/rules";
 import {
   collectNightlyDispatchCandidates,
   planDispatchForSubscription,
@@ -241,6 +244,26 @@ describe("planDispatchForSubscription", () => {
     }
   });
 
+  test("a zone with isInnerCityNightCollection: null (bulk-imported, unconfirmed) returns null and logs a [dispatcher] error naming isInnerCityNightCollection (issue #178)", () => {
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      const subscription = subscriptionWith({
+        zone: { zone: "zone-unconfirmed", isInnerCityNightCollection: null, recyclingCalendarGroup: null },
+      });
+
+      expect(planDispatchForSubscription(subscription, NOW)).toBeNull();
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(expect.stringContaining("[dispatcher]"));
+      expect(spy).toHaveBeenCalledWith(
+        expect.stringContaining("isInnerCityNightCollection is unresolved"),
+      );
+      expect(spy).toHaveBeenCalledWith(expect.stringContaining(`${subscription.id}`));
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
   test("repeat calls with the same subscription and now return deep-equal but independently-mutable results", () => {
     const subscription = subscriptionWith({ zone: SUBURBAN_ZONE });
 
@@ -303,6 +326,17 @@ async function seedDispatchFixtures(): Promise<void> {
     collection_weekday: null,
   });
 
+  // Bulk-imported, unconfirmed street (issue #178, ADR 0075):
+  // is_inner_city_night_collection is genuinely null, not defaulted false.
+  const [unconfirmedClassificationAddressId] = await db("addresses").insert({
+    street_name: "Unconfirmed Classification Street",
+    suburb: "Newlands",
+    zone: "zone-unconfirmed",
+    is_inner_city_night_collection: null,
+    recycling_calendar_group: null,
+    collection_weekday: null,
+  });
+
   await db("push_subscriptions").insert([
     {
       endpoint: "https://push.example/suburban",
@@ -345,6 +379,13 @@ async function seedDispatchFixtures(): Promise<void> {
       auth: "auth-unconfirmed-weekday",
       language_preference: "en",
       address_id: unconfirmedWeekdayAddressId,
+    },
+    {
+      endpoint: "https://push.example/unconfirmed-classification",
+      p256dh: "p256dh-unconfirmed-classification",
+      auth: "auth-unconfirmed-classification",
+      language_preference: "en",
+      address_id: unconfirmedClassificationAddressId,
     },
   ]);
 }
@@ -405,6 +446,16 @@ describe("collectNightlyDispatchCandidates", () => {
 
     expect(endpoints).not.toContain("https://push.example/suburban-unconfirmed-weekday");
     expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining("collectionWeekday"));
+  });
+
+  test("a subscription joined to an address with is_inner_city_night_collection: null (bulk-imported, unconfirmed) is excluded from the returned batch (issue #178)", async () => {
+    const candidates = await collectNightlyDispatchCandidates(NOW);
+    const endpoints = candidates.map((c) => c.endpoint);
+
+    expect(endpoints).not.toContain("https://push.example/unconfirmed-classification");
+    expect(errorSpy).toHaveBeenCalledWith(
+      expect.stringContaining("isInnerCityNightCollection is unresolved"),
+    );
   });
 
   test("resolves opposite recycling parity for two suburban subscriptions on different addresses.recycling_calendar_group (issue #102)", async () => {

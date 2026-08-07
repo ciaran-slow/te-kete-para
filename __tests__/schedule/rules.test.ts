@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   computeCollectionRuleSet,
   UnresolvedRecyclingCalendarGroupError,
+  UnresolvedZoneClassificationError,
   type ZoneClassification,
 } from "../../src/lib/schedule/rules";
 
@@ -245,5 +246,45 @@ describe("computeCollectionRuleSet", () => {
     expect(() => computeCollectionRuleSet(noGroup, validDate)).toThrow(
       UnresolvedRecyclingCalendarGroupError,
     );
+  });
+
+  test("a zone with isInnerCityNightCollection null throws UnresolvedZoneClassificationError, identically on repeat calls", () => {
+    const unresolved: ZoneClassification = {
+      zone: "zone-unconfirmed",
+      isInnerCityNightCollection: null,
+      recyclingCalendarGroup: null,
+    };
+    const validDate = new Date(Date.UTC(2026, 0, 12));
+
+    expect(() => computeCollectionRuleSet(unresolved, validDate)).toThrow(
+      new UnresolvedZoneClassificationError("computeCollectionRuleSet"),
+    );
+    expect(() => computeCollectionRuleSet(unresolved, validDate)).toThrow(
+      new UnresolvedZoneClassificationError("computeCollectionRuleSet"),
+    );
+    expect(() => computeCollectionRuleSet(unresolved, validDate)).toThrow(
+      UnresolvedZoneClassificationError,
+    );
+  });
+
+  test("a zone with isInnerCityNightCollection null throws with any recyclingCalendarGroup value", () => {
+    const unresolvedWithGroup: ZoneClassification = {
+      zone: "zone-unconfirmed",
+      isInnerCityNightCollection: null,
+      recyclingCalendarGroup: 1,
+    };
+    const validDate = new Date(Date.UTC(2026, 0, 12));
+
+    expect(() => computeCollectionRuleSet(unresolvedWithGroup, validDate)).toThrow(
+      UnresolvedZoneClassificationError,
+    );
+  });
+});
+
+describe("UnresolvedZoneClassificationError", () => {
+  test("is also a RangeError", () => {
+    const err = new UnresolvedZoneClassificationError("computeCollectionRuleSet");
+    expect(err).toBeInstanceOf(RangeError);
+    expect(err).toBeInstanceOf(UnresolvedZoneClassificationError);
   });
 });
