@@ -57,6 +57,26 @@ async function fetchTerm(term) {
 }
 
 /**
+ * Normalizes a street/suburb name for curated-vs-bulk comparison only (the
+ * output data itself keeps WCC's original spelling unchanged). WCC's
+ * registry uses abbreviations ("Mt Victoria") the 17 curated rows spell out
+ * in full ("Mount Victoria") — an exact-string or case-insensitive-only
+ * comparison misses this and lets a bulk row shadow/duplicate a curated
+ * street under the abbreviated spelling (found live: "Majoribanks Street,
+ * Mt Victoria" and "Adelaide Road, Mt Cook" both duplicated a curated,
+ * WCC-confirmed row). Expands "Mt"/"St" to "Mount"/"Saint" at a word
+ * boundary before lowercasing, so both spellings collapse to the same key.
+ */
+function normalizeForComparison(value) {
+  return value
+    .replace(/\bMt\b\.?/gi, "Mount")
+    .replace(/\bSt\b\.?/gi, "Saint")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
  * Parses one `{label, value}` row into `{streetName, suburb}`, or `null` if
  * the label can't be parsed (logged, not thrown, so one bad row doesn't
  * abort the run).
@@ -128,19 +148,26 @@ async function main() {
   }
 
   // Exclude any bulk row whose (streetName, suburb) matches a curated,
-  // WCC-confirmed row case-insensitively — the curated rows must never be
-  // shadowed or duplicated by an unconfirmed import row for the same address.
+  // WCC-confirmed row after normalizing case and WCC's Mt/St abbreviations
+  // (normalizeForComparison) — the curated rows must never be shadowed or
+  // duplicated by an unconfirmed import row for the same address.
   const { CURATED_ADDRESSES } = require("../db/seeds/01_addresses.js");
   const curatedKeys = new Set(
     CURATED_ADDRESSES.map((row) =>
-      JSON.stringify([row.street_name.toLowerCase(), row.suburb.toLowerCase()]),
+      JSON.stringify([
+        normalizeForComparison(row.street_name),
+        normalizeForComparison(row.suburb),
+      ]),
     ),
   );
 
   let excludedAsCuratedCount = 0;
   const streets = [];
   for (const row of byStreetSuburb.values()) {
-    const key = JSON.stringify([row.streetName.toLowerCase(), row.suburb.toLowerCase()]);
+    const key = JSON.stringify([
+      normalizeForComparison(row.streetName),
+      normalizeForComparison(row.suburb),
+    ]);
     if (curatedKeys.has(key)) {
       excludedAsCuratedCount += 1;
       continue;
@@ -170,7 +197,14 @@ async function main() {
   );
 }
 
-main().catch((err) => {
-  console.error("[import] Fatal error:", err);
-  process.exitCode = 1;
-});
+// Guarded so this file can be `require`d for `normalizeForComparison` (test
+// reuse — see __tests__/db/seeds/addresses.test.ts) without triggering a
+// live fetch against wellington.govt.nz as a side effect of the import.
+if (require.main === module) {
+  main().catch((err) => {
+    console.error("[import] Fatal error:", err);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = { normalizeForComparison, parseLabel };

@@ -1,6 +1,14 @@
 import { afterEach, describe, expect, it } from "vitest";
 import Knex from "knex";
 import knexConfigs from "../../../knexfile.js";
+// scripts/import-wellington-streets.js is a plain Node CommonJS script (run
+// manually with `node`, not bundled) — imported here (mirroring knexfile.js's
+// own default-import CJS interop above) only for its normalizeForComparison
+// helper, so this test exercises the exact same normalization the import
+// script itself uses to exclude curated rows.
+import importScriptExports from "../../../scripts/import-wellington-streets.js";
+
+const { normalizeForComparison } = importScriptExports;
 
 /**
  * db/seeds/01_addresses.js: a two-tier registry (issue #178, ADR 0075) — the
@@ -91,6 +99,55 @@ describe("addresses seed", () => {
       .groupBy("street_name", "suburb")
       .havingRaw("count(*) > 1");
     expect(duplicates).toEqual([]);
+  });
+
+  it("no bulk-imported row shadows a curated row under a WCC suburb abbreviation (e.g. Mt vs Mount) (issue #178 verify finding)", async () => {
+    db = Knex(knexConfigs.test);
+    await db.migrate.latest();
+    await db.seed.run();
+
+    const curatedRows = await db("addresses")
+      .whereNotNull("is_inner_city_night_collection")
+      .select("street_name", "suburb");
+    const curatedKeys = new Set(
+      curatedRows.map((r) =>
+        JSON.stringify([
+          normalizeForComparison(r.street_name),
+          normalizeForComparison(r.suburb),
+        ]),
+      ),
+    );
+
+    const bulkRows = await db("addresses")
+      .whereNull("is_inner_city_night_collection")
+      .select("street_name", "suburb");
+    const shadowedRows = bulkRows.filter((r) =>
+      curatedKeys.has(
+        JSON.stringify([
+          normalizeForComparison(r.street_name),
+          normalizeForComparison(r.suburb),
+        ]),
+      ),
+    );
+
+    expect(shadowedRows).toEqual([]);
+
+    // Specific regression fixtures for the exact collision the verify pass
+    // found live: "Mt Victoria"/"Mt Cook" (WCC's abbreviation) must not
+    // exist as a second, unresolved row alongside the curated "Mount
+    // Victoria"/"Mount Cook" spelling for the same street.
+    expect(
+      await db("addresses").where({
+        street_name: "Majoribanks Street",
+        suburb: "Mt Victoria",
+      }),
+    ).toEqual([]);
+    expect(
+      await db("addresses").where({
+        street_name: "Adelaide Road",
+        suburb: "Mt Cook",
+      }),
+    ).toEqual([]);
   });
 
   it("includes a real, non-curated street confirmed present in the live import (Wadestown Road, Wadestown) with unresolved classification", async () => {

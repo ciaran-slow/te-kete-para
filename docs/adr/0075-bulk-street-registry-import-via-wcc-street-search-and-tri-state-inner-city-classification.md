@@ -45,9 +45,14 @@ endpoint's ~100-result cap), dedupes by the endpoint's own numeric
 (`db/seeds/data/wellington-streets.json`) — no network dependency at seed
 or test time, mirroring ADR 0060's "one-time fetch baked into a seed file"
 precedent. The live run against the real endpoint (2026-08-07/08) found
-2,089 unique streets not already covered by the 17 curated rows (15 of the
+2,087 unique streets not already covered by the 17 curated rows (17 of the
 endpoint's raw rows collapsed into already-curated street/suburb pairs and
-were excluded), with 0 rows skipped as unparseable.
+were excluded — this comparison normalizes WCC's `Mt`/`St` abbreviations
+against the curated rows' spelled-out `Mount`/`Saint`, catching two rows
+— `Majoribanks Street, Mt Victoria` and `Adelaide Road, Mt Cook` — that an
+earlier, case-insensitive-only comparison missed and would have duplicated
+alongside the curated `Mount Victoria`/`Mount Cook` spelling), with 0 rows
+skipped as unparseable.
 
 **Schema:** widen `addresses.is_inner_city_night_collection` to nullable.
 Every bulk-imported row gets `zone: "zone-unconfirmed"`,
@@ -163,7 +168,7 @@ Every real Wellington street WCC's own registry recognizes is now
 findable by name (FR-08's core ask), while every unconfirmed row stays
 honestly unresolved rather than silently misclassified — closing exactly
 the gap FR-08 was written to prevent. The residual cost is phase 2 (#188):
-confirming classification for the 2,089 bulk-imported rows this PR's live
+confirming classification for the 2,087 bulk-imported rows this PR's live
 run produced, which this PR deliberately does not attempt. `zone-unconfirmed`
 is a new sentinel value with no computation depending on it; if a future
 issue ever does derive behaviour from `zone` (nothing does today, per ADR

@@ -1,6 +1,6 @@
 {
   "source": "https://wellington.govt.nz/handlers/RubbishCollectionStreetsHandler.ashx",
-  "fetchedAt": "2026-08-07T23:37:20.404Z",
+  "fetchedAt": "2026-08-08T00:17:48.940Z",
   "streets": [
     {
       "streetName": "Abbott Street",
@@ -37,10 +37,6 @@
     {
       "streetName": "Adelaide Road",
       "suburb": "Berhampore"
-    },
-    {
-      "streetName": "Adelaide Road",
-      "suburb": "Mt Cook"
     },
     {
       "streetName": "Adelaide Road",
@@ -4497,10 +4493,6 @@
     {
       "streetName": "Mairangi Road",
       "suburb": "Wilton"
-    },
-    {
-      "streetName": "Majoribanks Street",
-      "suburb": "Mt Victoria"
     },
     {
       "streetName": "Makara Road",
