@@ -1,10 +1,7 @@
 // @vitest-environment node
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { getDb } from "@/lib/db";
-import {
-  computeCollectionRuleSet,
-  type ZoneClassification,
-} from "@/lib/schedule/rules";
+import { computeCollectionRuleSet, type ZoneClassification } from "@/lib/schedule/rules";
 import {
   collectNightlyDispatchCandidates,
   planDispatchForSubscription,
