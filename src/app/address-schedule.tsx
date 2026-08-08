@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useSyncExternalStore } from "react";
-import { AddressSearch } from "@/components/address-search";
+import { useMemo, useRef, useSyncExternalStore } from "react";
+import { AddressSearch, type SuburbSearchResult } from "@/components/address-search";
 import { PushSubscriptionToggle } from "@/components/push-subscription-toggle";
-import { ScheduleDisplay } from "@/components/schedule-display";
+import { ScheduleDisplay, computeSchedule } from "@/components/schedule-display";
 import { ShiftAlertBanner } from "@/components/shift-alert-banner";
 import {
   getServerCachedAddressRaw,
@@ -12,6 +12,7 @@ import {
   subscribeToCachedAddress,
   writeCachedAddress,
 } from "@/lib/schedule/address-cache";
+import { reportOnboardingTime } from "@/lib/metrics/onboarding-time";
 
 /**
  * Page-specific composition, colocated with (not exported from) page.tsx —
@@ -39,11 +40,24 @@ export function AddressSchedule() {
     [rawCachedAddress],
   );
 
+  const reportedOnboardingRef = useRef(false);
+
+  function handleAddressSelect(address: SuburbSearchResult) {
+    writeCachedAddress(address);
+    if (!reportedOnboardingRef.current) {
+      const { ruleSet } = computeSchedule(address, undefined);
+      if (ruleSet !== null) {
+        reportedOnboardingRef.current = true;
+        reportOnboardingTime(Math.round(performance.now()));
+      }
+    }
+  }
+
   const schedule = <ScheduleDisplay address={selected} />;
 
   return (
     <div className="flex w-full max-w-md flex-col items-stretch gap-4">
-      <AddressSearch onSelect={writeCachedAddress} />
+      <AddressSearch onSelect={handleAddressSelect} />
       <ShiftAlertBanner address={selected} />
       {selected === null ? (
         schedule

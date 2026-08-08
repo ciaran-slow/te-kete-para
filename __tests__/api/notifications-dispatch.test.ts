@@ -63,15 +63,19 @@ describe("GET /api/notifications/dispatch", () => {
     await teardownTestDb();
   });
 
+  let logSpy: ReturnType<typeof vi.spyOn>;
+
   beforeEach(() => {
     vi.mocked(sendDispatchPayload).mockImplementation(async (payload) => ({
       subscriptionId: payload.subscriptionId,
       success: true,
     }));
+    logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
   });
 
   afterEach(() => {
     vi.clearAllMocks();
+    logSpy.mockRestore();
   });
 
   describe("authenticated — mixed success/failure", () => {
@@ -88,6 +92,17 @@ describe("GET /api/notifications/dispatch", () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual({ attempted: 2, succeeded: 1, failed: 1 });
       expect(sendDispatchPayload).toHaveBeenCalledTimes(2);
+      // NFR-04/ADR 0076: the real collectNightlyDispatchCandidates ->
+      // sendDispatchBatch path (not just the mocked runNightlyDispatch path
+      // covered in notifications-dispatch-summary-log.test.ts) still emits
+      // the aggregate delivery-rate summary line.
+      expect(
+        logSpy.mock.calls.some(
+          ([line]: unknown[]) =>
+            typeof line === "string" &&
+            line.includes('"event":"nightly_dispatch_summary"'),
+        ),
+      ).toBe(true);
     });
   });
 

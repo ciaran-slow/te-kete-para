@@ -128,7 +128,7 @@ function formatTimeWindowLabel(
   return `${t("schedule.collectionWindow")}: ${timeWindow.start}–${timeWindow.end}`;
 }
 
-interface ComputedSchedule {
+export interface ComputedSchedule {
   ruleSet: CollectionRuleSet | null;
   collectionDateUtc: Date;
   /** Only meaningful when ruleSet is null. */
@@ -137,7 +137,7 @@ interface ComputedSchedule {
   unresolvedClassification: boolean;
 }
 
-function computeSchedule(
+export function computeSchedule(
   address: SuburbSearchResult,
   now: Date | undefined,
 ): ComputedSchedule {

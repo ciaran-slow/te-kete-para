@@ -29,6 +29,20 @@ const INNER_CITY_ADDRESS: SuburbSearchResult = {
   recyclingCalendarGroup: null,
   collectionWeekday: null,
 };
+// Valid zone and collectionWeekday: 1 (matches GLASS_WEEK_MONDAY, so
+// findNextCollectionDate resolves), but recyclingCalendarGroup: null so
+// computeCollectionRuleSet throws UnresolvedRecyclingCalendarGroupError —
+// a genuine "not yet confirmed" address, not an error state (NFR-04, ADR
+// 0076: this must never report an onboarding-time sample).
+const UNCONFIRMED_CALENDAR_ADDRESS: SuburbSearchResult = {
+  id: 40,
+  streetName: "New Street",
+  suburb: "Newtown",
+  zone: "SUBURBAN-SOUTH",
+  isInnerCityNightCollection: false,
+  recyclingCalendarGroup: null,
+  collectionWeekday: 1,
+};
 
 // Monday 2026-01-12 UTC = a confirmed "glass" week (rules.ts, ADR 0042).
 // Mid-UTC-day so the viewer's local (Pacific/Auckland, ADR 0017) calendar
@@ -178,6 +192,9 @@ describe("AddressSchedule", () => {
       if (url === "/api/holidays") {
         return Promise.resolve(jsonResponse({ results: [] }));
       }
+      if (url === "/api/metrics/onboarding-time") {
+        return Promise.resolve(jsonResponse(null));
+      }
       throw new Error(`unexpected fetch: ${url}`);
     });
     vi.stubGlobal("fetch", fetchMock);
@@ -210,6 +227,141 @@ describe("AddressSchedule", () => {
     const [, init] = subscribeCall as [string, RequestInit];
     const body = JSON.parse(init?.body as string) as Record<string, unknown>;
     expect(body.addressId).toBe(SUBURBAN_ADDRESS.id);
+  });
+
+  test("reports onboarding time once a fresh selection resolves to a real schedule", async () => {
+    const fetchMock = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      void init;
+      const url = input.toString();
+      if (url.includes("/api/suburbs/search")) {
+        return Promise.resolve(jsonResponse({ results: [SUBURBAN_ADDRESS] }));
+      }
+      if (url === "/api/holidays") {
+        return Promise.resolve(jsonResponse({ results: [] }));
+      }
+      if (url === "/api/metrics/onboarding-time") {
+        return Promise.resolve(jsonResponse(null));
+      }
+      throw new Error(`unexpected fetch: ${url}`);
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    renderComposed();
+    await typeAndSettle("Karori");
+    selectFirstOption();
+
+    const onboardingCall = fetchMock.mock.calls.find(
+      ([url]) => url === "/api/metrics/onboarding-time",
+    );
+    expect(onboardingCall).toBeDefined();
+    const [, init] = onboardingCall as [string, RequestInit];
+    const body = JSON.parse(init?.body as string) as Record<string, unknown>;
+    expect(body.durationMs).toBeTypeOf("number");
+    expect(Number.isFinite(body.durationMs)).toBe(true);
+    expect(body.durationMs as number).toBeGreaterThanOrEqual(0);
+  });
+
+  test("does not report onboarding time when a fresh selection resolves to an unconfirmed schedule", async () => {
+    const fetchMock = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      void init;
+      const url = input.toString();
+      if (url.includes("/api/suburbs/search")) {
+        return Promise.resolve(
+          jsonResponse({ results: [UNCONFIRMED_CALENDAR_ADDRESS] }),
+        );
+      }
+      if (url === "/api/holidays") {
+        return Promise.resolve(jsonResponse({ results: [] }));
+      }
+      if (url === "/api/metrics/onboarding-time") {
+        return Promise.resolve(jsonResponse(null));
+      }
+      throw new Error(`unexpected fetch: ${url}`);
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    renderComposed();
+    await typeAndSettle("New");
+    selectFirstOption();
+
+    expect(
+      screen.getByText(
+        "We haven't confirmed this address's recycling calendar yet. Check back soon.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      fetchMock.mock.calls.some(([url]) => url === "/api/metrics/onboarding-time"),
+    ).toBe(false);
+  });
+
+  test("does not report onboarding time for a cache-restored address on mount", () => {
+    seedCachedAddress(SUBURBAN_ADDRESS);
+    const fetchMock = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      void init;
+      const url = input.toString();
+      if (url === "/api/holidays") {
+        return Promise.resolve(jsonResponse({ results: [] }));
+      }
+      if (url === "/api/metrics/onboarding-time") {
+        return Promise.resolve(jsonResponse(null));
+      }
+      throw new Error(`unexpected fetch: ${url}`);
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    renderComposed();
+
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Your next collection" }),
+    ).toBeInTheDocument();
+    expect(
+      fetchMock.mock.calls.some(([url]) => url === "/api/metrics/onboarding-time"),
+    ).toBe(false);
+  });
+
+  test("reports onboarding time only once even after a second successful selection", async () => {
+    const fetchMock = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      void init;
+      const url = input.toString();
+      if (url.includes("/api/suburbs/search")) {
+        return Promise.resolve(jsonResponse({ results: [SUBURBAN_ADDRESS] }));
+      }
+      if (url === "/api/holidays") {
+        return Promise.resolve(jsonResponse({ results: [] }));
+      }
+      if (url === "/api/metrics/onboarding-time") {
+        return Promise.resolve(jsonResponse(null));
+      }
+      throw new Error(`unexpected fetch: ${url}`);
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    renderComposed();
+    await typeAndSettle("Karori");
+    selectFirstOption();
+
+    fetchMock.mockImplementation((input: RequestInfo | URL) => {
+      const url = input.toString();
+      if (url.includes("/api/suburbs/search")) {
+        return Promise.resolve(jsonResponse({ results: [INNER_CITY_ADDRESS] }));
+      }
+      if (url === "/api/holidays") {
+        return Promise.resolve(jsonResponse({ results: [] }));
+      }
+      if (url === "/api/metrics/onboarding-time") {
+        return Promise.resolve(jsonResponse(null));
+      }
+      throw new Error(`unexpected fetch: ${url}`);
+    });
+
+    await typeAndSettle("Cuba");
+    selectFirstOption();
+
+    expect(
+      fetchMock.mock.calls.filter(
+        ([url]) => url === "/api/metrics/onboarding-time",
+      ),
+    ).toHaveLength(1);
   });
 
   test("a previously cached address renders its schedule on a fresh mount, with no network call needed for the schedule itself (offline acceptance criterion)", () => {

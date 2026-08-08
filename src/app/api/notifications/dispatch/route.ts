@@ -41,11 +41,20 @@ export async function GET(request: Request): Promise<Response> {
       baseDelayMs: DISPATCH_RETRY_BASE_DELAY_MS,
     });
     const succeeded = outcomes.filter((outcome) => outcome.success).length;
-    return Response.json({
-      attempted: outcomes.length,
-      succeeded,
-      failed: outcomes.length - succeeded,
-    });
+    const attempted = outcomes.length;
+    const successRatePercent =
+      attempted === 0 ? null : Math.round((succeeded / attempted) * 1000) / 10;
+    console.log(
+      JSON.stringify({
+        event: "nightly_dispatch_summary",
+        attempted,
+        succeeded,
+        failed: attempted - succeeded,
+        successRatePercent,
+        timestamp: new Date().toISOString(),
+      }),
+    );
+    return Response.json({ attempted, succeeded, failed: attempted - succeeded });
   } catch (err) {
     console.error(
       `[api/notifications/dispatch] Nightly dispatch run failed after ${DISPATCH_RETRY_ATTEMPTS} attempts:`,
