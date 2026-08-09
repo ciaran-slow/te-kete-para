@@ -1,0 +1,8354 @@
+{
+  "source": "https://wellington.govt.nz/handlers/RubbishCollectionStreetsHandler.ashx",
+  "fetchedAt": "2026-08-08T00:17:48.940Z",
+  "streets": [
+    {
+      "streetName": "Abbott Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Abel Smith Street",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Abel Smith Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Abilene Crescent",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Achilles Close",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Adair Way",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Adams Terrace",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Adams Terrace",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Adelaide Road",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Adelaide Road",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Admiralty Street",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Agra Crescent",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Ahuriri Street",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Aintree Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Aitken Street",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Akaroa Drive",
+      "suburb": "Maupuia"
+    },
+    {
+      "streetName": "Akatea Street",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Akautangi Way",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Alameda Terrace",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Alanbrooke Place",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Albany Avenue",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Albemarle Road",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Albert Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Alder Place",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Alexandra Road",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Alexandra Road",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Alexandra Road",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Alexandra Road",
+      "suburb": "Roseneath"
+    },
+    {
+      "streetName": "Alfred Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Alister Way",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Allen Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Allen Terrace",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Allenby Terrace",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Allington Road",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Allington Road",
+      "suburb": "Makara"
+    },
+    {
+      "streetName": "Alpha Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Alwyn Place",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Amapur Drive",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Amapur Drive",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Ambala Way",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Amesbury Drive",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Amos Way",
+      "suburb": "Kingston"
+    },
+    {
+      "streetName": "Amritsar Street",
+      "suburb": "Kaiwharawhara"
+    },
+    {
+      "streetName": "Amritsar Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Anaheim Place",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Andaman Grove",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Anderson Terrace",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Angell Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Angus Avenue",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Anne Street",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Anthony Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Antico Street",
+      "suburb": "Melrose"
+    },
+    {
+      "streetName": "Antigua Way",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Anzia Way",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Aorangi Terrace",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Aotea Quay",
+      "suburb": "Pipitea"
+    },
+    {
+      "streetName": "Aparima Avenue",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Aplin Terrace",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Appleton Place",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Apu Crescent",
+      "suburb": "Lyall Bay"
+    },
+    {
+      "streetName": "Apuka Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Ara Haewai",
+      "suburb": "Houghton Bay"
+    },
+    {
+      "streetName": "Ara Patukawenga",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Arahanga Grove",
+      "suburb": "Maupuia"
+    },
+    {
+      "streetName": "Arakan Way",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Aramoana Place",
+      "suburb": "Maupuia"
+    },
+    {
+      "streetName": "Aranoni Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Aranui Street",
+      "suburb": "Maupuia"
+    },
+    {
+      "streetName": "Aranui Street",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Arapiko Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Arawa Road",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Archbold Street",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Arcus Way",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Arden Way",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Ardross Avenue",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Argentine Avenue",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Ariki Road",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Arima Place",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Arizona Grove",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Arlington Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Armitage Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Armour Avenue",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Arney Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Aro Street",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Arthur Carman Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Arthur Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Arun Crescent",
+      "suburb": "Southgate"
+    },
+    {
+      "streetName": "Ascot Street",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Ashfield Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Ashleigh Crescent",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Ashton Fitchett Drive",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Ashwood Street",
+      "suburb": "Woodridge"
+    },
+    {
+      "streetName": "Asquith Terrace",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Astelia Way",
+      "suburb": "Woodridge"
+    },
+    {
+      "streetName": "Astor Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Atamira Close",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Athens Street",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Atherton Terrace",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Athol Crescent",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Atlanta Grove",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Atua Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Atwood Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Auckland Terrace",
+      "suburb": "Melrose"
+    },
+    {
+      "streetName": "Aurora Terrace",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Aurora Terrace",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Austin Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Austin Terrace",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Avon Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Awa Road",
+      "suburb": "Karaka Bays"
+    },
+    {
+      "streetName": "Awa Road",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Awa Road",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Awarua Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Aylesbury Way",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Baden Road",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Baffin Grove",
+      "suburb": "Kingston"
+    },
+    {
+      "streetName": "Balfour Street",
+      "suburb": "Mornington"
+    },
+    {
+      "streetName": "Ballance Street",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Ballantrae Place",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Ballina Drive",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Balliol Drive",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Balmain Street",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Balmoral Terrace",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Bancroft Terrace",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Bandipur Terrace",
+      "suburb": "Broadmeadows"
+    },
+    {
+      "streetName": "Bank Road",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Bankot Crescent",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Bann Street",
+      "suburb": "Southgate"
+    },
+    {
+      "streetName": "Bannister Avenue",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Barclay Street",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Baring Street",
+      "suburb": "Oriental Bay"
+    },
+    {
+      "streetName": "Barker Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Barnard Street",
+      "suburb": "Kaiwharawhara"
+    },
+    {
+      "streetName": "Barnard Street",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Barnett Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Baroda Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Barretts Way",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Barrie Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Bartlett Grove",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Barton Terrace",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Bassett Road",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Bata Place",
+      "suburb": "Owhiro Bay"
+    },
+    {
+      "streetName": "Batchelor Street",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Batham Drive",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Bathgate Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Baxter Way",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Bay Lair Grove",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Bay Road",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Baylands Drive",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Bayou Lane",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Bayswater Place",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Bayview Terrace",
+      "suburb": "Oriental Bay"
+    },
+    {
+      "streetName": "Beach Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Beacon Hill Road",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Beacon Hill Road",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Beacon Hill Road",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Beatty Avenue",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Beauchamp Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Beauchamp Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Beavis Lane",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Beazley Avenue",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Becker Way",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Bede Grove",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Bedford Street",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Beere Haven Road",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Beere Haven Steps",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Belfast Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Belize Grove",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Bell Road",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Bell Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Bella Vista",
+      "suburb": "Melrose"
+    },
+    {
+      "streetName": "Bellringer Crescent",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Belvedere Road",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Benares Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Bendbrook Way",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Bendigo Grove",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Bengal Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Bennett Grove",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Bentinck Avenue",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Berkshire Avenue",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Berlize Grove",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Berrymead Way",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Berwick Grove",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Beverley Grove",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Bharat Terrace",
+      "suburb": "Broadmeadows"
+    },
+    {
+      "streetName": "Bickerton Rise",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Bidwill Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Bill Cutting Place",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Bing Lucas Drive",
+      "suburb": "Takapu Valley"
+    },
+    {
+      "streetName": "Bing Lucas Drive",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Birch Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Birdwood Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Birkhall Grove",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Birla Terrace",
+      "suburb": "Broadmeadows"
+    },
+    {
+      "streetName": "Bishops Glen",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Black Pine Road",
+      "suburb": "Woodridge"
+    },
+    {
+      "streetName": "Black Rock Road",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Blackbridge Road",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Bladon Terrace",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Blair Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Blakey Avenue",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Blandford Way",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Bloomsbury Grove",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Blucher Avenue",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Blythe Street",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Boardwalk Lane",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Boeing Way",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Bolton Street",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Bolton Street",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Bombay Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Bond Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Boom Rock Road",
+      "suburb": "Ohariu"
+    },
+    {
+      "streetName": "Booth Street",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Borlase Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Boscobel Lane",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Boston Terrace",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Bosworth Terrace",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Boulcott Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Boulcott Street",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Bould Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Boundary Road",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Bourbon Terrace",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Bourke Street",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Bowen Street",
+      "suburb": "Pipitea"
+    },
+    {
+      "streetName": "Bowen Street",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Bowes Crescent",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Box Hill",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Boyd Terrace",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Bracken Road",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Bracken Road",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Braemar Terrace",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Braithwaite Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Brandon Street",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Branscombe Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Brasch Way",
+      "suburb": "Kaiwharawhara"
+    },
+    {
+      "streetName": "Brasenose Place",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Breaker Bay Road",
+      "suburb": "Breaker Bay"
+    },
+    {
+      "streetName": "Breton Grove",
+      "suburb": "Kingston"
+    },
+    {
+      "streetName": "Bridge Street",
+      "suburb": "Rongotai"
+    },
+    {
+      "streetName": "Brighton Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Brindle Way",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Bristol Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Bristow Place",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Britomart Street",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Brixham Way",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Broadway",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Broadway",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Broderick Crescent",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Bronwyn Way",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Brooker Grove",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Brooklyn Road",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Brooklyn Road",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Brooklyn Terrace",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Broomhedge Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Broomhill Road",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Broomhill Road",
+      "suburb": "Highbury"
+    },
+    {
+      "streetName": "Brougham Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Brown Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Bruce Avenue",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Bruges Avenue",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Brussels Street",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Brydon Way",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Buccaneer Place",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Buchanan Street",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Buckingham Street",
+      "suburb": "Melrose"
+    },
+    {
+      "streetName": "Buckle Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Buckle Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Buckley Road",
+      "suburb": "Houghton Bay"
+    },
+    {
+      "streetName": "Buckley Road",
+      "suburb": "Southgate"
+    },
+    {
+      "streetName": "Buller Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Bunker Way",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Bunny Street",
+      "suburb": "Pipitea"
+    },
+    {
+      "streetName": "Burbank Crescent",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Burdendale Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Burgess Road",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Burgess Road",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Burma Road",
+      "suburb": "Broadmeadows"
+    },
+    {
+      "streetName": "Burma Road",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Burma Road",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Burn Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Burnell Avenue",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Burnham Street",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Burrows Avenue",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Burwah Street",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Bury Grove",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Busaco Road",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Bushland Grove",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Butavas Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Bute Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Butt Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Buxton Avenue",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Byron Street",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Cabbage Tree Grove",
+      "suburb": "Woodridge"
+    },
+    {
+      "streetName": "Cable Car Lane",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Cable Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Cable Street",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Cabot Place",
+      "suburb": "Kingston"
+    },
+    {
+      "streetName": "Caesars Place",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Cairns Street",
+      "suburb": "Rongotai"
+    },
+    {
+      "streetName": "Calabar Road",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Calcutta Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Caldwell Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Caledonia Street",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Calgarry Avenue",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Calypso Street",
+      "suburb": "Grenada North"
+    },
+    {
+      "streetName": "Cam Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Cambrian Street",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Cambridge Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Cambridge Terrace",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Cameron Street",
+      "suburb": "Kaiwharawhara"
+    },
+    {
+      "streetName": "Campbell Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Camperdown Road",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Camrose Grove",
+      "suburb": "Kingston"
+    },
+    {
+      "streetName": "Canterbury Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Caprera Street",
+      "suburb": "Melrose"
+    },
+    {
+      "streetName": "Captain Edward Daniell Drive",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Cara Crescent",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Cardall Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Cardigan Way",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Cardrona Way",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Carey Street",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Cargill Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Caribbean Drive",
+      "suburb": "Grenada North"
+    },
+    {
+      "streetName": "Caribbean Drive",
+      "suburb": "Takapu Valley"
+    },
+    {
+      "streetName": "Caribou Place",
+      "suburb": "Kingston"
+    },
+    {
+      "streetName": "Carleton Terrace",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Carlisle Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Carlton Gore Road",
+      "suburb": "Roseneath"
+    },
+    {
+      "streetName": "Carlton Street",
+      "suburb": "Melrose"
+    },
+    {
+      "streetName": "Carluke Street",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Carmichael Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Caroline Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Caroni Way",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Carrington Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Carroll Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Cashew Street",
+      "suburb": "Grenada North"
+    },
+    {
+      "streetName": "Cashmere Avenue",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Cassis Place",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Castlemaine Close",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Catherine Crescent",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Cathie Place",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Caughley Grove",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Cavalry Close",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Cave Road",
+      "suburb": "Houghton Bay"
+    },
+    {
+      "streetName": "Cavendish Square",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Cecil Road",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Cecil Road",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Cecil Road",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Cedarwood Street",
+      "suburb": "Woodridge"
+    },
+    {
+      "streetName": "Centennial Highway",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Centennial Highway",
+      "suburb": "Ngauranga"
+    },
+    {
+      "streetName": "Central Terrace",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Ceres Crescent",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Cessna Way",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Chamberlain Road",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Chancellor Way",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Chapman Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Chapman Street",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Charlotte Avenue",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Chartwell Drive",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Chartwell Drive",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Chastudon Place",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Chatham Street",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Chaucer Way",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Chaytor Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Chaytor Street",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Cheesman Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Cheetwood Street",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Chella Way",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Chelmsford Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Chelsea Street",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Cheltenham Terrace",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Chequers Way",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Cherry Grove",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Cheshire Street",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Cheshire Street",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Chester Road",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Chesterton Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Chesterton Street",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Chetwode Grove",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Chevalier Way",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Chews Lane",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Cheyne Walk",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Childers Terrace",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Chilka Street",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Chippenham Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Chisbury Lane",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Chisbury Street",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Chisenhall Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Chorley Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Christeson Lane",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Christopher Way",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Chudleigh Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Church Street",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Churchill Drive",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Churchill Drive",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Churton Drive",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Cirrus Close",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Claire Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Claremont Grove",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Clarence Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Clark Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Claverton Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Clementine Way",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Clermont Terrace",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Cleveland Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Clifford Road",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Clifton Terrace",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Clinton Way",
+      "suburb": "Kingston"
+    },
+    {
+      "streetName": "Clive Road",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Cluny Avenue",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Clutha Avenue",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Clyde Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Coates Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Cobar Close",
+      "suburb": "Maupuia"
+    },
+    {
+      "streetName": "Cobham Drive",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Cobham Drive",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Cobham Drive",
+      "suburb": "Rongotai"
+    },
+    {
+      "streetName": "Cochrane Street",
+      "suburb": "Rongotai"
+    },
+    {
+      "streetName": "Cockayne Road",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Cockayne Road",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Cockburn Street",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Colchester Crescent",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Coleridge Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "College Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Collier Avenue",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Collina Terrace",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Collingwood Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Collins Avenue",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Colombo Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Colonial Grove",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Colorado Grove",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Columbia Way",
+      "suburb": "Kingston"
+    },
+    {
+      "streetName": "Colville Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Colway Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Comber Place",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Commons Way",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Connaught Terrace",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Connaught Terrace",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Connaught Terrace",
+      "suburb": "Vogeltown"
+    },
+    {
+      "streetName": "Cook Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Coolidge Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Coombe Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Cooper Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Corlett Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Cornford Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Coromandel Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Corsham Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Cortina Avenue",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Corunna Avenue",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Cotswold Crescent",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Cottleville Terrace",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Cottonwood Lane",
+      "suburb": "Woodridge"
+    },
+    {
+      "streetName": "Countess Close",
+      "suburb": "Maupuia"
+    },
+    {
+      "streetName": "Court Road",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Coutts Street",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Coutts Street",
+      "suburb": "Rongotai"
+    },
+    {
+      "streetName": "Cowan Place",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Cranwell Street",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Crawford Green",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Crawford Road",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Crawford Road",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Cresswell Place",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Creswick Terrace",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Crieff Street",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Crofton Road",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Crompton Avenue",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Cromwell Point",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Cross Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Croydon Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Cruickshank Street",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Cullen Place",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Cunliffe Street",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Cunliffe Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Curacao Place",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Curnow Way",
+      "suburb": "Kaiwharawhara"
+    },
+    {
+      "streetName": "Curtis Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Curtis Street",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Curtis Street",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Customhouse Quay",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Cyril Way",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Dallas Court",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Daniell Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Danube Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Dargle Way",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Dargle Way",
+      "suburb": "Owhiro Bay"
+    },
+    {
+      "streetName": "Darlington Road",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Darlington Terrace",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Dart Crescent",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Darwin Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Dasent Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "David Crescent",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Davidson Crescent",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Davies Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Davis Street",
+      "suburb": "Pipitea"
+    },
+    {
+      "streetName": "Davis Street",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Dawson Street",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Debra Way",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Dee Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Dekka Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Delhi Crescent",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Denbigh Way",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Dennis Way",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Derby Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Derry Hill",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Derwent Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Deveron Place",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Devon Street",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Devon Street",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Devonshire Road",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Diane Grove",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Didsbury Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Disley Street",
+      "suburb": "Highbury"
+    },
+    {
+      "streetName": "Disley Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Disley Street",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Disraeli Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Doctors Common",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Domanski Crescent",
+      "suburb": "Owhiro Bay"
+    },
+    {
+      "streetName": "Domett Street",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Dominica Crescent",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Dominion Park Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Don Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Donald Crescent",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Donald McLean Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Donald Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Doris Gordon Crescent",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Dorking Road",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Dormar Place",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Dorset Way",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Douglas Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Douro Avenue",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Dover Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Downing Street",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Dr Taylor Terrace",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Dragon Street",
+      "suburb": "Grenada North"
+    },
+    {
+      "streetName": "Drake Street",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Dransfield Street",
+      "suburb": "Vogeltown"
+    },
+    {
+      "streetName": "Dress Circle",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Drummond Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Duchess Place",
+      "suburb": "Maupuia"
+    },
+    {
+      "streetName": "Dufferin Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Dufferin Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Duggan Place",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Duke Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Duncan Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Duncan Terrace",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Duncan Terrace",
+      "suburb": "Melrose"
+    },
+    {
+      "streetName": "Dundas Street",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Dundee Place",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Dunedin Terrace",
+      "suburb": "Melrose"
+    },
+    {
+      "streetName": "Dungarvan Road",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Dunmail Way",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Duppa Street",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Durham Crescent",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Durham Street",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Durham Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Duthie Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Duval Grove",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Eagle Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Earls Terrace",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Earn Place",
+      "suburb": "Southgate"
+    },
+    {
+      "streetName": "Earp Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Easdale Street",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Eastcott Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Ebor Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Eccleston Hill",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Eden Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Edge Hill",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Edgecombe Street",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Edgeware Road",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Edinburgh Terrace",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Edington Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Edward Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Egmont Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Elena Place",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Elgin Way",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Elizabeth Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Ellers Avenue",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Ellerton Way",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Ellesmere Avenue",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Ellice Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Elliott Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Ellora Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Ellwood Place",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Elphinstone Avenue",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Emerson Street",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Emily Way",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Emmett Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Endeavour Avenue",
+      "suburb": "Lyall Bay"
+    },
+    {
+      "streetName": "Endeavour Street",
+      "suburb": "Lyall Bay"
+    },
+    {
+      "streetName": "Entrance Street",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Epic Way",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Epping Grove",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Epsom Way",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Erlestoke Crescent",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Erris Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Erskine Close",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Espin Crescent",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Essex Street",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Estuary Street",
+      "suburb": "Makara Beach"
+    },
+    {
+      "streetName": "Euston Road",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Eva Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Evans Bay Parade",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Evans Bay Parade",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Evans Bay Parade",
+      "suburb": "Roseneath"
+    },
+    {
+      "streetName": "Everest Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Everton Terrace",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Evesham Place",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Fairburn Grove",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Fairlie Terrace",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Fairview Crescent",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Falkirk Avenue",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Fallowfield Avenue",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Fancourt Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Farm Road",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Farnham Street",
+      "suburb": "Mornington"
+    },
+    {
+      "streetName": "Farnworth Terrace",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Featherston Street",
+      "suburb": "Pipitea"
+    },
+    {
+      "streetName": "Featherston Street",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Feltex Lane",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Ferguson Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Fernhaven Grove",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Fernhill Terrace",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Fernlea Avenue",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Fernwood Court",
+      "suburb": "Woodridge"
+    },
+    {
+      "streetName": "Ferry Street",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Ferry Street",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Fettes Crescent",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Fife Lane",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Fifeshire Avenue",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Fillbridge Way",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Findlay Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Finlay Terrace",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Finnimore Terrace",
+      "suburb": "Vogeltown"
+    },
+    {
+      "streetName": "Fiona Grove",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Firth Terrace",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Fisher Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Fitzgerald Place",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Fitzherbert Terrace",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Fitzpatrick Street",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Fitzroy Street",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Fitzwilliam Terrace",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Flers Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Flinders Place",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Flint Way",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Florence Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Florio Terrace",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Footscray Avenue",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Forbes Lane",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Fore Street",
+      "suburb": "Kaiwharawhara"
+    },
+    {
+      "streetName": "Forglen Place",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Forres Street",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Forsyth Grove",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Fort Street",
+      "suburb": "Ngauranga"
+    },
+    {
+      "streetName": "Fortification Road",
+      "suburb": "Karaka Bays"
+    },
+    {
+      "streetName": "Fortunatus Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Fox Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Foxham Terrace",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Foyle Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Francis Place",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Frandi Street",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Frank Johnson Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Franklyn Road",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Frankmoore Avenue",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Fraser Avenue",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Fraser Avenue",
+      "suburb": "Ngauranga"
+    },
+    {
+      "streetName": "Frederick Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Frederick Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Freeling Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Freyberg Street",
+      "suburb": "Lyall Bay"
+    },
+    {
+      "streetName": "Friend Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Frobisher Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Furlong Crescent",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Furness Lane",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Futuna Close",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Fyvie Avenue",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Gahagan Way",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Ganges Road",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Garden Road",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Garfield Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Garrett Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Gatley Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Gavaskar Place",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Gaya Grove",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Gayle Way",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Gee Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "George Bolt Street",
+      "suburb": "Rongotai"
+    },
+    {
+      "streetName": "George Street",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Ghuznee Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Gifford Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Gilmer Terrace",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Gipps Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Girton Terrace",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Gladstone Terrace",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Gladys Scott Place",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Glamis Avenue",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Glamorgan Street",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Glanmire Road",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Glasgow Street",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Glen Alton Avenue",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Glen Road",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Glenamoy Crescent",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Glenbervie Terrace",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Glendale Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Glendavar Street",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Glenmore Street",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Glenmore Street",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Glenmore Street",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Glenside Road",
+      "suburb": "Glenside"
+    },
+    {
+      "streetName": "Glentui Grove",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Glenville Road",
+      "suburb": "Karaka Bays"
+    },
+    {
+      "streetName": "Glenwood Grove",
+      "suburb": "Woodridge"
+    },
+    {
+      "streetName": "Gloucester Street",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Glover Street",
+      "suburb": "Ngauranga"
+    },
+    {
+      "streetName": "Goa Street",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Goddard Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Goldies Brae",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Gonville Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Gordon Place",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Gordon Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Gore Street",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Goring Street",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Gothic Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Governor Road",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Govind Grove",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Gow Street",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Gowrie Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Grafton Road",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Grafton Road",
+      "suburb": "Roseneath"
+    },
+    {
+      "streetName": "Grant Road",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Grass Street",
+      "suburb": "Oriental Bay"
+    },
+    {
+      "streetName": "Grass Street",
+      "suburb": "Roseneath"
+    },
+    {
+      "streetName": "Green Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Greenview Way",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Greer Crescent",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Grenada Drive",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Grenfell Drive",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Gresford Place",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Grey Street",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Greyfriars Crescent",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Griffiths Grove",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Grosvenor Terrace",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Grosvenor Terrace",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Grove Road",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Grumman Lane",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Guadeloupe Crescent",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Guildford Terrace",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Gurkha Crescent",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Hadfield Terrace",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Haines Terrace",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Haining Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Halewood Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Halifax Street",
+      "suburb": "Kingston"
+    },
+    {
+      "streetName": "Hall Avenue",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Hall Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Hallewell Crescent",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Halleys Lane",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Halswater Drive",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Halswell Street",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Hamilton Road",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Hampshire Avenue",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Hampton Hill Road",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Handly Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Handyside Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Hania Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Hankey Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Hanover Street",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Hanson Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Hanson Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Happy Valley Road",
+      "suburb": "Owhiro Bay"
+    },
+    {
+      "streetName": "Hapua Street",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Harbour Park Terrace",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Harbour View Road",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Hardy Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Hargreaves Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Harland Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Harper Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Harriett Street",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Harris Street",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Harrison Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Harrold Street",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Harrold Street",
+      "suburb": "Highbury"
+    },
+    {
+      "streetName": "Hathaway Avenue",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Hattersley Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Hatton Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Haumia Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Hauraki Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Havana Rise",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Havelock Street",
+      "suburb": "Mornington"
+    },
+    {
+      "streetName": "Hawick Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Hawker Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Hawkestone Street",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Hawtrey Terrace",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Hawtrey Terrace",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Hay Street",
+      "suburb": "Oriental Bay"
+    },
+    {
+      "streetName": "Hayward Terrace",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Hazlewood Avenue",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Heath Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Heaton Terrace",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Hector Street",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Heke Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Helen Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Helston Road",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Helston Road",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Henderson Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Henry Street",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Hepara Street",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Herald Street",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Herald Terrace",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Herd Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Hereford Street",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Hervey Way",
+      "suburb": "Kaiwharawhara"
+    },
+    {
+      "streetName": "Hetsby Place",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Hewett Way",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "High Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Highbury Crescent",
+      "suburb": "Highbury"
+    },
+    {
+      "streetName": "Highbury Road",
+      "suburb": "Highbury"
+    },
+    {
+      "streetName": "Highbury Road",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Highland Crescent",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Hildreth Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Hill Street",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Hillary Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Hillcroft Road",
+      "suburb": "Horokiwi"
+    },
+    {
+      "streetName": "Hillview Crescent",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Hilton Way",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Himalaya Crescent",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Hinau Road",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Hinau Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Hindipur Terrace",
+      "suburb": "Broadmeadows"
+    },
+    {
+      "streetName": "Hindmarsh Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Hiropi Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Hislop Way",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Hobart Street",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Hobson Crescent",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Hobson Street",
+      "suburb": "Pipitea"
+    },
+    {
+      "streetName": "Hobson Street",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Hoggard Street",
+      "suburb": "Vogeltown"
+    },
+    {
+      "streetName": "Hohiria Road",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Holland Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Hollies Crescent",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Holloway Road",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Holloway Road",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Hollydale Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Home Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Homebush Road",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Homewood Avenue",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Homewood Crescent",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Honiana Te Puni Street",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Honiana Te Puni Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Hood Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Hood Street",
+      "suburb": "Oriental Bay"
+    },
+    {
+      "streetName": "Hoover Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Hopper Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Horner Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Hornsey Road",
+      "suburb": "Melrose"
+    },
+    {
+      "streetName": "Horokiwi Road",
+      "suburb": "Horokiwi"
+    },
+    {
+      "streetName": "Horokiwi Road West",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Hospital Road",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Hospital Road",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Houghton Bay Road",
+      "suburb": "Houghton Bay"
+    },
+    {
+      "streetName": "Houghton Bay Road",
+      "suburb": "Melrose"
+    },
+    {
+      "streetName": "Houston Grove",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Howard Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Hudson Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Hugh Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Huia Road",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Huia Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Humber Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Hungerford Road",
+      "suburb": "Houghton Bay"
+    },
+    {
+      "streetName": "Hungerford Road",
+      "suburb": "Lyall Bay"
+    },
+    {
+      "streetName": "Hunter Street",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Huntingdon Street",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Huntingdon Street",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Huntleigh Park Way",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Huntleigh Park Way",
+      "suburb": "Ohariu"
+    },
+    {
+      "streetName": "Hurman Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Huron Place",
+      "suburb": "Kingston"
+    },
+    {
+      "streetName": "Hurring Place",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Hutchison Road",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Hutchison Road",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Hutt Road",
+      "suburb": "Horokiwi"
+    },
+    {
+      "streetName": "Hutt Road",
+      "suburb": "Kaiwharawhara"
+    },
+    {
+      "streetName": "Hutt Road",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Hutt Road",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Hutt Road",
+      "suburb": "Ngauranga"
+    },
+    {
+      "streetName": "Hutt Road",
+      "suburb": "Pipitea"
+    },
+    {
+      "streetName": "Huxley Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Imlay Crescent",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Imperial Terrace",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Imperial Terrace",
+      "suburb": "Melrose"
+    },
+    {
+      "streetName": "Imran Terrace",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Imran Terrace",
+      "suburb": "Ngauranga"
+    },
+    {
+      "streetName": "Indira Place",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Indus Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Ingestre Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Ingestre Street",
+      "suburb": "Vogeltown"
+    },
+    {
+      "streetName": "Inglis Street",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Innes Way",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Inverell Way",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Inverlochy Place",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Ira Street",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Ironside Road",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Irvine Street",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Irwell Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Iwi Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Izard Road",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Jackson Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Jacobsen Lane",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Jalna Avenue",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Jamaica Drive",
+      "suburb": "Grenada North"
+    },
+    {
+      "streetName": "Jane Grove",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Jarden Mile",
+      "suburb": "Ngauranga"
+    },
+    {
+      "streetName": "Jarvie Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Jasons Place",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Jaunpur Crescent",
+      "suburb": "Broadmeadows"
+    },
+    {
+      "streetName": "Jay Street",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Jean Batten Street",
+      "suburb": "Rongotai"
+    },
+    {
+      "streetName": "Jefferson Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Jerome Way",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Jervois Quay",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Jessie Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Jeypore Street",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "John Sims Drive",
+      "suburb": "Broadmeadows"
+    },
+    {
+      "streetName": "John Sims Drive",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "John Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "John Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "John Witton Drive",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Johnsonville Road",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Johnston Street",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Joll Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Jonathan Way",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Jordan Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Jordan Street",
+      "suburb": "Owhiro Bay"
+    },
+    {
+      "streetName": "Jubilee Road",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Julia Place",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Kabul Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Kahikatea Grove",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Kaihuia Street",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Kaihuia Terrace",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Kaikoura Street",
+      "suburb": "Maupuia"
+    },
+    {
+      "streetName": "Kainui Road",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Kaiwharawhara Road",
+      "suburb": "Kaiwharawhara"
+    },
+    {
+      "streetName": "Kaiwharawhara Road",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Kaiwharawhara Road",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Kamla Way",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Kandy Crescent",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Kano Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Kanpur Road",
+      "suburb": "Broadmeadows"
+    },
+    {
+      "streetName": "Kapil Grove",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Karachi Crescent",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Karaka Bay Road",
+      "suburb": "Karaka Bays"
+    },
+    {
+      "streetName": "Karaka Bay Road",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Karamu Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Kareao Way",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Karepa Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Karo Drive",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Kastos Way",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Katarina Grove",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Kate Sheppard Place",
+      "suburb": "Pipitea"
+    },
+    {
+      "streetName": "Kate Sheppard Place",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Kate Way",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Katherine Avenue",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Kau Kau Way",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Kauri Street",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Kedah Street",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Kekerenga Street",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Kellsmere Crescent",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Kelvin Grove",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Kemp Street",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Kenepuru Drive",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Kenmore Street",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Kennedy Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Kensington Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Kent Terrace",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Kentwood Drive",
+      "suburb": "Woodridge"
+    },
+    {
+      "streetName": "Kenwyn Terrace",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Kenya Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Kereru Bend",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Kerr Grove",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Khandallah Road",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Khandallah Road",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Khouri Avenue",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Khyber Road",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Kilbirnie Crescent",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Kilgour Way",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Kilkelly Close",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Kilmister Avenue",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Kilsyth Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Kim Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Kimball Place",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Kimberley Way",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Kinapori Terrace",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "King Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Kinghorne Street",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Kingsbridge Place",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Kingsford Smith Street",
+      "suburb": "Lyall Bay"
+    },
+    {
+      "streetName": "Kingsford Smith Street",
+      "suburb": "Rongotai"
+    },
+    {
+      "streetName": "Kingston Heights Road",
+      "suburb": "Kingston"
+    },
+    {
+      "streetName": "Kinross Street",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Kio Crescent",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Kio Road",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Kipling Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Kitchener Terrace",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Kiwi Crescent",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Kiwi Place",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Knigges Avenue",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Knoll Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Kohima Drive",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Konini Road",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Kopiko Way",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Koromiko Road",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Kotinga Street",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Kowhai Road",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Kowhai Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Krishna Way",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Krull Street",
+      "suburb": "Vogeltown"
+    },
+    {
+      "streetName": "Kumutoto Lane",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Kupe Street",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Lacebark Lane",
+      "suburb": "Woodridge"
+    },
+    {
+      "streetName": "Ladbrooke Drive",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Ladbrooke Drive",
+      "suburb": "Woodridge"
+    },
+    {
+      "streetName": "Laidlaw Way",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Lakewood Avenue",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Lakshmi Place",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Lambeth Road",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Lambton Quay",
+      "suburb": "Pipitea"
+    },
+    {
+      "streetName": "Lambton Quay",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Lanark Way",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Lancaster Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Landcross Street",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Landfill Road",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Landfill Road",
+      "suburb": "Owhiro Bay"
+    },
+    {
+      "streetName": "Landsdowne Terrace",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Lane Crescent",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Larsen Crescent",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Laura Avenue",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Laurent Place",
+      "suburb": "Kingston"
+    },
+    {
+      "streetName": "Lavaud Street",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Lawrence Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Lawson Place",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Leadley Lane",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Leeds Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Left Bank",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Lemnos Avenue",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Lemonwood Way",
+      "suburb": "Woodridge"
+    },
+    {
+      "streetName": "Lennel Road",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Lenox Grove",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Leona Way",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Lerwick Terrace",
+      "suburb": "Melrose"
+    },
+    {
+      "streetName": "Leslie Street",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Lethenty Way",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Leveson Street",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Levina Avenue",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Levy Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Lewer Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Lewisville Terrace",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Liardet Street",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Liardet Street",
+      "suburb": "Vogeltown"
+    },
+    {
+      "streetName": "Liddel Grove",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Liffey Crescent",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Liffey Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Linacre Way",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Lincoln Avenue",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Lincoln Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Lincolnshire Road",
+      "suburb": "Horokiwi"
+    },
+    {
+      "streetName": "Lincolnshire Road",
+      "suburb": "Woodridge"
+    },
+    {
+      "streetName": "Linden Avenue",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Lindum Terrace",
+      "suburb": "Roseneath"
+    },
+    {
+      "streetName": "Lingard Grove",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Link Road",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Linwood Way",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Lipman Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Little Collins Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Little George Street",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Little Pipitea Street",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Liverpool Street",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Livingstone Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Loasby Crescent",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Lochiel Road",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Lohia Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Lombard Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Lomita Road",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Lomond Street",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Longcroft Terrace",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Longmont Terrace",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Lonsdale Crescent",
+      "suburb": "Rongotai"
+    },
+    {
+      "streetName": "Lookout Road",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Lookout Road",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Lookout Road",
+      "suburb": "Roseneath"
+    },
+    {
+      "streetName": "Lorne Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Lower North Terrace",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Lower Tyers Road",
+      "suburb": "Ngauranga"
+    },
+    {
+      "streetName": "Lower Watt Street",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Luckie Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Lucknow Terrace",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Ludlam Street",
+      "suburb": "Breaker Bay"
+    },
+    {
+      "streetName": "Ludlam Street",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Lukes Lane",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Lupin Terrace",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Luxford Street",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Lyall Parade",
+      "suburb": "Lyall Bay"
+    },
+    {
+      "streetName": "Lydia Way",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Lynda Avenue",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Lyndfield Lane",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Lyndhurst Road",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Lynmouth Avenue",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Lyons Crescent",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Lytton Street",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Maarama Crescent",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Macalister Place",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Macaulay Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Macdonald Crescent",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Mace Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Madison Place",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Madras Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Magdalen Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Maginnity Street",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Mahoe Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Mahora Street",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Maida Vale Road",
+      "suburb": "Roseneath"
+    },
+    {
+      "streetName": "Main Road",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Main Road Mt Crawford",
+      "suburb": "Maupuia"
+    },
+    {
+      "streetName": "Mairangi Road",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Mairangi Road",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Makara Road",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Makara Road",
+      "suburb": "Makara"
+    },
+    {
+      "streetName": "Makara Road",
+      "suburb": "Makara Beach"
+    },
+    {
+      "streetName": "Makatote Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Makererua Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Malaghan Grove",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Malcolm Lane",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Malda Grove",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Maldive Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Mallam Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Mallard Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Malvern Road",
+      "suburb": "Ngauranga"
+    },
+    {
+      "streetName": "Mamaku Grove",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Mamari Street",
+      "suburb": "Rongotai"
+    },
+    {
+      "streetName": "Mana Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Mana Street",
+      "suburb": "Vogeltown"
+    },
+    {
+      "streetName": "Manchester Street",
+      "suburb": "Melrose"
+    },
+    {
+      "streetName": "Manchester Terrace",
+      "suburb": "Melrose"
+    },
+    {
+      "streetName": "Mandalay Terrace",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Mander Place",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Mandeville Crescent",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Manitoba Place",
+      "suburb": "Kingston"
+    },
+    {
+      "streetName": "Manley Terrace",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Manners Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Mansfield Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Mantell Street",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Manuka Street",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Maple Grove",
+      "suburb": "Kingston"
+    },
+    {
+      "streetName": "Maracas Crescent",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Maramanui Way",
+      "suburb": "Karaka Bays"
+    },
+    {
+      "streetName": "Maraval Crescent",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Marewa Road",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Marford Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Margaret Street",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Marine Parade",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Marion Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Mariri Road",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Marjory Close",
+      "suburb": "Broadmeadows"
+    },
+    {
+      "streetName": "Mark Avenue",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Mark Avenue",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Market Lane",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Market Lane",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Marquis Street",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Marsden Avenue",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Marsh Way",
+      "suburb": "Kaiwharawhara"
+    },
+    {
+      "streetName": "Marshall Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Martha Place",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Martin Square",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Mary Dobson Way",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Mascot Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Masefield Way",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Massey Road",
+      "suburb": "Karaka Bays"
+    },
+    {
+      "streetName": "Massey Road",
+      "suburb": "Maupuia"
+    },
+    {
+      "streetName": "Massey Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Matai Road",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Matai Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Mataroa Avenue",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Mathieson Avenue",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Mauldeth Terrace",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Maupuia Road",
+      "suburb": "Maupuia"
+    },
+    {
+      "streetName": "Maupuia Road",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Maurice Terrace",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Mayaro Crescent",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Maybury Way",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Mayfair Place",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Maywood Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "McAlpine Avenue",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "McColl Street",
+      "suburb": "Vogeltown"
+    },
+    {
+      "streetName": "McCormack Place",
+      "suburb": "Ngauranga"
+    },
+    {
+      "streetName": "McFarlane Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "McGregor Street",
+      "suburb": "Rongotai"
+    },
+    {
+      "streetName": "McIntyre Avenue",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "McKeefry Grove",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "McKelvey Place",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "McKenzie Terrace",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "McKenzie Terrace",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "McKinley Crescent",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "McLellan Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "McLintock Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "McLintock Street",
+      "suburb": "Ohariu"
+    },
+    {
+      "streetName": "McLintock Street North",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "McMahon Way",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "McMillan Court",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Meadowcroft Grove",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Medway Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Mein Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Melbourne Road",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Melbourne Road",
+      "suburb": "Southgate"
+    },
+    {
+      "streetName": "Melksham Drive",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Melrose Crescent",
+      "suburb": "Melrose"
+    },
+    {
+      "streetName": "Melrose Road",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Melrose Road",
+      "suburb": "Southgate"
+    },
+    {
+      "streetName": "Melville Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Mercer Street",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Merritt Way",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Mersey Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Mertoun Terrace",
+      "suburb": "Highbury"
+    },
+    {
+      "streetName": "Mertoun Terrace",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Mervyn Kemp Drive",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Messines Road",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Mewburn Rise",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Mexted Terrace",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Middlesex Place",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Middleton Road",
+      "suburb": "Churton Park from #1 to #287"
+    },
+    {
+      "streetName": "Middleton Road",
+      "suburb": "Glenside from #289 onwards"
+    },
+    {
+      "streetName": "Middleton Road",
+      "suburb": "Johnsonville from #1 to #287"
+    },
+    {
+      "streetName": "Middleton Road",
+      "suburb": "Tawa from #289 onwards"
+    },
+    {
+      "streetName": "Miles Crescent",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Military Road",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Miller Place",
+      "suburb": "Lyall Bay"
+    },
+    {
+      "streetName": "Mills Road",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Millward Lane",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Millward Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Milne Terrace",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Milton Street",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Minerva Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Miramar Avenue",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Miramar North Road",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Miro Street",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Mitchell Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Mitika Way",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Moa Point Road",
+      "suburb": "Lyall Bay"
+    },
+    {
+      "streetName": "Moa Point Road",
+      "suburb": "Moa Point"
+    },
+    {
+      "streetName": "Moa Point Road",
+      "suburb": "Rongotai"
+    },
+    {
+      "streetName": "Moa Point Road",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Moana Road",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Moeller Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Moffitt Street",
+      "suburb": "Vogeltown"
+    },
+    {
+      "streetName": "Moir Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Molesworth Street",
+      "suburb": "Pipitea"
+    },
+    {
+      "streetName": "Molesworth Street",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Monaghan Avenue",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Moncrieff Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Monmouth Way",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Monorgan Road",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Monowai Road",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Monro Street",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Montego Place",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Monteith Grove",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Montgomery Avenue",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Montreal Grove",
+      "suburb": "Kingston"
+    },
+    {
+      "streetName": "Montrose Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Montserrat Place",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Moore Street",
+      "suburb": "Pipitea"
+    },
+    {
+      "streetName": "Moorefield Road",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Moorhouse Street",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Morgan Place",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Morgan Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Morley Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Mornington Road",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Mornington Road",
+      "suburb": "Mornington"
+    },
+    {
+      "streetName": "Morpeth Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Mortimer Terrace",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Mortimer Terrace",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Morton Street",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Morton Street",
+      "suburb": "Kingston"
+    },
+    {
+      "streetName": "Moselle Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Moston Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Motueka Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Moturoa Street",
+      "suburb": "Pipitea"
+    },
+    {
+      "streetName": "Mount Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Mowbray Street",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Moxham Avenue",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Mt Albert Road",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Mt Albert Road",
+      "suburb": "Southgate"
+    },
+    {
+      "streetName": "Mt Pleasant Road",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Mt Pleasant Road",
+      "suburb": "Highbury"
+    },
+    {
+      "streetName": "Mudges Terrace",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Mulgrave Street",
+      "suburb": "Pipitea"
+    },
+    {
+      "streetName": "Mulgrave Street",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Murchison Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Murchison Street",
+      "suburb": "Owhiro Bay"
+    },
+    {
+      "streetName": "Murphy Street",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Murray Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Murrayfield Drive",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Museum Street",
+      "suburb": "Pipitea"
+    },
+    {
+      "streetName": "Myers Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Myrtle Crescent",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Mysore Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Mysore Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Nadia Grove",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Nagpur Terrace",
+      "suburb": "Broadmeadows"
+    },
+    {
+      "streetName": "Nairn Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Nakora Road",
+      "suburb": "Karaka Bays"
+    },
+    {
+      "streetName": "Nalanda Crescent",
+      "suburb": "Broadmeadows"
+    },
+    {
+      "streetName": "Nanda Way",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Napier Street",
+      "suburb": "Karaka Bays"
+    },
+    {
+      "streetName": "Narbada Crescent",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Nassau Avenue",
+      "suburb": "Grenada North"
+    },
+    {
+      "streetName": "Natalie Way",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Nathan Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Naughton Terrace",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Nebraska Way",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Nepal Place",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Neston Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Nether Green Crescent",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Nevay Road",
+      "suburb": "Karaka Bays"
+    },
+    {
+      "streetName": "Nevay Road",
+      "suburb": "Maupuia"
+    },
+    {
+      "streetName": "Nevay Road",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Neville Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Newcombe Crescent",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Newlands Road",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Newman Terrace",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Newnham Court",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Newport Terrace",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Newtown Avenue",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Ngaio Gorge Road",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Ngaio Road",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Ngarimu Grove",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Ngata Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Ngatiapa Street",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Ngatitoa Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Ngatoto Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Ngatoto Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Ngauranga Gorge Road",
+      "suburb": "Ngauranga"
+    },
+    {
+      "streetName": "Nicholson Road",
+      "suburb": "Kaiwharawhara"
+    },
+    {
+      "streetName": "Nicholson Road",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Nikau Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Ninian Street",
+      "suburb": "Highbury"
+    },
+    {
+      "streetName": "Norfolk Street",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Norman Lane",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Normanby Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Norna Crescent",
+      "suburb": "Highbury"
+    },
+    {
+      "streetName": "Norna Crescent",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "North Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "North Terrace",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Northland Road",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Northwood Close",
+      "suburb": "Woodridge"
+    },
+    {
+      "streetName": "Norway Street",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Norway Street",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Norwich Street",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Norwich Street",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Norwood Place",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Nottingham Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Nuffield Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Nuku Street",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Oak Grove",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Oak Park Avenue",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Oban Street",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Ohariu Road",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Ohariu Valley Road",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Ohariu Valley Road",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Ohariu Valley Road",
+      "suburb": "Ohariu"
+    },
+    {
+      "streetName": "Ohiro Road",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Ohiro Road",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Ohiro Road",
+      "suburb": "Mornington"
+    },
+    {
+      "streetName": "Oku Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Old Bullock Road",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Old Coach Road",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Old Coach Road",
+      "suburb": "Ohariu"
+    },
+    {
+      "streetName": "Old Karori Road",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Old Porirua Road",
+      "suburb": "Kaiwharawhara"
+    },
+    {
+      "streetName": "Old Porirua Road",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Old Porirua Road",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Oldham Way",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Olivia Crescent",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Omar Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Omega Street",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Onehunga Road",
+      "suburb": "Karaka Bays"
+    },
+    {
+      "streetName": "Onepu Road",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Onepu Road",
+      "suburb": "Lyall Bay"
+    },
+    {
+      "streetName": "Ongley Crescent",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Onslow Road",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Onslow Terrace",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Ontario Street",
+      "suburb": "Kingston"
+    },
+    {
+      "streetName": "Opau Road",
+      "suburb": "Makara"
+    },
+    {
+      "streetName": "Opau Road",
+      "suburb": "Makara Beach"
+    },
+    {
+      "streetName": "Orange Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Orangi Kaupapa Road",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Orari Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Orchard Street",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Orchy Crescent",
+      "suburb": "Southgate"
+    },
+    {
+      "streetName": "Ordley Grove",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Oreily Avenue",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Oriel Avenue",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Oriel Place",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Oriental Terrace",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Oriental Terrace",
+      "suburb": "Oriental Bay"
+    },
+    {
+      "streetName": "Orissa Crescent",
+      "suburb": "Broadmeadows"
+    },
+    {
+      "streetName": "Orissa Crescent",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Orleans Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Oswald Crescent",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Otaki Street",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Otonga Way",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Ottawa Road",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Overtoun Terrace",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Owen Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Owhiro Bay Parade",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Owhiro Bay Parade",
+      "suburb": "Owhiro Bay"
+    },
+    {
+      "streetName": "Oxford Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Oxford Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Oxford Terrace",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Oxford Terrace",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Paddington Grove",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Padnell Crescent",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Paeroa Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Pahia Street",
+      "suburb": "Roseneath"
+    },
+    {
+      "streetName": "Paisley Terrace",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Palliser Road",
+      "suburb": "Oriental Bay"
+    },
+    {
+      "streetName": "Palliser Road",
+      "suburb": "Roseneath"
+    },
+    {
+      "streetName": "Palm Avenue",
+      "suburb": "Lyall Bay"
+    },
+    {
+      "streetName": "Palm Grove",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Palmer Street",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Panama Street",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Paparangi Crescent",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Paparata Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Papawai Terrace",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Para Street",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Paratu Way",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Park Avenue",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Park Road",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Park Street",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Parklands Drive",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Parkvale Road",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Parkvale Road",
+      "suburb": "Makara"
+    },
+    {
+      "streetName": "Parkvale Road",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Parliament Street",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Parsons Glen",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Patanga Crescent",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Paterson Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Patna Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Pauline Way",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Pearce Street",
+      "suburb": "Vogeltown"
+    },
+    {
+      "streetName": "Peckham Grove",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Pelorous Street",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Pembroke Road",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Pembroke Road",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Pembroke Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Penlington Place",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Penn Way",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Peppertree Lane",
+      "suburb": "Woodridge"
+    },
+    {
+      "streetName": "Peranga Terrace",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Percival Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Percival Street",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Percy Dyett Drive",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Perth Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Peter Button Place",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Peterhouse Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Petherick Crescent",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Phillip Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Phoenix Way",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Pickering Street",
+      "suburb": "Kaiwharawhara"
+    },
+    {
+      "streetName": "Picton Avenue",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Pigeonwood Lane",
+      "suburb": "Woodridge"
+    },
+    {
+      "streetName": "Pihipihi Way",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Pikitanga Close",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Pimble Avenue",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Pimlico Place",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Pine Hill Rise",
+      "suburb": "Glenside"
+    },
+    {
+      "streetName": "Pine Terrace",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Pinelands Avenue",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Pinkerton Grove",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Pinnacle Street",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Piper Way",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Pipitea Street",
+      "suburb": "Pipitea"
+    },
+    {
+      "streetName": "Pipitea Street",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Pirie Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Pitarua Street",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Pitt Street",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Plimmers Steps",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Plumer Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Plunket Street",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Plymouth Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Pollen Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Pomare Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Ponsonby Road",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Pony Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Poona Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Poplar Grove",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Porokaiwhiri Street",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Porritt Avenue",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Port Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Portland Crescent",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Portmore Close",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Portmore Place",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Portsmouth Road",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Post Office Square",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Prestbury Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Preston Way",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Prestwich Rise",
+      "suburb": "Churchton Park"
+    },
+    {
+      "streetName": "Pretoria Road",
+      "suburb": "Karaka Bays"
+    },
+    {
+      "streetName": "Prince Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Princess Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Princess Terrace",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Priscilla Crescent",
+      "suburb": "Kingston"
+    },
+    {
+      "streetName": "Priscilla Crescent",
+      "suburb": "Mornington"
+    },
+    {
+      "streetName": "Pritchard Street",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Proctor Lane",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Promontory Crescent",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Prospect Terrace",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Puketiro Avenue",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Punjab Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Purakau Avenue",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Puriri Street",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Puru Crescent",
+      "suburb": "Lyall Bay"
+    },
+    {
+      "streetName": "Putnam Street",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Quebec Street",
+      "suburb": "Kingston"
+    },
+    {
+      "streetName": "Queen Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Queens Drive",
+      "suburb": "Houghton Bay"
+    },
+    {
+      "streetName": "Queens Drive",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Queens Drive",
+      "suburb": "Lyall Bay"
+    },
+    {
+      "streetName": "Queens Drive",
+      "suburb": "Melrose"
+    },
+    {
+      "streetName": "Queens Wharf",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Quetta Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Quigley Street",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Radnall Way",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Radstock Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Rahui Street",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Raine Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Rajkot Terrace",
+      "suburb": "Broadmeadows"
+    },
+    {
+      "streetName": "Rajputana Way",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Rakau Road",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Rakopi Drive",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Rama Crescent",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Ramarama Lane",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Ramphal Terrace",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Ramsey Place",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Randolph Road",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Randwick Road",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Ranelagh Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Ranelagh Terrace",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Ranfurly Terrace",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Rangatira Road",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Rangimarie Way",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Rangiora Avenue",
+      "suburb": "Kaiwharawhara"
+    },
+    {
+      "streetName": "Rangitane Street",
+      "suburb": "Maupuia"
+    },
+    {
+      "streetName": "Rangoon Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Ranikhet Way",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Rankin Street",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Ranui Crescent",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Ranui Terrace",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Rarangi Way",
+      "suburb": "Owhiro Bay"
+    },
+    {
+      "streetName": "Raroa Crescent",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Raroa Road",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Raroa Road",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Raroa Terrace",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Rata Road",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Raukawa Street",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Raumati Terrace",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Raupo Street",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Ravi Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Rawhiti Terrace",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Rawson Place",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Rawson Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Reading Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Red Beech Avenue",
+      "suburb": "Woodridge"
+    },
+    {
+      "streetName": "Redwood Avenue",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Reef Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Regal Gardens",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Regal Gardens",
+      "suburb": "Melrose"
+    },
+    {
+      "streetName": "Regent Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Rembrandt Avenue",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Resolution Street",
+      "suburb": "Lyall Bay"
+    },
+    {
+      "streetName": "Retter Street",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Reuben Avenue",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Revans Street",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Rewa Road",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Rewa Terrace",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Rex Street",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Rhine Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Rhodes Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Ribble Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Rice Crescent",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Richmond Avenue",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Richmond Hill",
+      "suburb": "Glenside"
+    },
+    {
+      "streetName": "Ridd Crescent",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Ridley Green",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Ridvan Grove",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Rifle Range Road",
+      "suburb": "Ohariu"
+    },
+    {
+      "streetName": "Rimu Road",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Rimu Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Ring Lane",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Rintoul Street",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Rintoul Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Riroriro Close",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Rixon Grove",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Robert Street",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Roberts Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Robertson Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Robertson Street",
+      "suburb": "Owhiro Bay"
+    },
+    {
+      "streetName": "Robieson Lane",
+      "suburb": "Roseneath"
+    },
+    {
+      "streetName": "Robieson Street",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Robieson Street",
+      "suburb": "Roseneath"
+    },
+    {
+      "streetName": "Rochdale Drive",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Rochester Street",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Rodney Street",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Rodrigo Road",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Rodrigo Road",
+      "suburb": "Melrose"
+    },
+    {
+      "streetName": "Rokewa Way",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Rolleston Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Romaine Road",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Romney Square",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Ronald Woolf Place",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Rongotai Road",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Rongotai Road",
+      "suburb": "Rongotai"
+    },
+    {
+      "streetName": "Ropa Lane",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Rosalind Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Roscoe Terrace",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Rose Street",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Rosehaugh Avenue",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Roseneath Terrace",
+      "suburb": "Roseneath"
+    },
+    {
+      "streetName": "Ross Street",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Ross Street",
+      "suburb": "Lyall Bay"
+    },
+    {
+      "streetName": "Rossiter Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Rossport Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Rotherham Terrace",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Rothsay Road",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Rotoiti Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Rowells Road",
+      "suburb": "Glenside"
+    },
+    {
+      "streetName": "Roxburgh Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Roy Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Roy Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Royal Street",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Royston Way",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Rua Kai Way",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Rua Street",
+      "suburb": "Lyall Bay"
+    },
+    {
+      "streetName": "Ruahine Street",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Rudyard Crescent",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Rugby Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Ruskin Road",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Russell Terrace",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Russell Terrace",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Ruth Grove",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Rutland Way",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Ryan Grove",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Rydal Place",
+      "suburb": "Southgate"
+    },
+    {
+      "streetName": "Saba Way",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Saddleback Grove",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Safari Crescent",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Sages Lane",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Salamanca Road",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Salamanca Road",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Salek Street",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Salem Court",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Salford Street",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Salisbury Avenue",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Salisbury Garden Court",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Salisbury Terrace",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Salmont Place",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Samoa Street",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Samuel Parnell Road",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "San Sebastian Road",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Sanchi Way",
+      "suburb": "Broadmeadows"
+    },
+    {
+      "streetName": "Sandhurst Way",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Sandino Place",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Sandybrow",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Sar Street",
+      "suburb": "Pipitea"
+    },
+    {
+      "streetName": "Sar Street",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Sarah Way",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Sargeson Way",
+      "suburb": "Kaiwharawhara"
+    },
+    {
+      "streetName": "Sasanqua Way",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Satara Crescent",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Satchell Way",
+      "suburb": "Kaiwharawhara"
+    },
+    {
+      "streetName": "Saville Row",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Scapa Terrace",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Scarborough Terrace",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "School Road",
+      "suburb": "Kaiwharawhara"
+    },
+    {
+      "streetName": "Scorian Close",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Seaforth Terrace",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Seatoun Heights Road",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Seatoun Heights Road",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Seaview Terrace",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Seddon Memorial",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Seddon Terrace",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Sedgley Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Sefton Street",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Seine Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Selkirk Way",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Selwyn Terrace",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Semeloff Terrace",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Setsan Way",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Severn Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Shalimar Crescent",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Shannon Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Shastri Terrace",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Shelly Bay Road",
+      "suburb": "Maupuia"
+    },
+    {
+      "streetName": "Sheridan Terrace",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Shirley Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Short Street",
+      "suburb": "Vogeltown"
+    },
+    {
+      "streetName": "Shortland Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Shotter Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Shrimpton Way",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Shropshire Avenue",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Sidlaw Street",
+      "suburb": "Breaker Bay"
+    },
+    {
+      "streetName": "Sidlaw Street",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Signallers Grove",
+      "suburb": "Breaker Bay"
+    },
+    {
+      "streetName": "Signallers Grove",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Silver Pine Avenue",
+      "suburb": "Woodridge"
+    },
+    {
+      "streetName": "Silverbirch Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Silverstream Road",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Silverstream Road",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Silverton Place",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Sim Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Simla Crescent",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Sinclair Street",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Sirsi Terrace",
+      "suburb": "Broadmeadows"
+    },
+    {
+      "streetName": "Sita Way",
+      "suburb": "Broadmeadows"
+    },
+    {
+      "streetName": "Sloane Terrace",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Somerset Avenue",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Somerville Terrace",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Somes Crescent",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "South Karori Road",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "South Makara Road",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "South Makara Road",
+      "suburb": "Makara"
+    },
+    {
+      "streetName": "South Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Southampton Road",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Southern Cross Crescent",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Southgate Road",
+      "suburb": "Southgate"
+    },
+    {
+      "streetName": "Sovereign Point",
+      "suburb": "Kaiwharawhara"
+    },
+    {
+      "streetName": "Spencer Street",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Spenmoor Street",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Spicer Place",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Spiers Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Spitfire Place",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Springfield Terrace",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "St Aidans Way",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "St Albans Avenue",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "St Annes Square",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "St Benets Place",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "St Catherines Terrace",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "St Edmund Crescent",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "St Hildas Glade",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "St John Street",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "St Johns Terrace",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "St Kitts Place",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "St Louis Place",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "St Lucia Place",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "St Mary Street",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "St Michaels Crescent",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "St Vincent Terrace",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Stafford Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Standen Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Stanley Street",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Station Road",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Staunton Avenue",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Stebbings Road",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Stebbings Road",
+      "suburb": "Glenside"
+    },
+    {
+      "streetName": "Steeple Lane",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Stella Grove",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Stephen Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Stephen Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Stewart Drive",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Stewart Drive",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Stewart Duff Drive",
+      "suburb": "Moa Point"
+    },
+    {
+      "streetName": "Stewart Duff Drive",
+      "suburb": "Rongotai"
+    },
+    {
+      "streetName": "Stewart Duff Drive",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Stirling Street",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Stock Route",
+      "suburb": "Ngauranga"
+    },
+    {
+      "streetName": "Stock Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Stockden Place",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Stockport Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Stoke Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Stone Street",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Stonefield Place",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Stony Hill Place",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Stormanstown Way",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Stormont Place",
+      "suburb": "Kingston"
+    },
+    {
+      "streetName": "Stout Street",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Stowe Hill",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Stratford Way",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Strathavon Road",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Strathmore Avenue",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Streatlam Crescent",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Stroud Way",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Sugarloaf Road",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Sunflower Way",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Sunglow Avenue",
+      "suburb": "Melrose"
+    },
+    {
+      "streetName": "Sunhaven Drive",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Sunningdale Lane",
+      "suburb": "Woodridge"
+    },
+    {
+      "streetName": "Sunrise Boulevard",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Sunshine Avenue",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Surrey Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Surrey Street",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Sussex Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Sutherland Crescent",
+      "suburb": "Melrose"
+    },
+    {
+      "streetName": "Sutherland Road",
+      "suburb": "Lyall Bay"
+    },
+    {
+      "streetName": "Sutherland Road",
+      "suburb": "Melrose"
+    },
+    {
+      "streetName": "Swadel Way",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Swan Lane",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Swansea Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Swansea Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Swinford Crescent",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Swinton Place",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Sydenham Street",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Sydney Street West",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Tacy Street",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Taft Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Tahi Street",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Tai Paku Paku Road",
+      "suburb": "Karaka Bays"
+    },
+    {
+      "streetName": "Taiaroa Street",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Tainui Terrace",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Tainui Terrace",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Takapu Road",
+      "suburb": "Grenada North"
+    },
+    {
+      "streetName": "Takapu Road",
+      "suburb": "Takapu Valley"
+    },
+    {
+      "streetName": "Takapu Road",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Takarau Gorge Road",
+      "suburb": "Makara"
+    },
+    {
+      "streetName": "Takarau Gorge Road",
+      "suburb": "Makara Beach"
+    },
+    {
+      "streetName": "Takarau Gorge Road",
+      "suburb": "Ohariu"
+    },
+    {
+      "streetName": "Takatimu Way",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Talavera Terrace",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Tamahine Street",
+      "suburb": "Maupuia"
+    },
+    {
+      "streetName": "Tamar Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Tamworth Crescent",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Tanera Crescent",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Tania Way",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Tannadyce Street",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Tapiri Street",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Taranaki Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Taranaki Street",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Tarawera Road",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Tarikaka Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Tasman Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Tattenhall Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Tatum Way",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Tauhinu Road",
+      "suburb": "Maupuia"
+    },
+    {
+      "streetName": "Tauhinu Road",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Taurima Street",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Tavistock Road",
+      "suburb": "Melrose"
+    },
+    {
+      "streetName": "Tawa Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Tawa Terrace",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Taylor Terrace",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Te Anau Avenue",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Te Anau Road",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Te Kainga Way",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Te Kiteroa Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Te Reinga View",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Te Wharepouri Street",
+      "suburb": "Berhampore"
+    },
+    {
+      "streetName": "Te Whiti Street",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Tea Tree Lane",
+      "suburb": "Woodridge"
+    },
+    {
+      "streetName": "Ted Gilberd Place",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Tedder Way",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Telford Terrace",
+      "suburb": "Oriental Bay"
+    },
+    {
+      "streetName": "Teme Way",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Tennyson Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Tensing Place",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Terawhiti Terrace",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Terrace Gardens",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Terrace Gardens",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Terrance Grove",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Thames Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Thane Road",
+      "suburb": "Roseneath"
+    },
+    {
+      "streetName": "Thatcher Crescent",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "The Crescent",
+      "suburb": "Roseneath"
+    },
+    {
+      "streetName": "The Drive",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "The Esplanade",
+      "suburb": "Houghton Bay"
+    },
+    {
+      "streetName": "The Esplanade",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "The Esplanade (after the roundabout)",
+      "suburb": "Houghton Bay"
+    },
+    {
+      "streetName": "The Quadrant",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "The Ridgeway",
+      "suburb": "Kingston"
+    },
+    {
+      "streetName": "The Ridgeway",
+      "suburb": "Mornington"
+    },
+    {
+      "streetName": "The Rigi",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "The Terrace",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "The Terrace",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Thomas Hook Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Thompson Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Thorby Street",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Thorndon Quay",
+      "suburb": "Pipitea"
+    },
+    {
+      "streetName": "Thorndon Quay",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Thule Street",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Thurleigh Grove",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Tiber Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Tiketike Way",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Tio Tio Road",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Tio Tio Road",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Tirangi Road",
+      "suburb": "Rongotai"
+    },
+    {
+      "streetName": "Tiro Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Tisdall Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Tobago Crescent",
+      "suburb": "Grenada North"
+    },
+    {
+      "streetName": "Tobruk Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Todman Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Tolhurst Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Tonks Grove",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Torless Terrace",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Torquay Terrace",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Torrens Terrace",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Torridon Road",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Tortola Crescent",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Toru Street",
+      "suburb": "Lyall Bay"
+    },
+    {
+      "streetName": "Torwood Road",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Tory Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Totara Road",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Totara Terrace",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Tower Way",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Townsend Road",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Trafalgar Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Trafford Terrace",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Tralee Place",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Travancore Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Travers Street",
+      "suburb": "Vogeltown"
+    },
+    {
+      "streetName": "Treasure Grove",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Trebann Street",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Tree Top Lane",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Trelawny Terrace",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Trelissick Crescent",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Tremewan Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Trent Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Trevor Terrace",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Trilids Lane",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Tringham Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Trinidad Crescent",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Troy Street",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Truscott Avenue",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Tuapapa Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Tui Terrace",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Tukanae Street",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Tullamore Way",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Tully Street",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Turkington Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Turnbull Street",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Turriff Crescent",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Turville Crescent",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Tutchen Avenue",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Twomey Grove",
+      "suburb": "Houghton Bay"
+    },
+    {
+      "streetName": "Tyers Road",
+      "suburb": "Ngauranga"
+    },
+    {
+      "streetName": "Tyne Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Tyrico Way",
+      "suburb": "Grenada Village"
+    },
+    {
+      "streetName": "Underwood Way",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Upland Road",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Upoko Road",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Upper Bourke Street",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Upper Lewisville Terrace",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Upper Watt Street",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Upton Terrace",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Vallance Street",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Valley Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Van Der Velden Way",
+      "suburb": "Horokiwi"
+    },
+    {
+      "streetName": "Vancouver Street",
+      "suburb": "Kingston"
+    },
+    {
+      "streetName": "Vasanta Avenue",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Vautier Avenue",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Vennell Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Ventnor Street",
+      "suburb": "Seatoun"
+    },
+    {
+      "streetName": "Vera Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Veronica Street",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Versailles Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Verviers Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Victoria Street",
+      "suburb": "Wellington"
+    },
+    {
+      "streetName": "Victory Avenue",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Victory Crescent",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "View Road",
+      "suburb": "Houghton Bay"
+    },
+    {
+      "streetName": "View Road",
+      "suburb": "Lyall Bay"
+    },
+    {
+      "streetName": "Virginia Grove",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Vivian Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Vogel Street",
+      "suburb": "Mt Victoria"
+    },
+    {
+      "streetName": "Volga Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Volga Street",
+      "suburb": "Southgate"
+    },
+    {
+      "streetName": "Voltaire Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Wade Street",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Wadestown Road",
+      "suburb": "Thorndon"
+    },
+    {
+      "streetName": "Wadestown Road",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Wadham Grove",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Waiapu Road",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Waikare Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Waikato Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Waikowhai Street",
+      "suburb": "Ngaio"
+    },
+    {
+      "streetName": "Waipapa Road",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Waipapa Terrace",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Waitaha Way",
+      "suburb": "Houghton Bay"
+    },
+    {
+      "streetName": "Waitaha Way",
+      "suburb": "Lyall Bay"
+    },
+    {
+      "streetName": "Waitai Lane",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Waiteata Road",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "Waitoa Road",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Waiwera Crescent",
+      "suburb": "Maupuia"
+    },
+    {
+      "streetName": "Wakefield Street",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Wakefield Terrace",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Wakely Road",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Wakely Road",
+      "suburb": "Ngauranga"
+    },
+    {
+      "streetName": "Walden Street",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Wallace Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Walmer Street",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Walter Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Wanaka Street",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Wantwood Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Waring Taylor Street",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Warren Street",
+      "suburb": "Paparangi"
+    },
+    {
+      "streetName": "Warrington Grove",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Waru Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Warwick Street",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Washington Avenue",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Waterford Drive",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Waterhouse Drive",
+      "suburb": "Brooklyn"
+    },
+    {
+      "streetName": "Waterloo Quay",
+      "suburb": "Pipitea"
+    },
+    {
+      "streetName": "Waterloo Quay",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Watson Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Wavell Street",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Waverton Terrace",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Wayside",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Wayside West",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Webb Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Webb Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Weka Street",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Weld Street",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Welland Place",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Wellington Road",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Wellington Road",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Wentworth Street",
+      "suburb": "Mornington"
+    },
+    {
+      "streetName": "Wesley Road",
+      "suburb": "Kelburn"
+    },
+    {
+      "streetName": "West Road",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Westchester Drive",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Westchester Drive",
+      "suburb": "Glenside"
+    },
+    {
+      "streetName": "Westhaven Drive",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Westland Road",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Westleigh Way",
+      "suburb": "Newlands"
+    },
+    {
+      "streetName": "Westra View",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Westview Grove",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Westwood Road",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Wexford Road",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Wha Street",
+      "suburb": "Lyall Bay"
+    },
+    {
+      "streetName": "Whanganui Street",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Wharekauri Street",
+      "suburb": "Strathmore Park"
+    },
+    {
+      "streetName": "Whaui Street",
+      "suburb": "Vogeltown"
+    },
+    {
+      "streetName": "Wheeler Way",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "White Pine Avenue",
+      "suburb": "Woodridge"
+    },
+    {
+      "streetName": "Whitmore Street",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Whitu Street",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Wigan Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Wilberforce Street",
+      "suburb": "Miramar"
+    },
+    {
+      "streetName": "Wilfred Street",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Wilkinson Street",
+      "suburb": "Oriental Bay"
+    },
+    {
+      "streetName": "Willeston Street",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "William Earp Place",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "William Street",
+      "suburb": "Hataitai"
+    },
+    {
+      "streetName": "Williamson Way",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Willis Street",
+      "suburb": "Aro Valley"
+    },
+    {
+      "streetName": "Willis Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Willis Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Willowbank Road",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Wilmshurst Place",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Wilson Street",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Wilton Bush Road",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Wilton Road",
+      "suburb": "Wadestown"
+    },
+    {
+      "streetName": "Wilton Road",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Winchester Street",
+      "suburb": "Kaiwharawhara"
+    },
+    {
+      "streetName": "Windermeer Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Wingate Terrace",
+      "suburb": "Newtown"
+    },
+    {
+      "streetName": "Wingfield Place",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Winnipeg Way",
+      "suburb": "Kingston"
+    },
+    {
+      "streetName": "Winsley Terrace",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "Winston Street",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Witham Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Woburn Road",
+      "suburb": "Northland"
+    },
+    {
+      "streetName": "Woodburn Drive",
+      "suburb": "Takapu Valley"
+    },
+    {
+      "streetName": "Woodburn Drive",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Woodford Way",
+      "suburb": "Crofton Downs"
+    },
+    {
+      "streetName": "Woodhouse Avenue",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Woodland Road",
+      "suburb": "Johnsonville"
+    },
+    {
+      "streetName": "Woodman Drive",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Woodmancote Road",
+      "suburb": "Khandallah"
+    },
+    {
+      "streetName": "Woodridge Drive",
+      "suburb": "Woodridge"
+    },
+    {
+      "streetName": "Woodstock Terrace",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Woodward Street",
+      "suburb": "Wellington Central"
+    },
+    {
+      "streetName": "Woollaston Way",
+      "suburb": "Horokiwi"
+    },
+    {
+      "streetName": "Worcester Street",
+      "suburb": "Wilton"
+    },
+    {
+      "streetName": "Wright Street",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Wrights Hill Road",
+      "suburb": "Karori"
+    },
+    {
+      "streetName": "Wye Street",
+      "suburb": "Island Bay"
+    },
+    {
+      "streetName": "Yale Road",
+      "suburb": "Mt Cook"
+    },
+    {
+      "streetName": "Yarnbrook Grove",
+      "suburb": "Churton Park"
+    },
+    {
+      "streetName": "York Street",
+      "suburb": "Te Aro"
+    },
+    {
+      "streetName": "Yule Street",
+      "suburb": "Kilbirnie"
+    },
+    {
+      "streetName": "Yule Street",
+      "suburb": "Lyall Bay"
+    },
+    {
+      "streetName": "Zaida Way",
+      "suburb": "Maupuia"
+    },
+    {
+      "streetName": "Zande Terrace",
+      "suburb": "Tawa"
+    },
+    {
+      "streetName": "Zetland Street",
+      "suburb": "Highbury"
+    },
+    {
+      "streetName": "Zohrab Street",
+      "suburb": "Hataitai"
+    }
+  ]
+}

@@ -17,7 +17,7 @@ export interface SuburbSearchResult {
   streetName: string;
   suburb: string;
   zone: string;
-  isInnerCityNightCollection: boolean;
+  isInnerCityNightCollection: boolean | null;
   recyclingCalendarGroup: RecyclingCalendarGroup | null;
   /**
    * Which real WCC weekday this address's weekly kerbside collection falls

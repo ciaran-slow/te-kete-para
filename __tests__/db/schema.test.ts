@@ -16,7 +16,11 @@ const SCHEMA = {
       street_name: { nullable: false, defaultValue: null },
       suburb: { nullable: false, defaultValue: null },
       zone: { nullable: false, defaultValue: null },
-      is_inner_city_night_collection: { nullable: false, defaultValue: "'0'" },
+      // Widened to nullable by issue #178/ADR 0075: a bulk-imported street
+      // whose CBD/night-collection status hasn't been confirmed against
+      // WCC's live per-street lookup tool must be representable as
+      // genuinely unresolved (null), not defaulted to false.
+      is_inner_city_night_collection: { nullable: true, defaultValue: null },
       recycling_calendar_group: { nullable: true, defaultValue: null },
       collection_weekday: { nullable: true, defaultValue: null },
     },

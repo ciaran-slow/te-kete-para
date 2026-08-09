@@ -50,7 +50,12 @@ export type RecyclingCalendarGroup = 1 | 2;
  */
 export interface ZoneClassification {
   zone: string;
-  isInnerCityNightCollection: boolean;
+  /**
+   * `null` when a bulk-imported street (issue #178, ADR 0075) hasn't yet
+   * been checked against WCC's live per-street lookup tool — a genuinely
+   * unresolved state, never defaulted to `false`.
+   */
+  isInnerCityNightCollection: boolean | null;
   /**
    * Which of WCC's two independently-phased alternating recycling
    * calendars (ADR 0042) this address actually follows — confirmed
@@ -97,6 +102,23 @@ export class UnresolvedRecyclingCalendarGroupError extends RangeError {
   }
 }
 
+/**
+ * Thrown by computeCollectionRuleSet (and the collection-day.ts functions
+ * that share this classification) when isInnerCityNightCollection is `null`
+ * — a bulk-imported street (issue #178, ADR 0075) whose CBD/night-collection
+ * status hasn't been confirmed against WCC's live per-street lookup tool
+ * yet. Mirrors UnresolvedRecyclingCalendarGroupError exactly (ADR 0068):
+ * still a RangeError, so any existing broad `catch`/`instanceof RangeError`
+ * check keeps working unchanged, while callers that need to distinguish
+ * "genuinely unresolved" from every other rejected-unknown case can.
+ */
+export class UnresolvedZoneClassificationError extends RangeError {
+  constructor(fnName: string) {
+    super(`${fnName}: isInnerCityNightCollection must be resolved (true or false).`);
+    this.name = "UnresolvedZoneClassificationError";
+  }
+}
+
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 // Monday 2026-01-12 UTC = a confirmed "glass" week under WCC's published
 // Calendar 1 (ADR 0042). Calendar 2 is Calendar 1's exact photographic
@@ -117,6 +139,9 @@ export function computeCollectionRuleSet(
     throw new RangeError(
       "computeCollectionRuleSet: zone must be a non-empty string.",
     );
+  }
+  if (zone.isInnerCityNightCollection === null) {
+    throw new UnresolvedZoneClassificationError("computeCollectionRuleSet");
   }
 
   if (zone.isInnerCityNightCollection) {

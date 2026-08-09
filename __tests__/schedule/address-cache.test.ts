@@ -28,6 +28,20 @@ const ADDRESS_B: SuburbSearchResult = {
   recyclingCalendarGroup: null,
   collectionWeekday: null,
 };
+// A bulk-imported street (issue #178, ADR 0075) whose CBD/night-collection
+// status hasn't been confirmed yet — isInnerCityNightCollection is
+// genuinely null, not a boolean. Proves the widened field still round-trips
+// under the *current* ADDRESS_CACHE_VERSION (deliberately not bumped for
+// this change, ADR 0075) rather than being quarantined.
+const ADDRESS_UNCONFIRMED_CLASSIFICATION: SuburbSearchResult = {
+  id: 30,
+  streetName: "Wadestown Road",
+  suburb: "Wadestown",
+  zone: "zone-unconfirmed",
+  isInnerCityNightCollection: null,
+  recyclingCalendarGroup: null,
+  collectionWeekday: null,
+};
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -66,6 +80,19 @@ test("three writes alternating back (A, B, A) leave exactly A cached, no drift",
   writeCachedAddress(ADDRESS_A);
 
   expect(parseCachedAddress(readCachedAddressRaw())).toEqual(ADDRESS_A);
+});
+
+test("a payload with isInnerCityNightCollection: null (bulk-imported, unconfirmed) parses successfully under the current ADDRESS_CACHE_VERSION, not quarantined (issue #178, ADR 0075)", () => {
+  writeCachedAddress(ADDRESS_UNCONFIRMED_CLASSIFICATION);
+  expect(parseCachedAddress(readCachedAddressRaw())).toEqual(
+    ADDRESS_UNCONFIRMED_CLASSIFICATION,
+  );
+
+  const payload = JSON.stringify({
+    version: ADDRESS_CACHE_VERSION,
+    address: ADDRESS_UNCONFIRMED_CLASSIFICATION,
+  });
+  expect(parseCachedAddress(payload)).toEqual(ADDRESS_UNCONFIRMED_CLASSIFICATION);
 });
 
 test("parseCachedAddress(null) is null", () => {

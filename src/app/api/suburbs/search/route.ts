@@ -11,7 +11,7 @@ interface AddressRow {
   street_name: string;
   suburb: string;
   zone: string;
-  is_inner_city_night_collection: number | boolean;
+  is_inner_city_night_collection: number | boolean | null;
   recycling_calendar_group: number | null;
   collection_weekday: number | null;
 }
@@ -21,7 +21,7 @@ export interface SuburbSearchResult {
   streetName: string;
   suburb: string;
   zone: string;
-  isInnerCityNightCollection: boolean;
+  isInnerCityNightCollection: boolean | null;
   recyclingCalendarGroup: RecyclingCalendarGroup | null;
   collectionWeekday: Weekday | null;
 }
@@ -29,7 +29,9 @@ export interface SuburbSearchResult {
 /**
  * Maps a raw `addresses` row to the API's camelCase contract (ADR 0013).
  * `Boolean(...)` closes the gap where knex's sqlite3 dialect returns
- * `boolean` columns as the JS number 1/0, not true/false.
+ * `boolean` columns as the JS number 1/0, not true/false. `null` (a
+ * bulk-imported, unconfirmed street, issue #178/ADR 0075) is preserved as
+ * `null` rather than coerced to `false`.
  */
 export function toSuburbSearchResult(row: AddressRow): SuburbSearchResult {
   return {
@@ -37,7 +39,10 @@ export function toSuburbSearchResult(row: AddressRow): SuburbSearchResult {
     streetName: row.street_name,
     suburb: row.suburb,
     zone: row.zone,
-    isInnerCityNightCollection: Boolean(row.is_inner_city_night_collection),
+    isInnerCityNightCollection:
+      row.is_inner_city_night_collection === null
+        ? null
+        : Boolean(row.is_inner_city_night_collection),
     recyclingCalendarGroup:
       row.recycling_calendar_group === 1 || row.recycling_calendar_group === 2
         ? row.recycling_calendar_group

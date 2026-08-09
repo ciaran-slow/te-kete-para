@@ -22,6 +22,8 @@
  * issue, having already stopped at the data + pure-function layer.
  */
 
+import { UnresolvedZoneClassificationError } from "@/lib/schedule/rules";
+
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 /** `Date#getUTCDay()` convention: 0 = Sunday ... 6 = Saturday. */
@@ -33,7 +35,11 @@ export type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6;
  * — never re-derived from `zone` (ADR 0063, mirroring ADR 0015).
  */
 export interface CollectionDayClassification {
-  isInnerCityNightCollection: boolean;
+  /**
+   * `null` when a bulk-imported street (issue #178, ADR 0075) hasn't yet
+   * been checked against WCC's live per-street lookup tool.
+   */
+  isInnerCityNightCollection: boolean | null;
   /**
    * Which real WCC weekday this address's weekly kerbside collection falls
    * on, confirmed via WCC's live per-street lookup tool (ADR 0063). `null`
@@ -45,7 +51,7 @@ export interface CollectionDayClassification {
 }
 
 interface AddressCollectionDayRow {
-  is_inner_city_night_collection: number | boolean;
+  is_inner_city_night_collection: number | boolean | null;
   collection_weekday: number | null;
 }
 
@@ -59,7 +65,10 @@ export function toCollectionDayClassification(
       ? (raw as Weekday)
       : null;
   return {
-    isInnerCityNightCollection: Boolean(row.is_inner_city_night_collection),
+    isInnerCityNightCollection:
+      row.is_inner_city_night_collection === null
+        ? null
+        : Boolean(row.is_inner_city_night_collection),
     collectionWeekday,
   };
 }
@@ -103,6 +112,9 @@ export function isCollectionDay(
   date: Date,
 ): boolean {
   assertValidDate(date, "isCollectionDay", "date");
+  if (classification.isInnerCityNightCollection === null) {
+    throw new UnresolvedZoneClassificationError("isCollectionDay");
+  }
 
   if (classification.isInnerCityNightCollection) {
     return true;
@@ -128,6 +140,9 @@ export function findNextCollectionDate(
   fromDate: Date,
 ): Date {
   assertValidDate(fromDate, "findNextCollectionDate", "fromDate");
+  if (classification.isInnerCityNightCollection === null) {
+    throw new UnresolvedZoneClassificationError("findNextCollectionDate");
+  }
   const startUtc = utcCalendarDate(fromDate);
 
   if (classification.isInnerCityNightCollection) {

@@ -72,6 +72,18 @@ const UNCONFIRMED_CALENDAR_ADDRESS: SuburbSearchResult = {
   // computeCollectionRuleSet is the only throw this fixture exercises.
   collectionWeekday: 1,
 };
+// A bulk-imported street (issue #178, ADR 0075) whose CBD/night-collection
+// status hasn't been confirmed against WCC's live per-street lookup tool
+// yet — isInnerCityNightCollection is genuinely null, not defaulted false.
+const UNCONFIRMED_CLASSIFICATION_ADDRESS: SuburbSearchResult = {
+  id: 50,
+  streetName: "Wadestown Road",
+  suburb: "Wadestown",
+  zone: "zone-unconfirmed",
+  isInnerCityNightCollection: null,
+  recyclingCalendarGroup: null,
+  collectionWeekday: null,
+};
 
 // Matches rules.test.ts's epoch fixture: a glass week, mid-UTC-day so the
 // viewer's local (Pacific/Auckland, ADR 0017) calendar date is also
@@ -250,6 +262,25 @@ describe("ScheduleDisplay", () => {
       ),
     ).not.toBeInTheDocument();
     expect(screen.queryAllByRole("listitem")).toHaveLength(0);
+  });
+
+  test("an address with isInnerCityNightCollection: null shows a specific 'not confirmed yet' message, not the generic error or a fabricated schedule (issue #178)", () => {
+    expect(() =>
+      renderDisplay(UNCONFIRMED_CLASSIFICATION_ADDRESS, GLASS_WEEK_MONDAY),
+    ).not.toThrow();
+
+    expect(
+      screen.getByText(
+        "We haven't confirmed this address's collection details yet. Check back soon.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "We couldn't work out your next collection for this address. Please try again.",
+      ),
+    ).not.toBeInTheDocument();
+    expect(screen.queryAllByRole("listitem")).toHaveLength(0);
+    expect(screen.queryByText(/\d{2}\/\d{2}\/\d{4}/)).not.toBeInTheDocument();
   });
 
   test("a suburban address with an unconfirmed collectionWeekday shows the translated error, not a bogus date (distinct throw path from the blank-zone case)", () => {
